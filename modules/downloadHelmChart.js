@@ -3,12 +3,9 @@ import { execSync } from 'child_process';
 
 async function authenticateAndPullHelmChart(inputParameters) {
 
-    // Set your ECR repository URL
-    const repositoryUrl = inputParameters.aws_accountid+'.dkr.ecr.'+inputParameters.aws_region+'.amazonaws.com';
-    console.log("ECR URL" +repositoryUrl)
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
-    console.log("Helm Url :" +helmUrl +"Helm Version :" +addonVersion)
+    console.log("Helm Url : " +helmUrl +"Helm Version : " +addonVersion)
 
     // Set your AWS region and credentials
     AWS.config.update({ region: inputParameters.aws_region });
@@ -27,7 +24,8 @@ async function authenticateAndPullHelmChart(inputParameters) {
     const username = decodedToken[0];
     const password = decodedToken[1];
     const registryUrl = data.authorizationData[0].proxyEndpoint;
-    const loginCmd = `docker login -u ${username} -p ${password} ${registryUrl}`;
+    console.log("registryUrl : " +registryUrl)
+    const loginCmd = `helm registry login -u ${username} -p ${password} ${registryUrl}`;
     // Log in to ECR
     try {
         const result = execSync(loginCmd);
