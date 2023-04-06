@@ -7,6 +7,8 @@ async function authenticateAndPullHelmChart(inputParameters) {
     const repositoryUrl = inputParameters.aws_accountid+'.dkr.ecr.'+inputParameters.aws_region+'.amazonaws.com';
     console.log("ECR URL" +repositoryUrl)
     const helmUrl = inputParameters.helmUrl;
+    const addonVersion = inputParameters.addonVersion;
+    console.log("Helm Url :" +helmUrl +"Helm Version :" +helmUrl)
 
     // Set your AWS region and credentials
     AWS.config.update({ region: inputParameters.aws_region });
@@ -35,7 +37,7 @@ async function authenticateAndPullHelmChart(inputParameters) {
         return;
     }
     // Pull the Helm chart from ECR
-    const pullCmd = `helm pull ${helmUrl}`;
+    const pullCmd = `helm pull ${helmUrl} --version ${addonVersion}`;
     try {
         const result = execSync(pullCmd);
         console.log(result.toString());
