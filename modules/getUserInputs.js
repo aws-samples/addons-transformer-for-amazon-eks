@@ -23,6 +23,16 @@ async function getUserInputs() {
             name: 'namespace',
             message: "Whats your deployment namespace?",
         },
+        {
+            type: 'input',
+            name: 'aws_accountid',
+            message: "Whats your AWS Account id?",
+        },
+        {
+            type: 'input',
+            name: 'aws_region',
+            message: "Whats your AWS Region ?",
+        },
     ];
     
     const answers = await inquirer.prompt(questions);

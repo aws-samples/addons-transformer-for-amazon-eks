@@ -2,8 +2,15 @@
 import checkAndInstallDependencies from './modules/installDependencies.js';
 import getUserInputs from './modules/getUserInputs.js'
 import validateUserInputs from './modules/validateUserInputs.js';
+import authenticateAndPullHelmChart from './modules/downloadHelmChart.js';
 
-await checkAndInstallDependencies();
+try {
+    await checkAndInstallDependencies();
+} catch (error) {
+    console.error(error.message);
+    process.exit(100);
+}
+
 
 let inputParameters = await getUserInputs();
 console.log(JSON.stringify(inputParameters, null, '  '));
@@ -13,5 +20,14 @@ try {
     console.log('All User Inputs are Valid!');
 } catch (error) {
     console.error(error.message);
+    process.exit(200);
+}
+
+try {
+    await authenticateAndPullHelmChart(inputParameters);
+    console.log('Helm Chart Pull is Successful!');
+} catch (error) {
+    console.error(error.message);
+    process.exit(300);
 }
 

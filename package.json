@@ -5,6 +5,7 @@
   "type": "module",
   "bin": "./transformer.js",
   "dependencies": {
+    "aws-sdk": "^2.1351.0",
     "child_process": "^1.0.2",
     "inquirer": "^9.1.5",
     "js-yaml": "^4.1.0",
