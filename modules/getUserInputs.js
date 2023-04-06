@@ -10,7 +10,7 @@ async function getUserInputs() {
         },
         {
             type: 'input',
-            name: 'helmURL',
+            name: 'helmUrl',
             message: "Whats your Helm URL of the Addon",
         },
         {

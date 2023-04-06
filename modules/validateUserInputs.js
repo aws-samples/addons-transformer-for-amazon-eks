@@ -8,8 +8,8 @@ function validateUserInputs(inputParameters) {
         throw new Error('Invalid Addon Name: ' + inputParameters.addonName);
     }
 
-    if (!inputParameters.helmURL || !urlRegex.test(inputParameters.helmURL)) {
-      throw new Error('Invalid Helm URL: ' + inputParameters.helmURL);
+    if (!inputParameters.helmUrl || !urlRegex.test(inputParameters.helmUrl)) {
+      throw new Error('Invalid Helm Url: ' + inputParameters.helmUrl);
     }
     
     if (!inputParameters.addonVersion || !alphanumericRegex.test(inputParameters.addonVersion)) {
