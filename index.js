@@ -25,7 +25,6 @@ try {
 
 try {
     await authenticateAndPullHelmChart(inputParameters);
-    console.log('Helm Chart Pull is Successful!');
 } catch (error) {
     console.error(error.message);
     process.exit(300);
