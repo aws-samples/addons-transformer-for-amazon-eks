@@ -8,7 +8,7 @@ async function authenticateAndPullHelmChart(inputParameters) {
     console.log("ECR URL" +repositoryUrl)
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
-    console.log("Helm Url :" +helmUrl +"Helm Version :" +helmUrl)
+    console.log("Helm Url :" +helmUrl +"Helm Version :" +addonVersion)
 
     // Set your AWS region and credentials
     AWS.config.update({ region: inputParameters.aws_region });
