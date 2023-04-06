@@ -39,6 +39,7 @@ async function authenticateAndPullHelmChart(inputParameters) {
     try {
         const result = execSync(pullCmd);
         console.log(result.toString());
+        console.log('Helm Chart Pull is Successful!');
     } catch (error) {
         console.error(error);
         return;
