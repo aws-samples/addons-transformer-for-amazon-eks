@@ -2,7 +2,7 @@
 function validateUserInputs(inputParameters) {
     const urlRegex = /^oci?:\/\/.+$/; // Matches URLs starting with oci://
     const nameRegex = /^[A-Za-z ]+$/; // Matches names containing only letters and spaces
-    const alphanumericRegex = /^[a-zA-Z0-9].-+$/; // matches alphabets and numbers only
+    const alphanumericRegex = /^[a-zA-Z0-9.-]+$/; // matches alphabets and numbers only
   
     if (!inputParameters.addonName || !nameRegex.test(inputParameters.addonName)) {
         throw new Error('Invalid Addon Name: ' + inputParameters.addonName);
