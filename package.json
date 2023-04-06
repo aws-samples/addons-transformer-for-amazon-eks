@@ -1,9 +1,9 @@
 {
-  "name": "sleek-transformer",
+  "name": "aws-sleek-transformer",
   "version": "0.1",
-  "main": "transformer.js",
+  "main": "index.js",
   "type": "module",
-  "bin": "./transformer.js",
+  "bin": "./index.js",
   "dependencies": {
     "aws-sdk": "^2.1351.0",
     "child_process": "^1.0.2",
