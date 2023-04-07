@@ -36,7 +36,6 @@ async function pullHelmChartAndValidate(inputParameters) {
         return;
     }
     // Pull the Helm chart from ECR
-    const folderPath = './unzipped';
     const pullCmd = `mkdir ./unzipped && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ./unzipped`;
     try {
         const result = execSync(pullCmd);
@@ -49,8 +48,8 @@ async function pullHelmChartAndValidate(inputParameters) {
     });
 
     // Search for occurrences of ".Capabilities" and "helm.sh/hook"
-    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', folderPath]);
-    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', folderPath]);
+    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', './unzipped']);
+    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', './unzipped']);
     // Check the counts and exit if either is greater than zero
     if (findCapabilities.stdout > 0 || findHooks.stdout > 0) {
         console.log('Found .Capabilities or helm.sh/hook in Helm chart');
