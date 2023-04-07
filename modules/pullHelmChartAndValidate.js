@@ -37,7 +37,7 @@ async function pullHelmChartAndValidate(inputParameters) {
     }
     // Pull the Helm chart from ECR
     const folderPath = './unzipped';
-    const pullCmd = `mkdir ${folderPath}  && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ${folderPath}`;
+    const pullCmd = `mkdir ./unzipped && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ./unzipped`;
     try {
         const result = execSync(pullCmd);
         console.log(result.toString());
