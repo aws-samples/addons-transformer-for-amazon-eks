@@ -1,7 +1,8 @@
 import AWS from 'aws-sdk'
 import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 
-async function authenticateAndPullHelmChart(inputParameters) {
+async function pullHelmChartAndValidate(inputParameters) {
 
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
@@ -35,7 +36,8 @@ async function authenticateAndPullHelmChart(inputParameters) {
         return;
     }
     // Pull the Helm chart from ECR
-    const pullCmd = `helm pull ${helmUrl} --version ${addonVersion}`;
+    const folderPath = './unzipped';
+    const pullCmd = `mkdir ${folderPath}  && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ${folderPath}`;
     try {
         const result = execSync(pullCmd);
         console.log(result.toString());
@@ -46,6 +48,16 @@ async function authenticateAndPullHelmChart(inputParameters) {
     }
     });
 
+    // Search for occurrences of ".Capabilities" and "helm.sh/hook"
+    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', folderPath]);
+    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', folderPath]);
+    // Check the counts and exit if either is greater than zero
+    if (findCapabilities.stdout > 0 || findHooks.stdout > 0) {
+        console.log('Found .Capabilities or helm.sh/hook in Helm chart');
+        process.exit(350);
+        } else {
+        console.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
+    }
 }
 
 export default authenticateAndPullHelmChart
