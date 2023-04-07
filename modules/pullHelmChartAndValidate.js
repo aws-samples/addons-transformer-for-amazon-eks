@@ -4,6 +4,7 @@ import { spawnSync } from 'child_process';
 
 async function pullHelmChartAndValidate(inputParameters) {
 
+    const addonName = inputParameters.addonName;
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
     console.log("Helm Url : " +helmUrl +"Helm Version : " +addonVersion)
@@ -27,7 +28,6 @@ async function pullHelmChartAndValidate(inputParameters) {
     const registryUrl = data.authorizationData[0].proxyEndpoint;
     console.log("registryUrl : " +registryUrl)
     const loginCmd = `helm registry login -u ${username} -p ${password} ${registryUrl}`;
-    console.log("command : " +loginCmd )
     // Log in to ECR
     try {
         const result = execSync(loginCmd);
@@ -37,28 +37,27 @@ async function pullHelmChartAndValidate(inputParameters) {
         return;
     }
     // Pull the Helm chart from ECR
-    const pullCmd = `mkdir ./unzipped && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ./unzipped`;
+    const pullCmd = `mkdir ./unzipped-${addonName} && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ./unzipped-${addonName}`;
     try {
         const result = execSync(pullCmd);
         console.log(result.toString());
         console.log('Helm Chart Pull is Successful!');
-        // Search for occurrences of ".Capabilities" and "helm.sh/hook"
-        const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', './unzipped']);
-        const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', './unzipped']);
-        // Check the counts and exit if either is greater than zero
-        if (findCapabilities.stdout > 0 || findHooks.stdout > 0) {
-            console.log('Found .Capabilities or helm.sh/hook in Helm chart');
-            process.exit(350);
-            } else {
-            console.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
-        }
     } catch (error) {
         console.error(error);
         return;
     }
     });
 
-
+    // Search for occurrences of ".Capabilities" and "helm.sh/hook"
+    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', `./unzipped-${addonName}`]);
+    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', `./unzipped-${addonName}`]);
+    // Check the counts and exit if either is greater than zero
+    if (findCapabilities.stdout > 0 || findHooks.stdout > 0) {
+        console.log('Found .Capabilities or helm.sh/hook in Helm chart');
+        process.exit(350);
+        } else {
+        console.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
+    }
 }
 
 export default pullHelmChartAndValidate
