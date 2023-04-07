@@ -60,5 +60,5 @@ async function pullHelmChartAndValidate(inputParameters) {
     }
 }
 
-export default authenticateAndPullHelmChart
+export default pullHelmChartAndValidate
 
