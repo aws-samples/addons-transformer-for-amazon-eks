@@ -57,10 +57,6 @@ try {
 try {
     await pullHelmChartAndValidate(inputParameters)
         .then(() => {
-        /***************************************************************/
-        /* We will now do the following:                               */
-
-        /***************************************************************/
         try {
             createAndSubmitPullRequest(inputParameters);
         } catch (error) {
