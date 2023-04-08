@@ -38,7 +38,7 @@ async function cloneRepository(repoUrl) {
 
 // Function to add a file to the cloned repository
 async function addFileToRepo(headBranch,addonName) {
-  execSync(`cd aws-sleek-transformer && git checkout main && git reset --hard origin/main && git branch -D ${headBranch} || true && git checkout -b ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file"`);
+  execSync(`cd aws-sleek-transformer && git checkout main && git reset --hard origin/main && git checkout -B ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file"`);
   // execSync('git add new-file.txt');
   // execSync('git commit -m "Adding a new file');
 }
