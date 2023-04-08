@@ -25,6 +25,7 @@ async function getGitHubAccessToken(sm, secretName) {
   const secret = await sm.getSecretValue({ SecretId: secretName }).promise();
   const secretString = secret.SecretString;
   if (typeof secretString === 'string') {
+    console.log(JSON.stringify(secretString, null, '  '));
     return JSON.parse(secretString).accessToken;
   } else {
     throw new Error('SecretString is not a string.');
@@ -52,6 +53,7 @@ async function addFileToRepo(headBranch,addonName) {
 async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody) {
   const prUrl = `https://github.com/elamaran11/aws-sleek-transformer/pull/new/${baseBranch}...${headBranch}`;
   const accessToken = await getGitHubAccessToken(sm,secretName);
+  console.log('Access Token : ' +accessToken);
   const octokit = new Octokit({ auth: accessToken });
   await octokit.pulls.create({
     owner: 'elamaran11',
