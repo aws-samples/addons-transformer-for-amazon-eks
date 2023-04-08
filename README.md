@@ -26,8 +26,8 @@ To implement this solution, you need the following prerequisites:
 
 * The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). The AWS CLI is a unified tool to manage your AWS services.
 * AWS CLI default profile should be configured to access your AWS Account with region `us-east-1`.
-* Node (https://nodejs.org/en/download/current/) version 18.12.1 or later.
-* NPM (https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
+* [Node](https://nodejs.org/en/download/current/) version 18.12.1 or later.
+* [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
 * A secret by name `github-access-token-secret` with your github token as plain text should be created in AWS Secrets Manager in `us-east-1` region.
 
 ## Deployment
