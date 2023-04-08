@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects. This npm module does the following :
+Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects. This npm module does the following:
 
 1. Installs project dependencies such as `kubectl`, `eksctl`, `helm` utilities to the terminal.
 2. Grabs the following user inputs :
