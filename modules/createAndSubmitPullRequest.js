@@ -53,7 +53,7 @@ async function addFileToRepo(headBranch,addonName) {
 async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody) {
   const prUrl = `https://github.com/elamaran11/aws-sleek-transformer/pull/new/${baseBranch}...${headBranch}`;
   const accessToken = await getGitHubAccessToken(sm,secretName);
-  console.log('Access Token : ' +accessToken);
+  console.log('Access Token : '+accessToken);
   const octokit = new Octokit({ auth: accessToken });
   await octokit.pulls.create({
     owner: 'elamaran11',
