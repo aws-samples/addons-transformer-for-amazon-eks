@@ -5,27 +5,27 @@ function validateUserInputs(inputParameters) {
     const alphanumericRegex = /^[a-zA-Z0-9.-]+$/; // matches alphabets and numbers only
   
     if (!inputParameters.addonName || !nameRegex.test(inputParameters.addonName)) {
-        throw new Error('Invalid Addon Name: ' + inputParameters.addonName);
+        throw new Error('Invalid Addon Name : ' + inputParameters.addonName);
     }
 
     if (!inputParameters.helmUrl || !urlRegex.test(inputParameters.helmUrl)) {
-      throw new Error('Invalid Helm Url: ' + inputParameters.helmUrl);
+      throw new Error('Invalid Helm Url : ' + inputParameters.helmUrl);
     }
     
     if (!inputParameters.addonVersion || !alphanumericRegex.test(inputParameters.addonVersion)) {
-      throw new Error('Invalid Addon Version: ' + inputParameters.addonVersion);
+      throw new Error('Invalid Addon Version : ' + inputParameters.addonVersion);
     }
   
     if (!inputParameters.namespace || !alphanumericRegex.test(inputParameters.namespace)) {
-      throw new Error('Invalid Namespace: ' + inputParameters.namespace);
+      throw new Error('Invalid Namespace : ' + inputParameters.namespace);
     }
 
     if (!inputParameters.aws_accountid || !alphanumericRegex.test(inputParameters.aws_accountid)) {
-      throw new Error('Invalid AWS Account ID: ' + inputParameters.aws_accountid);
+      throw new Error('Invalid AWS Account ID : ' + inputParameters.aws_accountid);
     }
 
     if (!inputParameters.aws_region || !alphanumericRegex.test(inputParameters.aws_region)) {
-      throw new Error('Invalid AWS Account ID: ' + inputParameters.aws_region);
+      throw new Error('Invalid AWS Region : ' + inputParameters.aws_region);
     }
   
     return true;
