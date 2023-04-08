@@ -31,7 +31,6 @@ try {
 /* 6. Whats your AWS Region ?                                  */
 /***************************************************************/
 let inputParameters = await getUserInputs();
-console.log(JSON.stringify(inputParameters, null, '  '));
 
 /***************************************************************/
 /* We will now validate the inputs from the user               */
@@ -56,13 +55,14 @@ try {
 /* 6. Submit a PR with the Addon extract                       */
 /***************************************************************/
 try {
-    await pullHelmChartAndValidate(async (inputParameters) => {
+    await pullHelmChartAndValidate(inputParameters)
+        .then(() => {
         /***************************************************************/
         /* We will now do the following:                               */
 
         /***************************************************************/
         try {
-            await createAndSubmitPullRequest(inputParameters);
+            createAndSubmitPullRequest(inputParameters);
         } catch (error) {
             console.error(error.message);
             process.exit(400);

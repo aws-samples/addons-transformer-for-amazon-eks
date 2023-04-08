@@ -4,12 +4,14 @@ import { spawnSync } from 'child_process';
 
 async function pullHelmChartAndValidate(inputParameters) {
 
+    console.log(JSON.stringify(inputParameters, null, '  '));
     const addonName = inputParameters.addonName;
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
+    const region = inputParameters.aws_region ;
 
     // Set your AWS region and credentials
-    AWS.config.update({ region: inputParameters.aws_region });
+    AWS.config.update({ region: region });
     const ecr = new AWS.ECR();
     // Get the ECR login command
     const loginParams = {
@@ -57,6 +59,12 @@ async function pullHelmChartAndValidate(inputParameters) {
             console.error(error);
             return;
         }
+    });
+    return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log(`Function done`);
+          resolve();
+        }, 2000);
     });
 }
 

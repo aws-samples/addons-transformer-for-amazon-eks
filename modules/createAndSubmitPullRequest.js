@@ -33,7 +33,7 @@ async function getGitHubAccessToken(sm, secretName) {
 
 // Function to clone the GitHub repository
 async function cloneRepository(repoUrl) {
-  execSync(`git clone ${repoUrl} && cd aws-sleek-transformer`);
+  execSync(`rm -rf aws-sleek-transformer && git clone ${repoUrl} && cd aws-sleek-transformer`);
 }
 
 // Function to add a file to the cloned repository
