@@ -33,12 +33,12 @@ async function getGitHubAccessToken(sm, secretName) {
 
 // Function to clone the GitHub repository
 async function cloneRepository(repoUrl) {
-  execSync(`rm -rf aws-sleek-transformer && git clone ${repoUrl}`);
+  execSync(`rm -rf aws-sleek-transformer && mkdir aws-sleek-transformer && cd aws-sleek-transformer && git clone ${repoUrl} .`);
 }
 
 // Function to add a file to the cloned repository
 async function addFileToRepo() {
-  execSync('cd aws-sleek-transformer && touch new-file.txt');
+  execSync('touch new-file.txt');
   execSync('git add new-file.txt');
   execSync('git commit -m "Adding a new file"');
 }
