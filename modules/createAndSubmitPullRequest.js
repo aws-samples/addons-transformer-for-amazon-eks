@@ -25,8 +25,6 @@ async function getGitHubAccessToken(sm, secretName) {
   const secret = await sm.getSecretValue({ SecretId: secretName }).promise();
   const secretString = secret.SecretString;
   if (typeof secretString === 'string') {
-    console.log(JSON.stringify(secretString, null, '  '));
-    console.log('Access Token : '+secretString);
     return secretString;
   } else {
     throw new Error('SecretString is not a string.');
@@ -54,7 +52,6 @@ async function addFileToRepo(headBranch,addonName) {
 async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody) {
   const prUrl = `https://github.com/elamaran11/aws-sleek-transformer/pull/new/${baseBranch}...${headBranch}`;
   const accessToken = await getGitHubAccessToken(sm,secretName);
-  console.log('Access Token : '+accessToken);
   const octokit = new Octokit({ auth: accessToken });
   await octokit.pulls.create({
     owner: 'elamaran11',
@@ -64,7 +61,7 @@ async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequ
     base: baseBranch,
     head: headBranch
   });
-  execSync('cd .. && rm -rf aws-sleek-transformer');
+  execSync('rm -rf aws-sleek-transformer');
 
 }
 
