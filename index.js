@@ -65,10 +65,10 @@ try {
 /* 2. Clone the GitHub repo of `aws-sleek-transformer          */
 /* 3. Submit a PR with the Addon extract                       */
 /***************************************************************/
-try {
-    await createAndSubmitPullRequest(inputParameters);
-} catch (error) {
-    console.error(error.message);
-    process.exit(400);
-}
+// try {
+//     await createAndSubmitPullRequest(inputParameters);
+// } catch (error) {
+//     console.error(error.message);
+//     process.exit(400);
+// }
 
