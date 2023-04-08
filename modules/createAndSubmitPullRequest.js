@@ -10,14 +10,17 @@ async function createAndSubmitPullRequest(inputParameters) {
 
   // GitHub repository and pull request configuration
   const addonName = inputParameters.addonName;
-  const repoUrl = 'https://github.com/elamaran11/aws-sleek-transformer.git';
+  const owner = 'elamaran11';
+  const repo = 'aws-sleek-transformer';
+  const repoUrl = `https://github.com/${owner}/${repo}.git`;
   const pullRequestTitle = `Adding ${addonName} Addon`;
   const pullRequestBody = `Adding ${addonName} Addon to the repository`;
   const baseBranch = 'main';
   const headBranch = `feature/${addonName}`;
+  
   await cloneRepository(repoUrl);
   await addFileToRepo(headBranch, addonName);
-  await submitPullRequest(sm, secretName ,baseBranch, headBranch, pullRequestTitle, pullRequestBody, addonName);
+  await submitPullRequest(sm, secretName, owner, repo, baseBranch, headBranch, pullRequestTitle, pullRequestBody, addonName);
 }
 
 // Function to retrieve the GitHub personal access token from AWS Secrets Manager
@@ -48,18 +51,18 @@ async function addFileToRepo(headBranch,addonName) {
 }
 
 // Function to submit a pull request to the GitHub repository
-async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody, addonName) {
+async function submitPullRequest(sm, secretName, owner, repo, baseBranch,headBranch, pullRequestTitle, pullRequestBody, addonName) {
   const accessToken = await getGitHubAccessToken(sm,secretName);
   const octokit = new Octokit({ auth: accessToken });
   await octokit.pulls.create({
-    owner: 'elamaran11',
-    repo: 'aws-sleek-transformer',
+    owner: owner,
+    repo: repo,
     title: pullRequestTitle,
     body: pullRequestBody,
     base: baseBranch,
     head: headBranch
   });
-  execSync('rm -rf /unzipped-${addonName} && rm -rf aws-sleek-transformer');
+  execSync(`rm -rf ./unzipped-${addonName} && rm -rf ./aws-sleek-transformer`);
 }
 
 export default createAndSubmitPullRequest
