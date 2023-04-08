@@ -9,7 +9,6 @@ node_modules
 .vscode
 *.iml
 .code
-*.tgz
 # CDK asset staging directory
 .cdk.staging
 cdk.out
