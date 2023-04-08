@@ -51,24 +51,26 @@ try {
 /* 3. Perform static validations to find occurences of :       */
 /*    a. `.Capabilities`                                       */
 /*    b. `helm.sh/hook`                                        */
+/* 4. Read GitHub Token secret from AWS Secrets Manager        */
+/* 5. Clone the GitHub repo of `aws-sleek-transformer          */
+/* 6. Submit a PR with the Addon extract                       */
 /***************************************************************/
 try {
-    await pullHelmChartAndValidate(inputParameters);
+    await pullHelmChartAndValidate(async (inputParameters) => {
+        /***************************************************************/
+        /* We will now do the following:                               */
+
+        /***************************************************************/
+        try {
+            await createAndSubmitPullRequest(inputParameters);
+        } catch (error) {
+            console.error(error.message);
+            process.exit(400);
+        }
+    });
 } catch (error) {
     console.error(error.message);
     process.exit(300);
 }
 
-/***************************************************************/
-/* We will now do the following:                               */
-/* 1. Read GitHub Token secret from AWS Secrets Manager        */
-/* 2. Clone the GitHub repo of `aws-sleek-transformer          */
-/* 3. Submit a PR with the Addon extract                       */
-/***************************************************************/
-// try {
-//     await createAndSubmitPullRequest(inputParameters);
-// } catch (error) {
-//     console.error(error.message);
-//     process.exit(400);
-// }
 
