@@ -38,14 +38,18 @@ async function cloneRepository(repoUrl) {
 
 // Function to add a file to the cloned repository
 async function addFileToRepo(headBranch,addonName) {
-  execSync(`cd aws-sleek-transformer && git checkout main && git reset --hard origin/main && git checkout -B ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file"`);
-  // execSync('git add new-file.txt');
-  // execSync('git commit -m "Adding a new file');
+  const repoCmd = `cd aws-sleek-transformer && git checkout main && git reset --hard origin/main && git branch -D ${headBranch} || true && git checkout -B ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file" && git push -u origin ${headBranch}`;
+  try {
+      const result = execSync(repoCmd);
+      console.log('Git Commit Successful!');
+  } catch (error) {
+      console.error(error);
+      return;
+  }
 }
 
 // Function to submit a pull request to the GitHub repository
 async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody) {
-  execSync(`cd aws-sleek-transformer && git push -u origin ${headBranch}`);
   const prUrl = `https://github.com/elamaran11/aws-sleek-transformer/pull/new/${baseBranch}...${headBranch}`;
   const accessToken = await getGitHubAccessToken(sm,secretName);
   const octokit = new Octokit({ auth: accessToken });
