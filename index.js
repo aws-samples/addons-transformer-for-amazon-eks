@@ -5,7 +5,7 @@
 import checkAndInstallDependencies from './modules/installDependencies.js';
 import getUserInputs from './modules/getUserInputs.js'
 import validateUserInputs from './modules/validateUserInputs.js';
-import authenticateAndPullHelmChart from './modules/pullHelmChartAndValidate.js';
+import pullHelmChartAndValidate from './modules/pullHelmChartAndValidate.js';
 import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
 
 /***************************************************************/
@@ -53,7 +53,7 @@ try {
 /*    b. `helm.sh/hook`                                        */
 /***************************************************************/
 try {
-    await authenticateAndPullHelmChart(inputParameters);
+    await pullHelmChartAndValidate(inputParameters);
 } catch (error) {
     console.error(error.message);
     process.exit(300);
