@@ -7,7 +7,6 @@ async function pullHelmChartAndValidate(inputParameters) {
     const addonName = inputParameters.addonName;
     const helmUrl = inputParameters.helmUrl;
     const addonVersion = inputParameters.addonVersion;
-    console.log("Helm Url : " +helmUrl +"Helm Version : " +addonVersion)
 
     // Set your AWS region and credentials
     AWS.config.update({ region: inputParameters.aws_region });
@@ -16,11 +15,13 @@ async function pullHelmChartAndValidate(inputParameters) {
     const loginParams = {
     registryIds: [ inputParameters.aws_accountid ]
     };
+
     ecr.getAuthorizationToken(loginParams, (err, data) => {
         if (err) {
             console.log(err);
             return;
         }
+        console.log("Helm Url : " +helmUrl +"Helm Version : " +addonVersion)
         const token = data.authorizationData[0].authorizationToken;
         const decodedToken = Buffer.from(token, 'base64').toString().split(':');
         const username = decodedToken[0];
@@ -33,7 +34,7 @@ async function pullHelmChartAndValidate(inputParameters) {
             const result = execSync(loginCmd);
             console.log(result.toString());
             // Pull the Helm chart from ECR
-            const pullCmd = `rm -rf ./unzipped-${addonName} && mkdir ./unzipped-${addonName} && helm pull ${helmUrl} --version ${addonVersion} --untar --untardir ./unzipped-${addonName}`;
+            const pullCmd = `rm -rf ./unzipped-${addonName} && mkdir ./unzipped-${addonName} && helm pull ${helmUrl} --version ${addonVersion} -d ./unzipped-${addonName} && mv $(ls ./unzipped-${addonName} | grep .tgz) "${addonName}.tgz" && tar -xf ./unzipped-${addonName}/${addonName}.tgz --directory ./unzipped-${addonName} `;
             try {
                 const result = execSync(pullCmd);
                 console.log(result.toString());

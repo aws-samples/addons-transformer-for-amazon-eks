@@ -5,6 +5,7 @@
   "type": "module",
   "bin": "./index.js",
   "dependencies": {
+    "@octokit/rest": "^19.0.7",
     "aws-sdk": "^2.1351.0",
     "child_process": "^1.0.2",
     "inquirer": "^9.1.5",

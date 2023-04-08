@@ -6,6 +6,7 @@ import checkAndInstallDependencies from './modules/installDependencies.js';
 import getUserInputs from './modules/getUserInputs.js'
 import validateUserInputs from './modules/validateUserInputs.js';
 import authenticateAndPullHelmChart from './modules/pullHelmChartAndValidate.js';
+import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
 
 /***************************************************************/
 /* We will install following dependencies to the terminal :    */
@@ -56,5 +57,18 @@ try {
 } catch (error) {
     console.error(error.message);
     process.exit(300);
+}
+
+/***************************************************************/
+/* We will now do the following:                               */
+/* 1. Read GitHub Token secret from AWS Secrets Manager        */
+/* 2. Clone the GitHub repo of `aws-sleek-transformer          */
+/* 3. Submit a PR with the Addon extract                       */
+/***************************************************************/
+try {
+    await createAndSubmitPullRequest(inputParameters);
+} catch (error) {
+    console.error(error.message);
+    process.exit(400);
 }
 
