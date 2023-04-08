@@ -34,7 +34,7 @@ async function pullHelmChartAndValidate(inputParameters) {
             const result = execSync(loginCmd);
             console.log(result.toString());
             // Pull the Helm chart from ECR
-            const pullCmd = `rm -rf ./unzipped-${addonName} && mkdir ./unzipped-${addonName} && helm pull ${helmUrl} --version ${addonVersion} -d ./unzipped-${addonName} && mv $(ls ./unzipped-${addonName} | grep .tgz) ./unzipped-${addonName}/${addonName}.tgz && tar -xf ./unzipped-${addonName}/${addonName}.tgz --directory ./unzipped-${addonName} `;
+            const pullCmd = `rm -rf ./unzipped-${addonName} && mkdir ./unzipped-${addonName} && helm pull ${helmUrl} --version ${addonVersion} -d ./unzipped-${addonName} && mv ./unzipped/$(ls ./unzipped-${addonName} | grep .tgz) ./unzipped-${addonName}/ && tar -xf ./unzipped-${addonName}/${addonName}.tgz --directory ./unzipped-${addonName} `;
             try {
                 const result = execSync(pullCmd);
                 console.log(result.toString());
