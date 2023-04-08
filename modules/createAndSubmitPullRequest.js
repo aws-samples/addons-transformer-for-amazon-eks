@@ -45,7 +45,7 @@ async function addFileToRepo() {
 
 // Function to submit a pull request to the GitHub repository
 async function submitPullRequest(sm, secretName, baseBranch,headBranch, pullRequestTitle, pullRequestBody) {
-  execSync(`git push -u origin ${headBranch}`);
+  execSync(`cd aws-sleek-transformer && git push -u origin ${headBranch}`);
   const prUrl = `https://github.com/elamaran11/aws-sleek-transformer/pull/new/${baseBranch}...${headBranch}`;
   const accessToken = await getGitHubAccessToken(sm,secretName);
   const octokit = new Octokit({ auth: accessToken });
