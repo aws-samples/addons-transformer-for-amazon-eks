@@ -27,7 +27,7 @@ async function getGitHubAccessToken(sm, secretName) {
   if (typeof secretString === 'string') {
     console.log(JSON.stringify(secretString, null, '  '));
     console.log('Access Token : '+secretString);
-    return JSON.parse(secretString).accessToken;
+    return secretString;
   } else {
     throw new Error('SecretString is not a string.');
   }
