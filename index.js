@@ -51,7 +51,7 @@ try {
 /*    a. `.Capabilities`                                       */
 /*    b. `helm.sh/hook`                                        */
 /* 4. Read GitHub Token secret from AWS Secrets Manager        */
-/* 5. Clone the GitHub repo of `aws-sleek-transformer          */
+/* 5. Clone the GitHub repo of `aws-sleek-transformer`         */
 /* 6. Submit a PR with the Addon extract                       */
 /***************************************************************/
 try {
