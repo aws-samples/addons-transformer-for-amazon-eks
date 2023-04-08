@@ -38,9 +38,9 @@ async function cloneRepository(repoUrl) {
 
 // Function to add a file to the cloned repository
 async function addFileToRepo() {
-  execSync('touch new-file.txt');
-  execSync('git add new-file.txt');
-  execSync('git commit -m "Adding a new file"');
+  execSync('cd aws-sleek-transformer && touch new-file.txt && git add new-file.txt && git commit -m "Adding a new file"');
+  // execSync('git add new-file.txt');
+  // execSync('git commit -m "Adding a new file');
 }
 
 // Function to submit a pull request to the GitHub repository
