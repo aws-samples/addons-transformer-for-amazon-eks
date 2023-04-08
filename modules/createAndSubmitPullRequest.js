@@ -38,7 +38,7 @@ async function cloneRepository(repoUrl) {
 
 // Function to add a file to the cloned repository
 async function addFileToRepo() {
-  execSync('touch new-file.txt');
+  execSync('pwd && touch new-file.txt');
   execSync('git add new-file.txt');
   execSync('git commit -m "Adding a new file"');
 }
