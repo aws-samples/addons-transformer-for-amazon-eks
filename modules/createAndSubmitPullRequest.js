@@ -16,7 +16,7 @@ async function createAndSubmitPullRequest(inputParameters) {
   const baseBranch = 'main';
   const headBranch = `feature/${addonName}`;
   await cloneRepository(repoUrl);
-  await addFileToRepo();
+  await addFileToRepo(headBranch,addonName);
   await submitPullRequest(sm, secretName ,baseBranch, headBranch, pullRequestTitle, pullRequestBody);
 }
 
@@ -37,8 +37,8 @@ async function cloneRepository(repoUrl) {
 }
 
 // Function to add a file to the cloned repository
-async function addFileToRepo() {
-  execSync('cd aws-sleek-transformer && touch new-file.txt && git add new-file.txt && git commit -m "Adding a new file"');
+async function addFileToRepo(headBranch,addonName) {
+  execSync(`cd aws-sleek-transformer && git branch -D ${headBranch} || true && git checkout -b ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file"`);
   // execSync('git add new-file.txt');
   // execSync('git commit -m "Adding a new file');
 }
