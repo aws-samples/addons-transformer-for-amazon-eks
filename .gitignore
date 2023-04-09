@@ -10,6 +10,7 @@ node_modules
 *.iml
 .code
 unzipped*
+aws-sleek-transformer
 # CDK asset staging directory
 .cdk.staging
 cdk.out
