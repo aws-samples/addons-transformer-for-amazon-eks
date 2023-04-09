@@ -36,12 +36,23 @@ async function getGitHubAccessToken(sm, secretName) {
 
 // Function to clone the GitHub repository
 async function cloneRepository(repoUrl) {
-  execSync(`rm -rf aws-sleek-transformer && mkdir aws-sleek-transformer && cd aws-sleek-transformer && git clone ${repoUrl} .`);
+  execSync(`rm -rf aws-sleek-transformer && 
+            mkdir aws-sleek-transformer && 
+            cd aws-sleek-transformer && 
+            git clone ${repoUrl} .`);
 }
 
 // Function to add a file to the cloned repository
 async function addFileToRepo(headBranch,addonName) {
-  const repoCmd = `cd aws-sleek-transformer && git checkout main && git reset --hard origin/main && git branch -D ${headBranch} || true && git checkout -B ${headBranch} && cp ../unzipped-${addonName}/${addonName}.tgz . && git add . && git commit -m "Adding a new file" && git push -u origin ${headBranch}`;
+  const repoCmd = `cd aws-sleek-transformer && 
+                   git checkout main && 
+                   git reset --hard origin/main && 
+                   git branch -D ${headBranch} || true && 
+                   git checkout -B ${headBranch} && 
+                   cp ../unzipped-${addonName}/${addonName}.tgz . && 
+                   git add . && 
+                   git commit -m "Adding a new file" && 
+                   git push -u origin ${headBranch}`;
   try {
       const result = execSync(repoCmd);
   } catch (error) {
@@ -62,7 +73,8 @@ async function submitPullRequest(sm, secretName, owner, repo, baseBranch, headBr
     base: baseBranch,
     head: headBranch
   });
-  execSync(`rm -rf ./unzipped-${addonName} && rm -rf ./aws-sleek-transformer`);
+  execSync(`rm -rf ./unzipped-${addonName} && 
+            rm -rf ./aws-sleek-transformer`);
 }
 
 export default createAndSubmitPullRequest
