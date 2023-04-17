@@ -28,7 +28,7 @@ async function forkAndSubmitPullRequest(inputParameters) {
         if (err) {
         console.error(err);
         } else {
-        const token = secret.SecretString;
+        const token = data.SecretString;
 
         // Create an Octokit instance with the GitHub token
         const octokit = new Octokit({
