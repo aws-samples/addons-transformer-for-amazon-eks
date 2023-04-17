@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
 import { Octokit } from '@octokit/rest';
-const fs = require('fs');
+import fs from 'fs';
 
 // Main function that executes the entire process
 async function forkAndSubmitPullRequest(inputParameters) {
