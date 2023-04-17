@@ -7,6 +7,7 @@ import getUserInputs from './modules/getUserInputs.js'
 import validateUserInputs from './modules/validateUserInputs.js';
 import pullHelmChartAndValidate from './modules/pullHelmChartAndValidate.js';
 import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
+import { SecretsManager } from 'aws-sdk';
 
 /***************************************************************/
 /* We will install following dependencies to the terminal :    */
@@ -68,5 +69,10 @@ try {
     console.error(error.message);
     process.exit(300);
 }
+
+
+
+        
+        
 
 
