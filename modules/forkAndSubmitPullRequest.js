@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk'
 import { Octokit } from '@octokit/rest';
+fs = require('fs');
 
 // Main function that executes the entire process
 async function forkAndSubmitPullRequest(inputParameters) {
@@ -50,15 +51,16 @@ async function forkAndSubmitPullRequest(inputParameters) {
             sha: forkedRepo.default_branch
             }).then(() => {
             // Get the contents of the file to be added
-            const content = Buffer.from("Hello, World!").toString('base64');
+            const fileContent = fs.readFileSync(filePath,'utf8');
+            fs.writeFileSync(`${addonName}.tgz`, fileContent);
 
             // Create the new file in the forked repository
             octokit.repos.createOrUpdateFileContents({
                 owner: forkOwner,
                 repo: forkName,
-                path: filePath,
+                path: './',
                 message: commitMessage,
-                content: content,
+                content: Buffer.from(fileContent).toString('base64'),
                 branch: branchName
             }).then(() => {
                 // Create a Pull Request to merge the changes into the original repository
