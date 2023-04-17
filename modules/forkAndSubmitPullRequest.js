@@ -11,7 +11,7 @@ async function forkAndSubmitPullRequest(inputParameters) {
     const owner = 'elamaran11';
     const repo = 'aws-sleek-transformer';
     const forkOwner = "elamaran11"; // Owner of the forked repository
-    const forkName = "aws-sleek-transformer1"; // Name of the forked repository
+    const forkName = "aws-sleek-transformer"; // Name of the forked repository
     const filePath = `./unzipped-${addonName}/${addonName}.tgz`; // Path to the file to be added
     const branchName = `feature/${addonName}`;
     const commitMessage = `Adding ${addonName} Addon to the repository`; // Commit message
