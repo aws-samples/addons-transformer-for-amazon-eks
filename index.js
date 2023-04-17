@@ -6,7 +6,8 @@ import checkAndInstallDependencies from './modules/installDependencies.js';
 import getUserInputs from './modules/getUserInputs.js'
 import validateUserInputs from './modules/validateUserInputs.js';
 import pullHelmChartAndValidate from './modules/pullHelmChartAndValidate.js';
-import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
+// import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
+import forkAndSubmitPullRequest from './modules/forkAndSubmitPullRequest.js';
 
 /***************************************************************/
 /* We will install following dependencies to the terminal :    */
@@ -58,7 +59,8 @@ try {
     await pullHelmChartAndValidate(inputParameters)
         .then(() => {
         try {
-            createAndSubmitPullRequest(inputParameters);
+            // createAndSubmitPullRequest(inputParameters);
+            forkAndSubmitPullRequest(inputParameters);
         } catch (error) {
             console.error(error.message);
             process.exit(400);
