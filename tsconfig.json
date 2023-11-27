@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "node16",
+    "outDir": "./built",
+    "allowJs": true,
+    "target": "es2022"
+  },
+  "include": ["./src/**/*"]
+}

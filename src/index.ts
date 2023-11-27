@@ -2,12 +2,10 @@
 /***************************************************************/
 /* Grab imports of internal modules used                       */
 /***************************************************************/
-import checkAndInstallDependencies from './modules/installDependencies.js';
-import getUserInputs from './modules/getUserInputs.js'
-import validateUserInputs from './modules/validateUserInputs.js';
-import pullHelmChartAndValidate from './modules/pullHelmChartAndValidate.js';
-// import createAndSubmitPullRequest from './modules/createAndSubmitPullRequest.js';
-import forkAndSubmitPullRequest from './modules/forkAndSubmitPullRequest.js';
+import checkAndInstallDependencies from './modules/installDependencies';
+import getUserInputs from "./modules/getUserInputs";
+import validateUserInputs from "./modules/validateUserInputs";
+import pullHelmChartAndValidate from "./modules/pullHelmChartAndValidate";
 
 /***************************************************************/
 /* We will install following dependencies to the terminal :    */
@@ -51,21 +49,11 @@ try {
 /* 3. Perform static validations to find occurences of :       */
 /*    a. `.Capabilities`                                       */
 /*    b. `helm.sh/hook`                                        */
-/* 4. Read GitHub Token secret from AWS Secrets Manager        */
-/* 5. Clone the GitHub repo of `aws-sleek-transformer`         */
-/* 6. Submit a PR with the Addon extract                       */
 /***************************************************************/
 try {
-    await pullHelmChartAndValidate(inputParameters)
-        .then(() => {
-        try {
-            // createAndSubmitPullRequest(inputParameters);
-            forkAndSubmitPullRequest(inputParameters);
-        } catch (error) {
-            console.error(error.message);
-            process.exit(400);
-        }
-    });
+    await pullHelmChartAndValidate(inputParameters);
+
+    console.log("Validations successful");
 } catch (error) {
     console.error(error.message);
     process.exit(300);

@@ -1,6 +1,7 @@
 import { execSync }from 'child_process';
 
 async function checkAndInstallEksctl() {
+  // TODO: Add validation for uname -s to ensure it gives the correct stuff
   try {
     // Check if eksctl is installed
     execSync('eksctl version');
