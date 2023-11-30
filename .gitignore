@@ -1,26 +1,13 @@
-!jest.config.js
-*.d.ts
+**/.DS_Store
+*-debug.log
+*-error.log
+/.idea
+/.nyc_output
+/dist
+/lib
+/package-lock.json
+/tmp
+/yarn.lock
 node_modules
-.vscode
-.local-pack
-.classpath.txt
-.idea
-.settings
-.vscode
-*.iml
-.code
-unzipped*
-aws-sleek-transformer
-# CDK asset staging directory
-.cdk.staging
-cdk.out
-dist
-*.swp
-cdk.context.json
-package-lock.json
-yarn.lock
-docs/api
-# mkdocs artifact
-site
-# macOS extraneous file
-.DS_STORE
+oclif.lock
+oclif.manifest.json
