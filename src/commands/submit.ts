@@ -1,6 +1,7 @@
 import { Command, Flags } from '@oclif/core'
+import {SleekCommand} from "../sleek-command.js";
 
-export default class Submit extends Command {
+export default class Submit extends SleekCommand {
 
   static description = `
     Sends the selected addon, version to the marketplace for final submission and upload it to Project Sleek.

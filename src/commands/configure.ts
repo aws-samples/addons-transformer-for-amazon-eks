@@ -1,9 +1,9 @@
 import {Command, Flags} from '@oclif/core';
 import {input, confirm} from '@inquirer/prompts';
 import select, { Separator } from '@inquirer/select';
-import * as config from 'config';
+import {SleekCommand} from "../sleek-command.js";
 
-export default class Configure extends Command {
+export default class Configure extends SleekCommand {
 
   static description = `
     Extracts information from the environment to populate information required for the Sleek CLI to function. If

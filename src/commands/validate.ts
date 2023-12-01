@@ -1,6 +1,7 @@
 import { Command, Flags } from '@oclif/core'
+import {SleekCommand} from "../sleek-command.js";
 
-export default class Validate extends Command {
+export default class Validate extends SleekCommand {
   static description = `
     This performs pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static
     and dynamic (deployment/runtime) aspects.
