@@ -42,7 +42,7 @@ $ npm install -g aws-sleek-transformer
 $ aws-sleek-transformer COMMAND
 running command...
 $ aws-sleek-transformer (--version)
-aws-sleek-transformer/0.0.0 darwin-arm64 node-v20.10.0
+aws-sleek-transformer/0.0.1 darwin-arm64 node-v20.10.0
 $ aws-sleek-transformer --help [COMMAND]
 USAGE
   $ aws-sleek-transformer COMMAND
@@ -81,14 +81,15 @@ DESCRIPTION
   the environment.
 
   This information is stored ~/.sleek/config.json
+  Each of these configurations can be edited by passing the exact addon name and version.
 
   The CLI requires the following:
-  * AWS Region - can be extracted from the env
-  * Marketplace AWS Account ID - can be extracted from the env
-  * Addon Name - requires user input
-  * Addon Version - requires user input
-  * Addon Helm Url - requires user input
-  * Deployment Namespace - requires user input
+  * AWS Region
+  * Marketplace AWS Account ID
+  * Addon Name
+  * Addon Version
+  * Addon Helm Url
+  * Deployment Namespace
 
   Each of these can be passed as flags to this command with the following flags:
   * --region
@@ -103,7 +104,7 @@ EXAMPLES
   $ aws-sleek-transformer configure
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.0/src/commands/configure.ts)_
+_See code: [src/commands/configure.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/configure.ts)_
 
 ## `aws-sleek-transformer submit`
 
@@ -141,7 +142,7 @@ EXAMPLES
   $ aws-sleek-transformer submit
 ```
 
-_See code: [src/commands/submit.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.0/src/commands/submit.ts)_
+_See code: [src/commands/submit.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/submit.ts)_
 
 ## `aws-sleek-transformer validate`
 
@@ -179,5 +180,5 @@ EXAMPLES
   $ aws-sleek-transformer validate
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.0/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->

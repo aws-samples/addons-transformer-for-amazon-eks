@@ -1,5 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import {SleekCommand} from "../sleek-command.js";
+import {getAddonKey, getCurrentAddons} from "../utils.js";
+import select from "@inquirer/select";
 
 export default class Submit extends SleekCommand {
 
@@ -32,12 +34,25 @@ export default class Submit extends SleekCommand {
   static summary = "Uses the pre-existing configurations to submit the addon to the AWS marketplace"
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Submit)
+    const {args, flags} = await this.parse(Submit);
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/vshardul/source/aws-sleek-transformer-refactor/src/commands/submit.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    let addonKey;
+
+    // if addon name and version are not provided, prompt the user
+    if (!flags.addonName || !flags.addonVersion) {
+      // fetch pre-existing configs from  ~/.sleek/config.json
+      const currentConf = this.configuration;
+      const addons = getCurrentAddons(currentConf);
+
+      const selected: { name: string,  version: string } = await select({
+        message: 'Which addon would you like to submit to the marketplace?',
+        choices: addons
+      });
+      addonKey = getAddonKey(selected.name, selected.version);
+    } else {
+      addonKey = getAddonKey(flags.addonName, flags.addonVersion);
     }
+
+    // figure out how to submit to the marketplace
   }
 }

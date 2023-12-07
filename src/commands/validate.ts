@@ -1,5 +1,8 @@
-import { Command, Flags } from '@oclif/core'
-import {SleekCommand} from "../sleek-command.js";
+import {Flags} from '@oclif/core';
+import select from "@inquirer/select";
+import {execSync, spawnSync} from "child_process";
+import {SleekCommand} from "../sleek-command.js"
+import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -12,7 +15,6 @@ export default class Validate extends SleekCommand {
     
     This command requires the "configure" command to have been run, it needs:
       * Helm URL
-      * Namespace
     to be configured correctly.
     
     It will perform a static validation on the device and then give you the option to submit it to the marketplace for
@@ -31,12 +33,60 @@ export default class Validate extends SleekCommand {
   static summary = "Validates a given addon from the configuration provided through the 'configure' command";
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Validate)
+    const {args, flags} = await this.parse(Validate);
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/vshardul/source/aws-sleek-transformer-refactor/src/commands/validate.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    let addonKey;
+
+    // if addon name and version are not provided, prompt the user
+    if (!flags.addonName || !flags.addonVersion) {
+      // fetch pre-existing configs from  ~/.sleek/config.json
+      const currentConf = this.configuration;
+      const addons = getCurrentAddons(currentConf);
+
+      const selected: { name: string,  version: string } = await select({
+        message: 'Which addon would you like to validate the configuration for?',
+        choices: addons
+      });
+      addonKey = getAddonKey(selected.name, selected.version);
+    } else {
+      addonKey = getAddonKey(flags.addonName, flags.addonVersion);
     }
+    const chart = await this.pullHelmChart(addonKey);
+
+    // turns out using grep is the best way to do it lmao
+    // rip all the Windows users
+    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', chart]);
+    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', chart]);
+
+    if (findCapabilities.status != 0 || findHooks.status != 0) {
+      this.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
+
+      this.configuration[addonKey].validated = false;
+    } else {
+      this.log("Found .Capabilities or helm.sh/hook in helm chart.");
+
+      this.configuration[addonKey].validated = true;
+    }
+  }
+
+  private async pullHelmChart(addonKey: string): Promise<string> {
+    const addonInfo = destructureAddonKey(addonKey);
+
+    const currentConf = this.configuration;
+    const currentAddon = currentConf[addonKey];
+
+    const untarLocation = `./unzipped-${addonInfo.name}`;
+    const pullCmd = `rm -rf ${untarLocation} && 
+                             mkdir ${untarLocation} && 
+                             helm pull ${currentAddon.helmUrl} --version ${addonInfo.version} --untar --untardir ${untarLocation}`;
+    try {
+      const result = execSync(pullCmd);
+      this.log(result.toString());
+      this.log("Helm Chart pull complete.");
+    } catch (e) {
+      this.error(`Helm chart pull failed with error ${e}`);
+    }
+
+    return untarLocation;
   }
 }

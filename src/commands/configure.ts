@@ -1,7 +1,8 @@
-import {Command, Flags} from '@oclif/core';
-import {input, confirm} from '@inquirer/prompts';
-import select, { Separator } from '@inquirer/select';
-import {SleekCommand} from "../sleek-command.js";
+import {Flags} from '@oclif/core';
+import {confirm, input} from '@inquirer/prompts';
+import select from '@inquirer/select';
+import {IConfig, SleekCommand} from "../sleek-command.js";
+import {getAddonKey, getCurrentAddons} from "../utils.js";
 
 export default class Configure extends SleekCommand {
 
@@ -48,11 +49,10 @@ export default class Configure extends SleekCommand {
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Configure);
 
-    // check if any flags are added
+    // check if any flags are not undefined
     // TODO: Validate this works
-    if (Object.keys(flags).length === 0) {
+    if (Object.values(flags).some(value => value !== undefined)) {
       // Immediately launch interactive session with inquirer
-
       // check if the want to edit an existing addon
       const editExistingAddon = await confirm({message: 'Do you want to edit an existing AddOn?'});
       if (editExistingAddon) {
@@ -61,36 +61,97 @@ export default class Configure extends SleekCommand {
         // edit workflow in here
 
         // fetch pre-existing configs from  ~/.sleek/config.json
-        let currentConf;
+        const currentConf = this.configuration;
+        const addons = getCurrentAddons(currentConf);
 
-        // const config = await select({
-        //   message: 'Which addon would you like to change the configuration for?',
-        //
-        // })
+        const selected = await select({
+          message: 'Which addon would you like to change the configuration for?',
+          choices: addons
+        });
+
+        const addOnKey = getAddonKey(selected.name, selected.version);
+
+        const toModify = {
+          addonName: await input({
+            message: 'Change the AddOn Name?',
+            default: selected.name
+          }),
+          addonVersion: await input({
+            message: 'Change the AddOn Version?',
+            default: selected.version
+          }),
+          helmUrl: await input({
+            message: 'Change the Helm URL?',
+            validate: input => {
+              return this.isValidUrl(input)
+            },
+            default: currentConf[addOnKey].helmUrl
+          }),
+          marketplaceId: await input({
+            message: 'Change the Marketplace AWS Account ID?',
+            default: currentConf[addOnKey].accId
+          }),
+          namespace: await input({
+            message: 'Change the Namespace?',
+            validate: input => {
+              return this.isValidNamespace(input)
+            },
+            default: currentConf[addOnKey].namespace
+          }),
+          region: await input({
+            message: 'Change the AWS Region?',
+            validate: input => {
+              return this.isValidRegion(input)
+            },
+            default: currentConf[addOnKey].region
+          }),
+        };
+
+        this.configuration[getAddonKey(toModify.addonName, toModify.addonVersion)] = {
+          helmUrl: toModify.helmUrl,
+          accId: toModify.marketplaceId,
+          namespace: toModify.namespace,
+          region: toModify.region,
+        };
+
+        delete this.configuration[addOnKey];
+
+        this.updateConfig();
       }
+
+      // create a new addon config
+      const addonConfig = {
+        addonName: await input({message: 'What is the AddOn Name?'}),
+        addonVersion: await input({message: 'What is the AddOn Version?'}),
+        helmUrl: await input({
+          message: 'What is the Helm URL?', validate: input => {
+            return this.isValidUrl(input)
+          }
+        }),
+        marketplaceId: await input({message: 'What is the Marketplace AWS Account ID?'}),
+        namespace: await input({
+          message: 'What is the Namespace?', validate: input => {
+            return this.isValidNamespace(input)
+          }
+        }),
+        region: await input({
+          message: 'What is the AWS Region?', validate: input => {
+            return this.isValidRegion(input)
+          }
+        }),
+      };
+
+      this.configuration[getAddonKey(addonConfig.addonName, addonConfig.addonVersion)] = {
+        helmUrl: addonConfig.helmUrl,
+        accId: addonConfig.marketplaceId,
+        namespace: addonConfig.namespace,
+        region: addonConfig.region,
+      };
     }
 
-    // create a new addon to validate
-    const addonConfig = {
-      addonName: await input({message: 'What is the AddOn Name?'}),
-      addonVersion: await input({message: 'What is the AddOn Version?'}),
-      helmUrl: await input({
-        message: 'What is the Helm URL?', validate: input => {
-          return this.isValidUrl(input)
-        }
-      }),
-      marketplaceId: await input({message: 'What is the Marketplace AWS Account ID?'}),
-      namespace: await input({
-        message: 'What is the Namespace?', validate: input => {
-          return this.isValidNamespace(input)
-        }
-      }),
-      region: await input({
-        message: 'What is the AWS Region?', validate: input => {
-          return this.isValidRegion(input)
-        }
-      }),
-    }
+    //validate if all the flags are present then validate and store into the config
+    // we know that all passed flags are defined
+
   }
 
   private isValidRegion(region: string): boolean {
@@ -102,7 +163,6 @@ export default class Configure extends SleekCommand {
     const regionRegex = /^[a-z][a-z0-9-]{1,23}[a-z0-9]$/;
 
     return regionRegex.test(region);
-
   }
 
   private isValidNamespace(namespace: string): boolean {
@@ -121,7 +181,6 @@ export default class Configure extends SleekCommand {
     // Namespaces cannot start or end with '-'
     return !(namespace[0] === '-' || namespace[namespace.length - 1] === '-');
   }
-
 
   private isValidUrl(input: string): boolean {
     try {
