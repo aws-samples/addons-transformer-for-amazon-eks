@@ -169,7 +169,6 @@ DESCRIPTION
 
   This command requires the "configure" command to have been run, it needs:
   * Helm URL
-  * Namespace
   to be configured correctly.
 
   It will perform a static validation on the device and then give you the option to submit it to the marketplace for

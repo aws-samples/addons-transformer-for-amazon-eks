@@ -51,7 +51,7 @@ export default class Configure extends SleekCommand {
 
     // check if any flags are not undefined
     // TODO: Validate this works
-    if (Object.values(flags).some(value => value !== undefined)) {
+    if (Object.values(flags).every(value => value === undefined)) {
       // Immediately launch interactive session with inquirer
       // check if the want to edit an existing addon
       const editExistingAddon = await confirm({message: 'Do you want to edit an existing AddOn?'});
@@ -112,11 +112,14 @@ export default class Configure extends SleekCommand {
           accId: toModify.marketplaceId,
           namespace: toModify.namespace,
           region: toModify.region,
+          validated: false
         };
 
         delete this.configuration[addOnKey];
 
         this.updateConfig();
+
+        return;
       }
 
       // create a new addon config
@@ -146,12 +149,40 @@ export default class Configure extends SleekCommand {
         accId: addonConfig.marketplaceId,
         namespace: addonConfig.namespace,
         region: addonConfig.region,
+        validated: false
       };
+
+      this.updateConfig();
+
+      return;
     }
 
-    //validate if all the flags are present then validate and store into the config
-    // we know that all passed flags are defined
+    let addon = {
+      region: "",
+      accId: "",
+      helmUrl: "",
+      namespace: ""
+    };
 
+    if (flags.region !== undefined && this.isValidRegion(flags.region)) {
+      addon["region"] = flags.region;
+    }
+
+    if (flags.namespace !== undefined && this.isValidNamespace(flags.namespace)) {
+      addon["namespace"] = flags.namespace;
+    }
+
+    if (flags.helmUrl !== undefined && this.isValidUrl(flags.helmUrl)) {
+      addon["helmUrl"] = flags.helmUrl;
+    }
+
+    if (flags.addonName !== undefined && flags.addonVersion !== undefined) {
+      if (Object.values(addon).every(value => value !== "")) {
+        this.configuration[getAddonKey(flags.addonName, flags.addonVersion)] = { ...addon, validated: false };
+
+        this.updateConfig();
+      }
+    }
   }
 
   private isValidRegion(region: string): boolean {

@@ -1,6 +1,6 @@
-import {Command, Config} from "@oclif/core";
-import * as fs from "fs-extra";
+import * as fs from "fs";
 import * as path from "path";
+import { Command, Config } from "@oclif/core";
 
 /**
  * A base command that provides common functionality for all Sleek Transformer commands:
@@ -17,43 +17,26 @@ export abstract class SleekCommand extends Command {
   public constructor(argv: string[], config: Config) {
     super(argv, config);
 
-    this.configuration = {};
+    const configPath = path.join(this.config.configDir, 'config.json');
 
-    // use oclif's config to load and store the config
-    fs.readJSON(path.join(this.config.configDir, 'config.json'))
-      .then(config => this.configuration = config as IConfig)
-      .catch(error => {
-        // if the error is JSON parsing failed, notify the user, attempt to repair the file
-        if (error.name === "SyntaxError") {
-          this.log("Configuration file is corrupt, attempting to repair.");
-          // TODO: Figure out repairing logic
-
-          this.configuration = {};
-        }
-
-        // If the file doesn't exist, create it with empty config
-        if (error.code === "ENOENT") {
-          this.log("No configuration file found, creating one with default values.");
-
-          fs.writeJson(path.join(this.config.configDir, 'config.json'), {}, { flag: "w" })
-            .then(config => this.configuration = {})
-            .catch(error => {
-              this.log(error);
-              this.error(error);
-            }
-          );
-        }
-      }
-    );
+    if (fs.existsSync(configPath)) {
+       this.configuration = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } else {
+      this.configuration = {};
+      fs.mkdirSync(this.config.configDir, { recursive: true });
+      fs.writeFileSync(configPath, JSON.stringify(this.configuration), { flag: "wx" })
+    }
   }
 
   public updateConfig() {
-    fs.writeJson(path.join(this.config.configDir, 'config.json'), this.configuration, { flag: "w" })
-      .catch(error => {
-          this.log(error);
-          this.error(error);
-        }
-      );
+    fs.writeFileSync(
+      path.join(
+        this.config.configDir,
+        'config.json'
+      ),
+      JSON.stringify(this.configuration),
+      { flag: "w" }
+    );
   }
 }
 

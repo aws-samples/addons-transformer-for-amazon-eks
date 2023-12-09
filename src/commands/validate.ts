@@ -47,7 +47,8 @@ export default class Validate extends SleekCommand {
         message: 'Which addon would you like to validate the configuration for?',
         choices: addons
       });
-      addonKey = getAddonKey(selected.name, selected.version);
+
+      addonKey = selected.name;
     } else {
       addonKey = getAddonKey(flags.addonName, flags.addonVersion);
     }
@@ -70,6 +71,7 @@ export default class Validate extends SleekCommand {
   }
 
   private async pullHelmChart(addonKey: string): Promise<string> {
+    console.log(addonKey);
     const addonInfo = destructureAddonKey(addonKey);
 
     const currentConf = this.configuration;
