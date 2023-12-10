@@ -56,8 +56,6 @@ export default class Configure extends SleekCommand {
       // check if the want to edit an existing addon
       const editExistingAddon = await confirm({message: 'Do you want to edit an existing AddOn?'});
       if (editExistingAddon) {
-        // do nothing.
-      } else {
         // edit workflow in here
 
         // fetch pre-existing configs from  ~/.sleek/config.json

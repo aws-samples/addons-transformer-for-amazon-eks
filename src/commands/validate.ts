@@ -3,6 +3,8 @@ import select from "@inquirer/select";
 import {execSync, spawnSync} from "child_process";
 import {SleekCommand} from "../sleek-command.js"
 import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
+import * as path from "node:path";
+import * as timers from "timers";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -52,14 +54,14 @@ export default class Validate extends SleekCommand {
     } else {
       addonKey = getAddonKey(flags.addonName, flags.addonVersion);
     }
-    const chart = await this.pullHelmChart(addonKey);
+    const chart = path.resolve(await this.pullHelmChart(addonKey));
 
     // turns out using grep is the best way to do it lmao
     // rip all the Windows users
-    const findCapabilities = spawnSync('grep', ['-R', '-i', '-l', '-e', '".Capabilities"', chart]);
-    const findHooks = spawnSync('grep', ['-R', '-i', '-l', '-e', '"helm.sh/hook"', chart]);
+    const findCapabilities = spawnSync('grep', ['-Rile', '".Capabilities"', chart], { shell: true });
+    const findHooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', chart], { shell: true });
 
-    if (findCapabilities.status != 0 || findHooks.status != 0) {
+    if (findCapabilities.stdout.toString() == "" && findHooks.stdout.toString() == "") {
       this.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
 
       this.configuration[addonKey].validated = false;
@@ -71,7 +73,6 @@ export default class Validate extends SleekCommand {
   }
 
   private async pullHelmChart(addonKey: string): Promise<string> {
-    console.log(addonKey);
     const addonInfo = destructureAddonKey(addonKey);
 
     const currentConf = this.configuration;

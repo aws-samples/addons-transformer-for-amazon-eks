@@ -10,8 +10,6 @@ export function getCurrentAddons(currentConf: IConfig) {
 }
 
 export function getAddonKey(name: string,  version: string) {
-  console.log(name);
-  console.log(version);
   return name + '@' + version;
 }
 
