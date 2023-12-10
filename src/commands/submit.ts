@@ -1,7 +1,7 @@
-import { Command, Flags } from '@oclif/core'
+import { Flags } from '@oclif/core'
+import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
 import {getAddonKey, getCurrentAddons} from "../utils.js";
-import select from "@inquirer/select";
 
 export default class Submit extends SleekCommand {
 

@@ -1,10 +1,9 @@
+import * as path from "path";
 import {Flags} from '@oclif/core';
 import select from "@inquirer/select";
+import {SleekCommand} from "../sleek-command.js";
 import {execSync, spawnSync} from "child_process";
-import {SleekCommand} from "../sleek-command.js"
 import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
-import * as path from "node:path";
-import * as timers from "timers";
 
 export default class Validate extends SleekCommand {
   static description = `

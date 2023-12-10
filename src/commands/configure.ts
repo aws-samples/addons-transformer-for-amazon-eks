@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core';
-import {confirm, input} from '@inquirer/prompts';
 import select from '@inquirer/select';
-import {IConfig, SleekCommand} from "../sleek-command.js";
+import {SleekCommand} from "../sleek-command.js";
+import {confirm, input} from '@inquirer/prompts';
 import {getAddonKey, getCurrentAddons} from "../utils.js";
 
 export default class Configure extends SleekCommand {
