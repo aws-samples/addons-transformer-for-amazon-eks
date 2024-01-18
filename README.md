@@ -68,6 +68,7 @@ FLAGS
   --addonName=<value>      Name of the addon
   --addonVersion=<value>   Version of the addon
   --helmUrl=<value>        Helm URL of the addon
+  --kubeVersion=<value>    Target Kubernetes version of the addon
   --marketplaceId=<value>  Marketplace AWS Account ID
   --namespace=<value>      Namespace of the addon
   --region=<value>         AWS Region
