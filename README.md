@@ -62,12 +62,13 @@ Sets up the Sleek CLI to work with a given helm chart
 ```
 USAGE
   $ aws-sleek-transformer configure [--addonName <value>] [--addonVersion <value>] [--helmUrl <value>]
-    [--marketplaceId <value>] [--namespace <value>] [--region <value>]
+    [--marketplaceId <value>] [--namespace <value>] [--region <value>] [--kubeVersion <value>]
 
 FLAGS
   --addonName=<value>      Name of the addon
   --addonVersion=<value>   Version of the addon
   --helmUrl=<value>        Helm URL of the addon
+  --kubeVersion=<value>    Target Kubernetes version of the addon
   --marketplaceId=<value>  Marketplace AWS Account ID
   --namespace=<value>      Namespace of the addon
   --region=<value>         AWS Region

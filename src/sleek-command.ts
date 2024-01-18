@@ -47,5 +47,6 @@ export interface IConfig {
     helmUrl: string;
     namespace: string;
     validated: boolean;
+    kubeVersion: string;
   };
 }

@@ -57,8 +57,30 @@ export default class Validate extends SleekCommand {
 
     // turns out using grep is the best way to do it lmao
     // rip all the Windows users
-    const findCapabilities = spawnSync('grep', ['-Rile', '".Capabilities"', chart], { shell: true });
-    const findHooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', chart], { shell: true });
+    const findCapabilities = spawnSync('grep', ['-Rile', '".Capabilities"', chart], { shell: true, encoding: "utf-8" });
+    const findHooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', chart], { shell: true, encoding: "utf-8" });
+
+    //TODO: Find all the helm template and within those templates ensure there's no "lookup" keyword
+    // Eg: {{ lookup }} is bad
+    // Eg: {{ <anything else> }} is fine
+    const findLookups = spawnSync('grep', ['-Rile', '/{{[^{}]*lookup[^{}]*}}/', chart], { shell: true, encoding: "utf-8" });
+
+    // TODO: Ensure all dependencies are included in the main chart, i.e. no remote calls in `helm dependency list`
+    const findDependencies = () => {
+      // run helm dependency list against the folder
+      const findDependencies = spawnSync('helm', ['dependency', 'list', chart], { shell: true, encoding: "utf-8" });
+      // three columns, dependencies listed in middle column
+      const dependencies = findDependencies.stdout.toString().split('\n')[1].split('\t')[1];
+      // check dependencies to ensure they all contain file://
+      if (dependencies.split(',').every(dep => dep.includes('file://'))) {
+        this.log('All dependencies are included in the main chart.');
+        return true;
+      }
+      else {
+        return false;
+      }
+    };
+
 
     if (findCapabilities.stdout.toString() == "" && findHooks.stdout.toString() == "") {
       this.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');

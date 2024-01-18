@@ -42,6 +42,7 @@ export default class Configure extends SleekCommand {
     marketplaceId: Flags.string({description: 'Marketplace AWS Account ID'}),
     namespace: Flags.string({description: 'Namespace of the addon'}),
     region: Flags.string({description: 'AWS Region'}),
+    kubeVersion: Flags.string({description: 'Target Kubernetes version of the addon'}),
   }
 
   static summary = "Sets up the Sleek CLI to work with a given helm chart"
@@ -89,6 +90,10 @@ export default class Configure extends SleekCommand {
             message: 'Change the Marketplace AWS Account ID?',
             default: currentConf[addOnKey].accId
           }),
+          kubeVersion: await input({
+            message: 'Change the Kubernetes Version?',
+            default: currentConf[addOnKey].kubeVersion
+          }),
           namespace: await input({
             message: 'Change the Namespace?',
             validate: input => {
@@ -110,6 +115,7 @@ export default class Configure extends SleekCommand {
           accId: toModify.marketplaceId,
           namespace: toModify.namespace,
           region: toModify.region,
+          kubeVersion: toModify.kubeVersion,
           validated: false
         };
 
@@ -135,6 +141,7 @@ export default class Configure extends SleekCommand {
             return this.isValidNamespace(input)
           }
         }),
+        kubeVersion: await input({message: 'What is the targeted Kubernetes Version?'}),
         region: await input({
           message: 'What is the AWS Region?', validate: input => {
             return this.isValidRegion(input)
@@ -146,6 +153,7 @@ export default class Configure extends SleekCommand {
         helmUrl: addonConfig.helmUrl,
         accId: addonConfig.marketplaceId,
         namespace: addonConfig.namespace,
+        kubeVersion: addonConfig.kubeVersion,
         region: addonConfig.region,
         validated: false
       };
@@ -159,6 +167,7 @@ export default class Configure extends SleekCommand {
       region: "",
       accId: "",
       helmUrl: "",
+      kubeVersion: "",
       namespace: ""
     };
 
@@ -209,6 +218,20 @@ export default class Configure extends SleekCommand {
 
     // Namespaces cannot start or end with '-'
     return !(namespace[0] === '-' || namespace[namespace.length - 1] === '-');
+  }
+
+  private isValidKubernetesVersion(version: string): boolean {
+    // Kubernetes versions must:
+    // start with the letter v
+    // has 2 periods at most
+    // not more than 9 characters
+
+    const versionRegex = /^v[0-9]+\.[0-9]+(\.[0-9]+)?$/;
+
+    if (version.length > 9) {
+      return false;
+    }
+    return versionRegex.test(version);
   }
 
   private isValidUrl(input: string): boolean {
