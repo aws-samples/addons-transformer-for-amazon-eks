@@ -1,5 +1,5 @@
 AWS Sleek Transformer CLI
-=================
+=========================
 
 <!-- toc -->
 * [Usage](#usage)
