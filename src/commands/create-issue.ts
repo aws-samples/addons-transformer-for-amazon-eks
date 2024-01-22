@@ -4,6 +4,7 @@ import * as yaml from 'js-yaml'
 import * as fs from "fs";
 import {Octokit} from "@octokit/core";
 import _Ajv from "ajv";
+import {getRepoName, getRepoOwner} from "../utils.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
@@ -39,6 +40,8 @@ export default class CreateIssue extends SleekCommand {
             description: "Runs all checks without creating the issue",
             default: false,
         }),
+        repo: Flags.string({description:"Github repository name where the issue will be created", hidden:true}),
+        repoOwner: Flags.string({description:"Github repository owner", hidden:true}),
     }
 
     static summary = "Creates a Github Issue based in the input file";
@@ -51,12 +54,23 @@ export default class CreateIssue extends SleekCommand {
         this.log(`File to process: ${filePath} ${isDryRun ? '(dry run)' : ''}`)
 
         // get schema
-        const schemaJsonFile = this.getSchemaPath();
-        const schema = fs.readFileSync(schemaJsonFile, 'utf8');
-        const schemaJson = JSON.parse(schema);
-        const ajv = new Ajv({allErrors: true})
+        const schemaJsonUrl = this.getSchemaUrl();
 
-        const schemaValidator = ajv.compile(schemaJson)
+        const schema = await fetch(schemaJsonUrl,{
+            headers : {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'no-cors'
+        })
+            .then(response=> response.json())
+            .catch(err=>{
+                this.logToStderr(`Schema url: ${schemaJsonUrl}`)
+                this.debug(err)
+                this.error('Error fetching the schema', {code: '1'});
+            })
+        const ajv = new Ajv({allErrors: true})
+        const schemaValidator = ajv.compile(schema)
 
         //read file
         const fileContents = fs.readFileSync(filePath, 'utf8');
@@ -75,8 +89,10 @@ export default class CreateIssue extends SleekCommand {
         const octokitOptions = {
             auth: process.env.GITHUB_TOKEN,
         };
-        const owner = this.getRepoOwner();
-        const repo = this.getRepoName();
+
+        const repo = flags.repo || getRepoName();
+        const owner = flags.repoOwner || getRepoOwner();
+
         const title = `Onboarding ${(data as issueData).sellerMarketPlaceAlias} ${(data as issueData).addon.name}@${(data as issueData).addon.version}`
         const createIssueRequest = {
             owner,
@@ -102,21 +118,9 @@ export default class CreateIssue extends SleekCommand {
         this.log(`Issue created: ${octokitResponse.data.html_url}`)
     }
 
-    private getSchemaPath() {
-        //todo: get schema from config
-        //todo: package schema with cli
-        return '/tmp/ast/schemas/issue-creation.schema.json'
-        // return './schemas/issue-creation.schema.json'
-    }
-
-    private getRepoOwner() {
-        //todo: get repo from config
-        return 'cloudsoft-fusion';
-    }
-
-    private getRepoName() {
-        //todo: get repo name from config
-        return 'aws-k8s-addons'
+    private getSchemaUrl() {
+        //todo: set up user public repo where the schema lives
+        return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
     }
 }
 

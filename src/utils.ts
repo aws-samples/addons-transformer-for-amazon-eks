@@ -17,3 +17,13 @@ export function destructureAddonKey(key: string) {
   const [name, version] = key.split('@');
   return {name, version};
 }
+
+export function getRepoOwner() {
+  //todo: set up user faced repo
+  return 'cloudsoft-fusion';
+}
+
+export function getRepoName() {
+  //todo: set up user faced repo
+  return 'aws-k8s-addons'
+}
