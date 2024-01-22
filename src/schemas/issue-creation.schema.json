@@ -186,7 +186,6 @@
       "type": "string"
     },
     "addon": {
-      "type": "object",
       "title": "Add-on properties",
       "$ref": "#/definitions/addon"
     }
