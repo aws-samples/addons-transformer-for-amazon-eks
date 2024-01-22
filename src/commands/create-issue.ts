@@ -78,12 +78,12 @@ export default class CreateIssue extends SleekCommand {
         // const data = yaml.load(fileContents, {schema:schemaJson})
         const data = yaml.load(fileContents)
         if (!schemaValidator(data)) {
-            this.logToStderr(`Schema validation errors: `);
-            schemaValidator.errors?.map(e => this.logToStderr(JSON.stringify(e)));
-            this.error('Err', {code: '1'});
+            const allErrors = ['Schema validation errors: '];
+            schemaValidator.errors?.map(e => allErrors.push(JSON.stringify(e)));
+            this.error(allErrors.join('\n'), {exit: 1});
         }
         this.log('Schema validation correct')
-        if (isDryRun) this.exit(0);
+        if (isDryRun) return ;
 
         // create issue base in the file input
         const octokitOptions = {
@@ -112,8 +112,7 @@ export default class CreateIssue extends SleekCommand {
         const octokit = new Octokit(octokitOptions)
         const octokitResponse = await octokit.request('POST /repos/{owner}/{repo}/issues', createIssueRequest);
         if (octokitResponse.status !== 201) {
-            this.logToStderr(`Error creating issue on ${owner}/${repo} (${octokitResponse.status})`)
-            this.exit(1)
+            this.error(`Error creating issue on ${owner}/${repo} (${octokitResponse.status})`, {exit:1} )
         }
         this.log(`Issue created: ${octokitResponse.data.html_url}`)
     }
