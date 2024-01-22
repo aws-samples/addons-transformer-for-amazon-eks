@@ -69,8 +69,6 @@
   "repository": "elaramas/aws-sleek-transformer",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
-    "Xpostbuild": "npm run copySchema",
-    "copySchema": "mkdir -p dist/schemas; cp src/schemas/*.* dist/schemas",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
