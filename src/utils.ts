@@ -19,7 +19,7 @@ export function destructureAddonKey(key: string) {
 }
 
 export function getRepoOwner() {
-  //todo: set up user faced repo
+  //  todo: set up user faced repo
   return 'cloudsoft-fusion';
 }
 
