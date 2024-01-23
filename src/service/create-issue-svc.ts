@@ -8,7 +8,10 @@ import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
-export async function createIssue(repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<svcResponse<OctokitResponse<any>>> {
+export const createIssue = async (title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<svcResponse<OctokitResponse<any>>> => {
+    return createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, callerCommand, labels)
+}
+const createIssueOnRepo = async (repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[]): Promise<svcResponse<OctokitResponse<any>>> => {
     const octokitOptions = {
         auth: process.env.GITHUB_TOKEN,
     };
@@ -67,10 +70,10 @@ function getSchemaUrl(): string {
     return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
 }
 
-export function getRepoOwner() {
+function getRepoOwner() {
     return 'cloudsoft-fusion';
 }
 
-export function getRepoName() {
+function getRepoName() {
     return 'aws-k8s-addons'
 }

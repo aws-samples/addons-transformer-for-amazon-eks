@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 import CreateIssueOpt from "./opts/create-issue-opt.js";
 import {SleekCommand} from "../sleek-command.js";
-import {createIssue, getRepoName, getRepoOwner, validateInputFileSchema} from "../service/create-issue-svc.js";
+import {createIssue, validateInputFileSchema} from "../service/create-issue-svc.js";
 import {issueData} from "../types/issue.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
@@ -31,11 +31,9 @@ export default class CreateIssue extends SleekCommand {
         // validateChart(helmCharName, helmChartVersion);
 
         // create issue base in the file input
-        const repo = flags.repo || getRepoName();
-        const owner = flags.repoOwner || getRepoOwner();
         const title = `Onboarding ${(data.body as issueData).sellerMarketPlaceAlias} ${(data.body as issueData).addon.name}@${(data.body as issueData).addon.version}`;
         const body= `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
-        const createIssueResponse = await createIssue(repo, owner, title, body,this, ['pending'])
+        const createIssueResponse = await createIssue(title, body,this, ['pending'])
 
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
     }
