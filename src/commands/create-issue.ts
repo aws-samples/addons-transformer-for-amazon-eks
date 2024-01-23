@@ -1,12 +1,11 @@
-import {Octokit} from "@octokit/core";
 import _Ajv from "ajv";
-import * as yaml from "js-yaml";
 import fs from "node:fs";
 
 import CreateIssueOpt from "./opts/create-issue-opt.js";
 import {SleekCommand} from "../sleek-command.js";
 import {getRepoName, getRepoOwner} from "../utils.js";
 import {createIssue, validateInputFileSchema} from "../service/create-issue-svc.js";
+import {issueData} from "../types/issue.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
@@ -39,16 +38,6 @@ export default class CreateIssue extends SleekCommand {
         const body= `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
         const createIssueResponse = await createIssue(repo, owner, title, body,this, ['pending'])
 
-        this.log(`Issue created: ${createIssueResponse.body.data.html_url}`)
+        this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
     }
 }
-
-export type addonData = {
-    name: string,
-    version: string
-};
-
-export type issueData = {
-    addon: addonData;
-    sellerMarketPlaceAlias: string,
-};
