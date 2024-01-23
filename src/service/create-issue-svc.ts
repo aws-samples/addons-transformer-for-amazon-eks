@@ -1,12 +1,14 @@
 import * as yaml from "js-yaml";
 import _Ajv from "ajv";
 import {SleekCommand} from "../sleek-command.js";
-import {issueData} from "../commands/create-issue.js";
 import {Octokit} from "@octokit/core";
+import {issueData} from "../types/issue.js";
+import {svcResponse} from "../types/service.js";
+import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
-export async function createIssue(repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<svcResponse> {
+export async function createIssue(repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<svcResponse<OctokitResponse<any>>> {
     const octokitOptions = {
         auth: process.env.GITHUB_TOKEN,
     };
@@ -30,7 +32,7 @@ export async function createIssue(repo: string, owner: string, title: string, bo
     return {success: true, body:octokitResponse}
 }
 
-export async function validateInputFileSchema(fileContents: string, callerCommand: SleekCommand): Promise<svcResponse> {
+export async function validateInputFileSchema(fileContents: string, callerCommand: SleekCommand): Promise<svcResponse<issueData>> {
     // get schema
     const schemaJsonUrl = getSchemaUrl();
 
@@ -63,16 +65,5 @@ export async function validateInputFileSchema(fileContents: string, callerComman
 function getSchemaUrl(): string {
     //  todo: set up user public repo where the schema lives
     return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
-}
-
-export type svcResponse = {
-    success: boolean,
-    body?: any,
-    error?: {
-        input: Error | string, options?: {
-            code?: string;
-            exit?: number;
-        }
-    },
 }
 
