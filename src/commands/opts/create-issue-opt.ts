@@ -38,9 +38,5 @@ export default class CreateIssueOpt {
 
     static summary = "Creates a Github Issue based in the input file";
 
-    getSchemaUrl() {
-        //  todo: set up user public repo where the schema lives
-        return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
-    }
 }
 
