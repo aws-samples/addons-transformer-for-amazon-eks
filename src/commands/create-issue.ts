@@ -3,8 +3,7 @@ import fs from "node:fs";
 
 import CreateIssueOpt from "./opts/create-issue-opt.js";
 import {SleekCommand} from "../sleek-command.js";
-import {getRepoName, getRepoOwner} from "../utils.js";
-import {createIssue, validateInputFileSchema} from "../service/create-issue-svc.js";
+import {createIssue, getRepoName, getRepoOwner, validateInputFileSchema} from "../service/create-issue-svc.js";
 import {issueData} from "../types/issue.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;

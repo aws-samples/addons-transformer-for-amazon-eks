@@ -67,3 +67,10 @@ function getSchemaUrl(): string {
     return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
 }
 
+export function getRepoOwner() {
+    return 'cloudsoft-fusion';
+}
+
+export function getRepoName() {
+    return 'aws-k8s-addons'
+}
