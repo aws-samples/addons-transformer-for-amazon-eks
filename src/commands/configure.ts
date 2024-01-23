@@ -1,7 +1,8 @@
-import {Flags} from '@oclif/core';
-import select from '@inquirer/select';
-import {SleekCommand} from "../sleek-command.js";
 import {confirm, input} from '@inquirer/prompts';
+import select from '@inquirer/select';
+import {Flags} from '@oclif/core';
+
+import {SleekCommand} from "../sleek-command.js";
 import {getAddonKey, getCurrentAddons} from "../utils.js";
 
 export default class Configure extends SleekCommand {
@@ -39,10 +40,10 @@ export default class Configure extends SleekCommand {
     addonName: Flags.string({description: 'Name of the addon'}),
     addonVersion: Flags.string({description: 'Version of the addon'}),
     helmUrl: Flags.string({description: 'Helm URL of the addon'}),
+    kubeVersion: Flags.string({description: 'Target Kubernetes version of the addon'}),
     marketplaceId: Flags.string({description: 'Marketplace AWS Account ID'}),
     namespace: Flags.string({description: 'Namespace of the addon'}),
     region: Flags.string({description: 'AWS Region'}),
-    kubeVersion: Flags.string({description: 'Target Kubernetes version of the addon'}),
   }
 
   static summary = "Sets up the Sleek CLI to work with a given helm chart"
@@ -64,58 +65,52 @@ export default class Configure extends SleekCommand {
         const addons = getCurrentAddons(currentConf);
 
         const selected = await select({
-          message: 'Which addon would you like to change the configuration for?',
-          choices: addons
+          choices: addons,
+          message: 'Which addon would you like to change the configuration for?'
         });
 
         const addOnKey = getAddonKey(selected.name, selected.version);
 
         const toModify = {
           addonName: await input({
-            message: 'Change the AddOn Name?',
-            default: selected.name
+            default: selected.name,
+            message: 'Change the AddOn Name?'
           }),
           addonVersion: await input({
-            message: 'Change the AddOn Version?',
-            default: selected.version
+            default: selected.version,
+            message: 'Change the AddOn Version?'
           }),
           helmUrl: await input({
+            default: currentConf[addOnKey].helmUrl,
             message: 'Change the Helm URL?',
-            validate: input => {
-              return this.isValidUrl(input)
-            },
-            default: currentConf[addOnKey].helmUrl
-          }),
-          marketplaceId: await input({
-            message: 'Change the Marketplace AWS Account ID?',
-            default: currentConf[addOnKey].accId
+            validate: input => this.isValidUrl(input)
           }),
           kubeVersion: await input({
-            message: 'Change the Kubernetes Version?',
-            default: currentConf[addOnKey].kubeVersion
+            default: currentConf[addOnKey].kubeVersion,
+            message: 'Change the Kubernetes Version?'
+          }),
+          marketplaceId: await input({
+            default: currentConf[addOnKey].accId,
+            message: 'Change the Marketplace AWS Account ID?'
           }),
           namespace: await input({
+            default: currentConf[addOnKey].namespace,
             message: 'Change the Namespace?',
-            validate: input => {
-              return this.isValidNamespace(input)
-            },
-            default: currentConf[addOnKey].namespace
+            validate: input => this.isValidNamespace(input)
           }),
           region: await input({
+            default: currentConf[addOnKey].region,
             message: 'Change the AWS Region?',
-            validate: input => {
-              return this.isValidRegion(input)
-            },
-            default: currentConf[addOnKey].region
+            validate: input =>  this.isValidRegion(input)
           }),
         };
 
         this.configuration[getAddonKey(toModify.addonName, toModify.addonVersion)] = {
-          helmUrl: toModify.helmUrl,
           accId: toModify.marketplaceId,
+          helmUrl: toModify.helmUrl,
+          kubeVersion: toModify.kubeVersion,
           namespace: toModify.namespace,
           region: toModify.region,
-          kubeVersion: toModify.kubeVersion,
           validated: false
         };
 
@@ -131,29 +126,23 @@ export default class Configure extends SleekCommand {
         addonName: await input({message: 'What is the AddOn Name?'}),
         addonVersion: await input({message: 'What is the AddOn Version?'}),
         helmUrl: await input({
-          message: 'What is the Helm URL?', validate: input => {
-            return this.isValidUrl(input)
-          }
-        }),
-        marketplaceId: await input({message: 'What is the Marketplace AWS Account ID?'}),
-        namespace: await input({
-          message: 'What is the Namespace?', validate: input => {
-            return this.isValidNamespace(input)
-          }
+          message: 'What is the Helm URL?', validate: input => this.isValidUrl(input)
         }),
         kubeVersion: await input({message: 'What is the targeted Kubernetes Version?'}),
+        marketplaceId: await input({message: 'What is the Marketplace AWS Account ID?'}),
+        namespace: await input({
+          message: 'What is the Namespace?', validate: input => this.isValidNamespace(input)
+        }),
         region: await input({
-          message: 'What is the AWS Region?', validate: input => {
-            return this.isValidRegion(input)
-          }
+          message: 'What is the AWS Region?', validate: input => this.isValidRegion(input)
         }),
       };
 
       this.configuration[getAddonKey(addonConfig.addonName, addonConfig.addonVersion)] = {
-        helmUrl: addonConfig.helmUrl,
         accId: addonConfig.marketplaceId,
-        namespace: addonConfig.namespace,
+        helmUrl: addonConfig.helmUrl,
         kubeVersion: addonConfig.kubeVersion,
+        namespace: addonConfig.namespace,
         region: addonConfig.region,
         validated: false
       };
@@ -163,30 +152,29 @@ export default class Configure extends SleekCommand {
       return;
     }
 
-    let addon = {
-      region: "",
+    const addon = {
       accId: "",
       helmUrl: "",
       kubeVersion: "",
-      namespace: ""
+      namespace: "",
+      region: ""
     };
 
     if (flags.region !== undefined && this.isValidRegion(flags.region)) {
-      addon["region"] = flags.region;
+      addon.region = flags.region;
     }
 
     if (flags.namespace !== undefined && this.isValidNamespace(flags.namespace)) {
-      addon["namespace"] = flags.namespace;
+      addon.namespace = flags.namespace;
     }
 
     if (flags.helmUrl !== undefined && this.isValidUrl(flags.helmUrl)) {
-      addon["helmUrl"] = flags.helmUrl;
+      addon.helmUrl = flags.helmUrl;
     }
 
     if (flags.addonName !== undefined && flags.addonVersion !== undefined) {
       if (Object.values(addon).every(value => value !== "")) {
         this.configuration[getAddonKey(flags.addonName, flags.addonVersion)] = { ...addon, validated: false };
-
         this.updateConfig();
       }
     }
