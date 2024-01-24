@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 import CreateIssueOpt from "./opts/create-issue-opt.js";
 import {SleekCommand} from "../sleek-command.js";
-import {createIssue, validateInputFileSchema} from "../service/create-issue-svc.js";
+import {createIssue, validateInputFileSchema} from "../services/create-issue.js";
 import {IssueData} from "../types/issue.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
