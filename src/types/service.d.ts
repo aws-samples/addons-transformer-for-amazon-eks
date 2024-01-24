@@ -1,4 +1,4 @@
-export type svcResponse<T> = {
+export type ServiceResponse<T> = {
     success: boolean,
     body?: T,
     error?: {

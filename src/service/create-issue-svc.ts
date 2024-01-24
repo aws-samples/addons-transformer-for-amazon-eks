@@ -2,16 +2,16 @@ import * as yaml from "js-yaml";
 import _Ajv from "ajv";
 import {SleekCommand} from "../sleek-command.js";
 import {Octokit} from "@octokit/core";
-import {issueData} from "../types/issue.js";
-import {svcResponse} from "../types/service.js";
+import {IssueData} from "../types/issue.js";
+import {ServiceResponse} from "../types/service.js";
 import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
-export const createIssue = async (title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<svcResponse<OctokitResponse<any>>> => {
+export const createIssue = async (title: string, body: string, callerCommand: SleekCommand, labels: string[] = []): Promise<ServiceResponse<OctokitResponse<any>>> => {
     return createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, callerCommand, labels)
 }
-const createIssueOnRepo = async (repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[]): Promise<svcResponse<OctokitResponse<any>>> => {
+const createIssueOnRepo = async (repo: string, owner: string, title: string, body: string, callerCommand: SleekCommand, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
     const octokitOptions = {
         auth: process.env.GITHUB_TOKEN,
     };
@@ -35,7 +35,7 @@ const createIssueOnRepo = async (repo: string, owner: string, title: string, bod
     return {success: true, body:octokitResponse}
 }
 
-export async function validateInputFileSchema(fileContents: string, callerCommand: SleekCommand): Promise<svcResponse<issueData>> {
+export async function validateInputFileSchema(fileContents: string, callerCommand: SleekCommand): Promise<ServiceResponse<IssueData>> {
     // get schema
     const schemaJsonUrl = getSchemaUrl();
 
@@ -62,7 +62,7 @@ export async function validateInputFileSchema(fileContents: string, callerComman
         schemaValidator.errors?.map(e => allErrors.push(JSON.stringify(e)));
         callerCommand.error(allErrors.join('\n'), {exit: 1});
     }
-    return {success: true, body: data as issueData}
+    return {success: true, body: data as IssueData}
 }
 
 function getSchemaUrl(): string {
