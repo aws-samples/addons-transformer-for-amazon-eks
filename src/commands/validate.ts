@@ -4,6 +4,7 @@ import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
 import {execSync, spawnSync} from "child_process";
 import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
+import ChartValidatorService from "../services/validate.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -55,38 +56,13 @@ export default class Validate extends SleekCommand {
     }
     const chart = path.resolve(await this.pullHelmChart(addonKey));
 
-    // turns out using grep is the best way to do it lmao
-    // rip all the Windows users
-    const findCapabilities = spawnSync('grep', ['-Rile', '".Capabilities"', chart],
-      { shell: true, encoding: "utf-8" });
-    const findHooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', chart],
-      { shell: true, encoding: "utf-8" });
+    this.log(`Validating chart ${chart}`);
 
-    //TODO: Find all the helm template and within those templates ensure there's no "lookup" keyword
-    // Eg: {{ lookup }} is bad
-    // Eg: {{ <anything else> }} is fine
-    const findLookups = spawnSync('grep', ['-Rile', '/{{[^{}]*lookup[^{}]*}}/', chart],
-      { shell: true, encoding: "utf-8" });
+    const validatorService = new ChartValidatorService({ chart: chart});
 
-    // TODO: Ensure all dependencies are included in the main chart, i.e. no remote calls in `helm dependency list`
-    const findDependencies = () => {
-      // run helm dependency list against the folder
-      const findDependencies = spawnSync('helm', ['dependency', 'list', chart], {shell: true, encoding: "utf-8"});
-      // three columns, dependencies listed in middle column
-      const dependencies = findDependencies.stdout.toString().split('\n')[1].split('\t')[1];
-      // check dependencies to ensure they all contain file://
-      if (dependencies.split(',').every(dep => dep.includes('file://'))) {
-        this.log('All dependencies are included in the main chart.');
-      } else {
-        return false;
-      }
+    const validatorServiceResp = await validatorService.run();
 
-      // check if all listed dependencies actually exist in the folder
-
-    };
-
-    // Check validation matrix, ensure there are no capabilities, hooks, or lookups
-
+    // do something with the validated service response
   }
 
   private async pullHelmChart(addonKey: string): Promise<string> {
