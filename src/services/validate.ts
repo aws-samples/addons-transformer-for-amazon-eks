@@ -4,7 +4,8 @@
 // add a second parameter that's "internal version" number maintained by us
 
 import {spawnSync} from "child_process";
-import {BaseService, ServiceConfig, ServiceResponse} from "./base-service.js";
+import {BaseService, ServiceConfig} from "./base-service.js";
+import {ServiceResponse} from "../types/service.js";
 
 export default class ChartValidatorService extends BaseService {
 

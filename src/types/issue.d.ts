@@ -1,9 +1,9 @@
-export type addonData = {
+export type AddonData = {
     name: string,
     version: string
 };
 
-export type issueData = {
-    addon: addonData;
+export type IssueData = {
+    addon: AddonData;
     sellerMarketPlaceAlias: string,
 };
