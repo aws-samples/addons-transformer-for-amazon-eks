@@ -29,9 +29,47 @@ export default class ChartValidatorService extends BaseService {
         success: false,
         body: "Addon pre-validation failed",
         error: {
-          // check if there's already something in response.error.input
-          // append to it or create it.
-
+          input: capabilities.error?.input!,
+          options: {
+            code: capabilities.error?.options?.code,
+            exit: 1
+          }
+        }
+      }
+    } else if (!hooks.success) {
+      response = {
+        success: false,
+        body: "Addon pre-validation failed",
+        error: {
+          input: hooks.error?.input!,
+          options: {
+            code: hooks.error?.options?.code,
+            exit: 1
+          }
+        }
+      }
+    } else if (!dependencies.success) {
+      response = {
+        success: false,
+        body: "Addon pre-validation failed",
+        error: {
+          input: dependencies.error?.input!,
+          options: {
+            code: dependencies.error?.options?.code,
+            exit: 1
+          }
+        }
+      }
+    } else {
+      response = {
+        success: false,
+        body: "Addon pre-validation failed",
+        error: {
+          input: "Unknown error",
+          options: {
+            code: "E505",
+            exit: 1
+          }
         }
       }
     }
