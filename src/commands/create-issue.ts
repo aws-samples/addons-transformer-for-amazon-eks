@@ -1,10 +1,12 @@
 import fs from "node:fs";
 
-import CreateIssueOpt from "./opts/create-issue-opt.js";
+import CreateIssueOpt from "../commandOpts/create-issue.js";
 import {SleekCommand} from "../sleek-command.js";
 import CreateIssueService from "../services/create-issue.js";
 import {IssueData} from "../types/issue.js";
 import SchemaValidationService from "../services/schemaValidation.js";
+import ChartValidatorService from "../services/validate.js";
+import {execSync} from "child_process";
 
 
 export class CreateIssue extends SleekCommand {
@@ -27,15 +29,40 @@ export class CreateIssue extends SleekCommand {
         this.log('Schema validation correct') // it exits if not valid
 
         if (isDryRun) return;
-        // todo
-        // validateChart(helmCharName, helmChartVersion);
+
+        const inputDataParsed = data.body as IssueData;
+        const addonData = inputDataParsed.addon;
+        const repo= addonData.helmChartUrl.substring(0,addonData.helmChartUrl.lastIndexOf(':'))
+        const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
+        const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
+        const validatorService = new ChartValidatorService(this, { chart: charPath});
+        const validatorServiceResp = await validatorService.run();
+        // todo: if validatorService exits when errors, not need to handle here !success
+        if(!validatorServiceResp.success){
+            this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )
+        }
+        this.log(`Chart validation successful`)
 
         // create issue base in the file input
-        const title = `Onboarding ${(data.body as IssueData).sellerMarketPlaceAlias} ${(data.body as IssueData).addon.name}@${(data.body as IssueData).addon.version}`;
+        const title = `Onboarding ${inputDataParsed.sellerMarketPlaceAlias} ${addonData.name}@${addonData.version}`;
         const body = `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
         const createIssueService = new CreateIssueService(this);
         const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])
 
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
+    }
+
+    private async pullHelmChart(name:string, chartTag:string, url:string): Promise<string> {
+        const chartVersionFlag = !! chartTag ? `--version ${chartTag}`:''
+        const untarLocation = `./unzipped-${name}`;
+        const pullCmd = `rm -rf ${untarLocation} && 
+                             mkdir ${untarLocation} && 
+                             helm pull oci://${url} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null 2>&1`;
+        try {
+            execSync(pullCmd);
+        } catch (e) {
+            this.error(`Helm chart pull failed with error ${e}`);
+        }
+        return untarLocation;
     }
 }
