@@ -8,7 +8,7 @@ import * as yaml from "js-yaml";
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 export default class SchemaValidationService extends BaseService {
     run(): Promise<ServiceResponse<any>> {
-        this.commandCaller.error(`not implemented`, {exit: 2})
+        this.error(`not implemented`, {exit: 2})
     }
 
     public async validateInputFileSchema(fileContents: string): Promise<ServiceResponse<IssueData>> {
@@ -22,9 +22,9 @@ export default class SchemaValidationService extends BaseService {
         })
             .then(response => response.json())
             .catch(err => {
-                this.commandCaller.logToStderr(`Schema url: ${schemaJsonUrl}`)
-                console.debug(err)
-                this.commandCaller.error('Error fetching the schema', {code: '1'});
+                this.logToStderr(`Schema url: ${schemaJsonUrl}`);
+                console.debug(err);
+                this.error('Error fetching the schema', {code: '1'});
             })
         const ajv = new Ajv({allErrors: true})
         const schemaValidator = ajv.compile(schema)
@@ -34,7 +34,7 @@ export default class SchemaValidationService extends BaseService {
         if (!schemaValidator(data)) {
             const allErrors = ['Schema validation errors: '];
             schemaValidator.errors?.map(e => allErrors.push(JSON.stringify(e)));
-            this.commandCaller.error(allErrors.join('\n'), {exit: 1});
+            this.error(allErrors.join('\n'), {exit: 1});
         }
 
         return {success: true, body: data as IssueData}
