@@ -38,6 +38,9 @@ To implement this solution, you need the following prerequisites:
 # Usage
 <!-- usage -->
 ```sh-session
+$ git clone https://github.com/aws-samples/addons-transformer-for-amazon-eks.git
+$ npm pack
+$ npm install <Path-To-targz-file>
 $ aws-sleek-transformer COMMAND
 running command...
 $ aws-sleek-transformer (--version)
