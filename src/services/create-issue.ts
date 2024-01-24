@@ -5,7 +5,7 @@ import {BaseService} from "./base-service.js";
 
 export default class CreateIssueService extends BaseService {
     public run(): Promise<ServiceResponse<OctokitResponse<any>>> {
-        this.commandCaller.error(`not implemented`, {exit: 2})
+        this.error(`not implemented`, {exit: 2})
     }
 
     public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
@@ -31,7 +31,7 @@ export default class CreateIssueService extends BaseService {
         const octokit = new Octokit(octokitOptions)
         const octokitResponse = await octokit.request('POST /repos/{owner}/{repo}/issues', createIssueRequest);
         if (octokitResponse.status !== 201) {
-            this.commandCaller.error(`Error creating issue on ${owner}/${repo} (${octokitResponse.status})`, {exit: 1})
+            this.error(`Error creating issue on ${owner}/${repo} (${octokitResponse.status})`, {exit: 1})
         }
         return {success: true, body: octokitResponse}
     }
