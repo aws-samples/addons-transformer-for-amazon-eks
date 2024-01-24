@@ -38,7 +38,6 @@ To implement this solution, you need the following prerequisites:
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g aws-sleek-transformer
 $ aws-sleek-transformer COMMAND
 running command...
 $ aws-sleek-transformer (--version)
