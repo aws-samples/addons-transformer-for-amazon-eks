@@ -6,11 +6,12 @@
 import {spawnSync} from "child_process";
 import {BaseService, ServiceConfig} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
+import {SleekCommand} from "../sleek-command.js";
 
 export default class ChartValidatorService extends BaseService {
 
-  constructor(config: ServiceConfig) {
-    super(config);
+  constructor(commandCaller: SleekCommand, config: ServiceConfig) {
+    super(commandCaller, config);
   }
 
   async run(): Promise<ServiceResponse<any>> {
