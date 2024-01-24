@@ -5,6 +5,7 @@ import {Flags} from '@oclif/core';
 import {SleekCommand} from "../sleek-command.js";
 import {getAddonKey, getCurrentAddons} from "../utils.js";
 
+// todo: remove
 export default class Configure extends SleekCommand {
 
   static description = `

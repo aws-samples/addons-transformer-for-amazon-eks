@@ -6,6 +6,7 @@ import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 import {PrettyPrintableError} from "@oclif/core/lib/errors/index.js";
 
+// todo: remove
 export interface ServiceConfig {
   // defines chart location
   chart: string;
@@ -38,5 +39,6 @@ export abstract class BaseService {
     this.commandCaller.error(input, options)
   }
 
+  // todo: remove
   public abstract run(): Promise<ServiceResponse<any>>;
 }

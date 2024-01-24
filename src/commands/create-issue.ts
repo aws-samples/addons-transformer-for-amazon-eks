@@ -52,6 +52,8 @@ export class CreateIssue extends SleekCommand {
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
     }
 
+    // todo: move to helm service
+    // todo: add parameter for chart url protocol
     private async pullHelmChart(name:string, chartTag:string, url:string): Promise<string> {
         const chartVersionFlag = !! chartTag ? `--version ${chartTag}`:''
         const untarLocation = `./unzipped-${name}`;

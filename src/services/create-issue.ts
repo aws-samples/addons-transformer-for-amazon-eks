@@ -4,6 +4,7 @@ import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js
 import {BaseService} from "./base-service.js";
 
 export default class CreateIssueService extends BaseService {
+    // todo: remove
     public run(): Promise<ServiceResponse<OctokitResponse<any>>> {
         this.error(`not implemented`, {exit: 2})
     }

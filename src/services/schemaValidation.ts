@@ -7,6 +7,7 @@ import * as yaml from "js-yaml";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 export default class SchemaValidationService extends BaseService {
+    // todo: remove
     run(): Promise<ServiceResponse<any>> {
         this.error(`not implemented`, {exit: 2})
     }
