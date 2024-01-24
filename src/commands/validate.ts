@@ -58,7 +58,7 @@ export default class Validate extends SleekCommand {
 
     this.log(`Validating chart ${chart}`);
 
-    const validatorService = new ChartValidatorService({ chart: chart});
+    const validatorService = new ChartValidatorService(this, { chart: chart});
 
     const validatorServiceResp = await validatorService.run();
 

@@ -3,6 +3,7 @@
  * that are global to services
  */
 import {ServiceResponse} from "../types/service.js";
+import {SleekCommand} from "../sleek-command.js";
 
 export interface ServiceConfig {
   // defines chart location
@@ -13,9 +14,11 @@ export interface ServiceConfig {
 
 
 export abstract class BaseService {
-  protected config: ServiceConfig;
+  protected config: ServiceConfig ;
+  protected commandCaller: SleekCommand;
 
-  constructor(config: ServiceConfig) {
+  constructor(commandCaller: SleekCommand, config: ServiceConfig = {} as ServiceConfig) {
+    this.commandCaller = commandCaller;
     this.config = config;
   }
 

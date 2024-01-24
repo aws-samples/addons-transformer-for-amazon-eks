@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 import CreateIssueOpt from "./opts/create-issue-opt.js";
 import {SleekCommand} from "../sleek-command.js";
-import {createIssue, validateInputFileSchema} from "../services/create-issue.js";
+import CreateIssueService, {validateInputFileSchema} from "../services/create-issue.js";
 import {IssueData} from "../types/issue.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
@@ -33,7 +33,8 @@ export default class CreateIssue extends SleekCommand {
         // create issue base in the file input
         const title = `Onboarding ${(data.body as IssueData).sellerMarketPlaceAlias} ${(data.body as IssueData).addon.name}@${(data.body as IssueData).addon.version}`;
         const body= `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
-        const createIssueResponse = await createIssue(title, body,this, ['pending'])
+        const createIssueService = new CreateIssueService(this);
+        const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])
 
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
     }
