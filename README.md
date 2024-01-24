@@ -1,5 +1,5 @@
-AWS Sleek Transformer CLI
-=========================
+Addons Transformer CLI for Amazon EKS
+=====================================
 
 <!-- toc -->
 * [Usage](#usage)
@@ -38,31 +38,31 @@ To implement this solution, you need the following prerequisites:
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g aws-sleek-transformer
-$ aws-sleek-transformer COMMAND
+$ npm install -g addons-transformer-for-amazon-eks
+$ addons-transformer-for-amazon-eks COMMAND
 running command...
-$ aws-sleek-transformer (--version)
-aws-sleek-transformer/0.0.1 darwin-arm64 node-v20.10.0
-$ aws-sleek-transformer --help [COMMAND]
+$ addons-transformer-for-amazon-eks (--version)
+addons-transformer-for-amazon-eks/0.0.1 darwin-arm64 node-v20.8.0
+$ addons-transformer-for-amazon-eks --help [COMMAND]
 USAGE
-  $ aws-sleek-transformer COMMAND
+  $ addons-transformer-for-amazon-eks COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`aws-sleek-transformer configure`](#aws-sleek-transformer-configure)
-* [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
-* [`aws-sleek-transformer validate`](#aws-sleek-transformer-validate)
+* [`addons-transformer-for-amazon-eks configure`](#addons-transformer-for-amazon-eks-configure)
+* [`addons-transformer-for-amazon-eks submit`](#addons-transformer-for-amazon-eks-submit)
+* [`addons-transformer-for-amazon-eks validate`](#addons-transformer-for-amazon-eks-validate)
 
-## `aws-sleek-transformer configure`
+## `addons-transformer-for-amazon-eks configure`
 
 Sets up the Sleek CLI to work with a given helm chart
 
 ```
 USAGE
-  $ aws-sleek-transformer configure [--addonName <value>] [--addonVersion <value>] [--helmUrl <value>]
-    [--marketplaceId <value>] [--namespace <value>] [--region <value>]
+  $ addons-transformer-for-amazon-eks configure [--addonName <value>] [--addonVersion <value>] [--helmUrl
+    <value>] [--marketplaceId <value>] [--namespace <value>] [--region <value>]
 
 FLAGS
   --addonName=<value>      Name of the addon
@@ -101,18 +101,18 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer configure
+  $ addons-transformer-for-amazon-eks configure
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/configure.ts)_
+_See code: [src/commands/configure.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/configure.ts)_
 
-## `aws-sleek-transformer submit`
+## `addons-transformer-for-amazon-eks submit`
 
 Uses the pre-existing configurations to submit the addon to the AWS marketplace
 
 ```
 USAGE
-  $ aws-sleek-transformer submit [--addonName <value>] [--addonVersion <value>]
+  $ addons-transformer-for-amazon-eks submit [--addonName <value>] [--addonVersion <value>]
 
 FLAGS
   --addonName=<value>     Name of the addon to submit
@@ -139,18 +139,18 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer submit
+  $ addons-transformer-for-amazon-eks submit
 ```
 
-_See code: [src/commands/submit.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/submit.ts)_
+_See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
-## `aws-sleek-transformer validate`
+## `addons-transformer-for-amazon-eks validate`
 
 Validates a given addon from the configuration provided through the 'configure' command
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [--addonName <value>] [--addonVersion <value>]
+  $ addons-transformer-for-amazon-eks validate [--addonName <value>] [--addonVersion <value>]
 
 FLAGS
   --addonName=<value>     Name of the addon to validate
@@ -176,8 +176,8 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer validate
+  $ addons-transformer-for-amazon-eks validate
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->
