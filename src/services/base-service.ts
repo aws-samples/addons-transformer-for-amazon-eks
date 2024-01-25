@@ -1,26 +1,13 @@
-/**
- * Is the base class of all our services, holds the configs
- * that are global to services
- */
 import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 import {PrettyPrintableError} from "@oclif/core/lib/errors/index.js";
 
-export interface ServiceConfig {
-  // defines chart location
-  chart: string;
-
-  // define other stuff common to all services here
-}
-
 
 export abstract class BaseService {
-  protected config: ServiceConfig ;
   private commandCaller: SleekCommand;
 
-  constructor(commandCaller: SleekCommand, config: ServiceConfig = {} as ServiceConfig) {
+  constructor(commandCaller: SleekCommand) {
     this.commandCaller = commandCaller;
-    this.config = config;
   }
 
   public log(message?: string, ...args: any[]): void{
@@ -37,6 +24,4 @@ export abstract class BaseService {
   } & PrettyPrintableError): never {
     this.commandCaller.error(input, options)
   }
-
-  public abstract run(): Promise<ServiceResponse<any>>;
 }

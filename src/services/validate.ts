@@ -4,17 +4,20 @@
 // add a second parameter that's "internal version" number maintained by us
 
 import {spawnSync} from "child_process";
-import {BaseService, ServiceConfig} from "./base-service.js";
+import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 
 export default class ChartValidatorService extends BaseService {
+  // this will always be a local filepath
+  private toValidate: string;
 
-  constructor(commandCaller: SleekCommand, config: ServiceConfig) {
-    super(commandCaller, config);
+  constructor(commandCaller: SleekCommand, toValidate: string) {
+    super(commandCaller);
+    this.toValidate = toValidate;
   }
 
-  async run(): Promise<ServiceResponse<any>> {
+  async validate(): Promise<ServiceResponse<any>> {
     const capabilities = await this.findCapabilities();
     const hooks = await this.findHooks();
     const dependencies = await this.findDependencies();
@@ -76,11 +79,11 @@ export default class ChartValidatorService extends BaseService {
       }
     }
 
-    return Promise.resolve(response);
+    return response;
   }
 
   private async findCapabilities(): Promise<ServiceResponse<string>> {
-    const capabilities = spawnSync('grep', ['-Rile', '".Capabilities"', this.config.chart], {
+    const capabilities = spawnSync('grep', ['-Rile', '".Capabilities"', this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -105,11 +108,11 @@ export default class ChartValidatorService extends BaseService {
       }
     }
 
-    return Promise.resolve(response);
+    return response;
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rile', '".Hooks"', this.config.chart], {shell: true, encoding: "utf-8"});
+    const hooks = spawnSync('grep', ['-Rile', '".Hooks"', this.toValidate], {shell: true, encoding: "utf-8"});
 
     let response: ServiceResponse<string>;
     if (hooks.stdout === "") {
@@ -130,11 +133,11 @@ export default class ChartValidatorService extends BaseService {
       }
     }
 
-    return Promise.resolve(response);
+    return response;
   }
 
   private async findDependencies(): Promise<ServiceResponse<string>> {
-    const grepDependencies = spawnSync('helm', ['dependency', 'list', this.config.chart], {
+    const grepDependencies = spawnSync('helm', ['dependency', 'list', this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -170,7 +173,6 @@ export default class ChartValidatorService extends BaseService {
       }
     }
 
-    return Promise.resolve(response);
+    return response;
   }
 }
-

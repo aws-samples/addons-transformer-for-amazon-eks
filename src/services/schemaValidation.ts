@@ -7,10 +7,6 @@ import * as yaml from "js-yaml";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 export default class SchemaValidationService extends BaseService {
-    run(): Promise<ServiceResponse<any>> {
-        this.error(`not implemented`, {exit: 2})
-    }
-
     public async validateInputFileSchema(fileContents: string): Promise<ServiceResponse<IssueData>> {
         const schemaJsonUrl = getSchemaUrl();
         const schema = await fetch(schemaJsonUrl, {

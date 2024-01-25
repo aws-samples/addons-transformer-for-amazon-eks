@@ -35,8 +35,8 @@ export class CreateIssue extends SleekCommand {
         const repo= addonData.helmChartUrl.substring(0,addonData.helmChartUrl.lastIndexOf(':'))
         const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
         const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
-        const validatorService = new ChartValidatorService(this, { chart: charPath});
-        const validatorServiceResp = await validatorService.run();
+        const validatorService = new ChartValidatorService(this, charPath);
+        const validatorServiceResp = await validatorService.validate();
         // todo: if validatorService exits when errors, not need to handle here !success
         if(!validatorServiceResp.success){
             this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )

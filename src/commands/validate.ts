@@ -4,6 +4,7 @@ import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
 import {execSync, spawnSync} from "child_process";
 import ChartValidatorService from "../services/validate.js";
+import HelmManagerService from "../services/helm.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -41,6 +42,7 @@ export default class Validate extends SleekCommand {
   static flags = {
     file: Flags.string({description: "Path to add-on input file"}),
     helmUrl: Flags.string({description: "Helm URL of the addon"}),
+    addonName: Flags.string({description: "Name of the addon"}),
   }
 
   static summary = "Validates a given addon from the configuration provided through the 'configure' command";
@@ -52,7 +54,7 @@ export default class Validate extends SleekCommand {
     // if file is given, validate based on the path
     // else, raise error stating one or the other arg/flag should be provided
     if (args.helmUrl) {
-      await this.validateHelmChart(args.helmUrl);
+      await this.validateHelmChart(args.helmUrl, flags.addonName!);
     } else if (flags.file) {
       await this.validateFile(flags.file);
     } else {
@@ -61,28 +63,15 @@ export default class Validate extends SleekCommand {
   }
 
   private async validateFile(filePath: string): Promise<void> {
-    const validator = new ChartValidatorService();
+    const validator = new ChartValidatorService(this, filePath);
     await validator.validate();
   }
 
-  private async pullHelmChart(addonKey: string): Promise<string> {
-    const addonInfo = destructureAddonKey(addonKey);
+  private async validateHelmChart(helmUrl: string, addonName: string): Promise<void> {
+    const helmManager = new HelmManagerService(this);
 
-    const currentConf = this.configuration;
-    const currentAddon = currentConf[addonKey];
-
-    const untarLocation = `./unzipped-${addonInfo.name}`;
-    const pullCmd = `rm -rf ${untarLocation} && 
-                             mkdir ${untarLocation} && 
-                             helm pull ${currentAddon.helmUrl} --version ${addonInfo.version} --untar --untardir ${untarLocation}`;
-    try {
-      const result = execSync(pullCmd);
-      this.log(result.toString());
-      this.log("Helm Chart pull complete.");
-    } catch (e) {
-      this.error(`Helm chart pull failed with error ${e}`);
-    }
-
-    return untarLocation;
+    const untarLocation = await helmManager.pullAndUnzipChart(helmUrl, addonName);
+    const validator = new ChartValidatorService(this, untarLocation);
+    await validator.validate();
   }
 }

@@ -4,10 +4,6 @@ import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js
 import {BaseService} from "./base-service.js";
 
 export default class CreateIssueService extends BaseService {
-    public run(): Promise<ServiceResponse<OctokitResponse<any>>> {
-        this.error(`not implemented`, {exit: 2})
-    }
-
     public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
         return this.createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, labels);
     }
