@@ -1,9 +1,8 @@
 import * as path from "path";
-import {Flags} from '@oclif/core';
+import {Args, Flags} from '@oclif/core';
 import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
 import {execSync, spawnSync} from "child_process";
-import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
 import ChartValidatorService from "../services/validate.js";
 
 export default class Validate extends SleekCommand {
@@ -14,10 +13,7 @@ export default class Validate extends SleekCommand {
     Runs the static analysis to find occurrences of:
       * .Capabilities
       * helm.sh/hook
-    
-    This command requires the "configure" command to have been run, it needs:
-      * Helm URL
-    to be configured correctly.
+      * external helm dependencies
     
     It will perform a static validation on the device and then give you the option to submit it to the marketplace for
     runtime and further validation before it can be included in the EKS Console marketplace. 
@@ -27,9 +23,24 @@ export default class Validate extends SleekCommand {
     '<%= config.bin %> <%= command.id %>',
   ]
 
+  static args = {
+    helmUrl: Args.string(
+      {
+        required: false,
+        description: "Helm URL of the addon"
+      }
+    ),
+    file: Args.string(
+      {
+        required: false,
+        description: "Path to add-on input file"
+      }
+    )
+  }
+
   static flags = {
-    addonName: Flags.string({description: "Name of the addon to validate"}),
-    addonVersion: Flags.string({description: "Version of the addon to validate"}),
+    file: Flags.string({description: "Path to add-on input file"}),
+    helmUrl: Flags.string({description: "Helm URL of the addon"}),
   }
 
   static summary = "Validates a given addon from the configuration provided through the 'configure' command";
@@ -37,35 +48,21 @@ export default class Validate extends SleekCommand {
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Validate);
 
-    let addonKey;
-
-    // if addon name and version are not provided, prompt the user
-    if (!flags.addonName || !flags.addonVersion) {
-      // fetch pre-existing configs from  ~/.sleek/config.json
-      const currentConf = this.configuration;
-      const addons = getCurrentAddons(currentConf);
-
-      const selected: { name: string, version: string } = await select({
-        message: 'Which addon would you like to validate the configuration for?',
-        choices: addons
-      });
-
-      addonKey = selected.name;
+    // if helmURL is given, download the chart then validate
+    // if file is given, validate based on the path
+    // else, raise error stating one or the other arg/flag should be provided
+    if (args.helmUrl) {
+      await this.validateHelmChart(args.helmUrl);
+    } else if (flags.file) {
+      await this.validateFile(flags.file);
     } else {
-      addonKey = getAddonKey(flags.addonName, flags.addonVersion);
+      this.error("Either a Helm URL or a file path should be provided");
     }
-    const chart = path.resolve(await this.pullHelmChart(addonKey));
+  }
 
-    this.log(`Validating chart ${chart}`);
-
-    const validatorService = new ChartValidatorService(this, { chart: chart});
-
-    const validatorServiceResp = await validatorService.run();
-    if(!validatorServiceResp.success){
-      this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )
-    }
-    this.log(validatorServiceResp.body)
-    // do something with the validated service response
+  private async validateFile(filePath: string): Promise<void> {
+    const validator = new ChartValidatorService();
+    await validator.validate();
   }
 
   private async pullHelmChart(addonKey: string): Promise<string> {
