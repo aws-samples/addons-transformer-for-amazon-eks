@@ -51,65 +51,43 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`addons-transformer-for-amazon-eks configure`](#addons-transformer-for-amazon-eks-configure)
+* [`addons-transformer-for-amazon-eks create-issue FILE`](#addons-transformer-for-amazon-eks-create-issue-file)
 * [`addons-transformer-for-amazon-eks submit`](#addons-transformer-for-amazon-eks-submit)
 * [`addons-transformer-for-amazon-eks validate`](#addons-transformer-for-amazon-eks-validate)
 
-## `addons-transformer-for-amazon-eks configure`
+## `addons-transformer-for-amazon-eks create-issue FILE`
 
-Sets up the Sleek CLI to work with a given helm chart
+Creates a Github Issue based in the input file
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks configure [--addonName <value>] [--addonVersion <value>] [--helmUrl
-    <value>] [--marketplaceId <value>] [--namespace <value>] [--region <value>]
+  $ addons-transformer-for-amazon-eks create-issue FILE [-d] [--file <value>]
 
 FLAGS
-  --addonName=<value>      Name of the addon
-  --addonVersion=<value>   Version of the addon
-  --helmUrl=<value>        Helm URL of the addon
-  --kubeVersion=<value>    Target Kubernetes version of the addon
-  --marketplaceId=<value>  Marketplace AWS Account ID
-  --namespace=<value>      Namespace of the addon
-  --region=<value>         AWS Region
+  -d, --dryRun        Runs all checks without creating the issue
+      --file=<value>  Path to add-on input file
 
 DESCRIPTION
-  Sets up the Sleek CLI to work with a given helm chart
+  Creates a Github Issue based in the input file
 
 
-  Extracts information from the environment to populate information required for the Sleek CLI to function. If
-  certain information is not found, prompts the user for it and asks them to validate the information extracted from
-  the environment.
+  This creates a Github Issue on the Sleek repository.
 
-  This information is stored ~/.sleek/config.json
-  Each of these configurations can be edited by passing the exact addon name and version.
+  It will validate the input file to match the schema
 
-  The CLI requires the following:
-  * AWS Region
-  * Marketplace AWS Account ID
-  * Addon Name
-  * Addon Version
-  * Addon Helm Url
-  * Deployment Namespace
-
-  Each of these can be passed as flags to this command with the following flags:
-  * --region
-  * --marketplace_id
-  * --addon_name
-  * --addon_version
-  * --helm_url
-  * --namespace
+  TODO:
+  * Run validation before creating the issue
 
 
 EXAMPLES
-  $ addons-transformer-for-amazon-eks configure
+  $ addons-transformer-for-amazon-eks create-issue filename
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/configure.ts)_
+_See code: [src/commands/configure.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
 
 ## `addons-transformer-for-amazon-eks submit`
 
-Uses the pre-existing configurations to submit the addon to the AWS marketplace
+Submit the addon to the AWS marketplace
 
 ```
 USAGE
@@ -120,7 +98,7 @@ FLAGS
   --addonVersion=<value>  Version of the addon to submit
 
 DESCRIPTION
-  Uses the pre-existing configurations to submit the addon to the AWS marketplace
+  Submit the addon to the AWS marketplace
 
 
   Sends the selected addon, version to the marketplace for final submission and upload it to Project Sleek.
@@ -145,17 +123,22 @@ EXAMPLES
 
 _See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
-## `addons-transformer-for-amazon-eks validate`
+## `addons-transformer-for-amazon-eks validate [HELMURL] [FILE]`
 
 Validates a given addon from the configuration provided through the 'configure' command
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks validate [--addonName <value>] [--addonVersion <value>]
+  $ addons-transformer-for-amazon-eks validate [HELMURL] [FILE] [--file <value>] [--helmUrl <value>] [--addonName <value>]
+
+ARGUMENTS
+  HELMURL  Helm URL of the addon
+  FILE     Path to add-on input file
 
 FLAGS
-  --addonName=<value>     Name of the addon to validate
-  --addonVersion=<value>  Version of the addon to validate
+  --addonName=<value>  Name of the addon
+  --file=<value>       Path to add-on input file
+  --helmUrl=<value>    Helm URL of the addon
 
 DESCRIPTION
   Validates a given addon from the configuration provided through the 'configure' command
@@ -167,10 +150,7 @@ DESCRIPTION
   Runs the static analysis to find occurrences of:
   * .Capabilities
   * helm.sh/hook
-
-  This command requires the "configure" command to have been run, it needs:
-  * Helm URL
-  to be configured correctly.
+  * external helm dependencies
 
   It will perform a static validation on the device and then give you the option to submit it to the marketplace for
   runtime and further validation before it can be included in the EKS Console marketplace.
