@@ -38,30 +38,33 @@ To implement this solution, you need the following prerequisites:
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g addons-transformer-for-amazon-eks
-$ addons-transformer-for-amazon-eks COMMAND
+$ npm install -g aws-sleek-transformer
+$ aws-sleek-transformer COMMAND
 running command...
-$ addons-transformer-for-amazon-eks (--version)
-addons-transformer-for-amazon-eks/0.0.1 darwin-arm64 node-v20.8.0
-$ addons-transformer-for-amazon-eks --help [COMMAND]
+$ aws-sleek-transformer (--version)
+aws-sleek-transformer/0.0.1 darwin-arm64 node-v20.10.0
+$ aws-sleek-transformer --help [COMMAND]
 USAGE
-  $ addons-transformer-for-amazon-eks COMMAND
+  $ aws-sleek-transformer COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`addons-transformer-for-amazon-eks create-issue FILE`](#addons-transformer-for-amazon-eks-create-issue-file)
-* [`addons-transformer-for-amazon-eks submit`](#addons-transformer-for-amazon-eks-submit)
-* [`addons-transformer-for-amazon-eks validate`](#addons-transformer-for-amazon-eks-validate)
+* [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
+* [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
+* [`aws-sleek-transformer validate [HELMURL] [FILE]`](#aws-sleek-transformer-validate-helmurl-file)
 
-## `addons-transformer-for-amazon-eks create-issue FILE`
+## `aws-sleek-transformer create-issue FILE`
 
 Creates a Github Issue based in the input file
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks create-issue FILE [-d] [--file <value>]
+  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
+
+ARGUMENTS
+  FILE  Path to add-on input file
 
 FLAGS
   -d, --dryRun        Runs all checks without creating the issue
@@ -80,22 +83,18 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ addons-transformer-for-amazon-eks create-issue filename
+  $ aws-sleek-transformer create-issue filename
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
+_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
 
-## `addons-transformer-for-amazon-eks submit`
+## `aws-sleek-transformer submit`
 
 Submit the addon to the AWS marketplace
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks submit [--addonName <value>] [--addonVersion <value>]
-
-FLAGS
-  --addonName=<value>     Name of the addon to submit
-  --addonVersion=<value>  Version of the addon to submit
+  $ aws-sleek-transformer submit
 
 DESCRIPTION
   Submit the addon to the AWS marketplace
@@ -118,18 +117,18 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ addons-transformer-for-amazon-eks submit
+  $ aws-sleek-transformer submit
 ```
 
 _See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
-## `addons-transformer-for-amazon-eks validate [HELMURL] [FILE]`
+## `aws-sleek-transformer validate [HELMURL] [FILE]`
 
 Validates a given addon from the configuration provided through the 'configure' command
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks validate [HELMURL] [FILE] [--file <value>] [--helmUrl <value>] [--addonName <value>]
+  $ aws-sleek-transformer validate [HELMURL] [FILE] [--file <value>] [--helmUrl <value>] [--addonName <value>]
 
 ARGUMENTS
   HELMURL  Helm URL of the addon
@@ -157,7 +156,7 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ addons-transformer-for-amazon-eks validate
+  $ aws-sleek-transformer validate
 ```
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_

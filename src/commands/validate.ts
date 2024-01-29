@@ -1,8 +1,5 @@
-import * as path from "path";
 import {Args, Flags} from '@oclif/core';
-import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
-import {execSync, spawnSync} from "child_process";
 import ChartValidatorService from "../services/validate.js";
 import HelmManagerService from "../services/helm.js";
 

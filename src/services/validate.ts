@@ -17,7 +17,11 @@ export default class ChartValidatorService extends BaseService {
     this.toValidate = toValidate;
   }
 
-  async validate(): Promise<ServiceResponse<any>> {
+  public async extendValidation() {
+
+  }
+
+  public async validate(): Promise<ServiceResponse<any>> {
     const capabilities = await this.findCapabilities();
     const hooks = await this.findHooks();
     const dependencies = await this.findDependencies();
