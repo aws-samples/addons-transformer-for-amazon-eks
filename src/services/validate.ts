@@ -17,7 +17,7 @@ export default class ChartValidatorService extends BaseService {
     this.toValidate = toValidate;
   }
 
-  public async extendValidation() {
+  public async extendedValidation(localFile?: string) {
 
   }
 
@@ -26,59 +26,49 @@ export default class ChartValidatorService extends BaseService {
     const hooks = await this.findHooks();
     const dependencies = await this.findDependencies();
 
-    let response: ServiceResponse<string>;
+    let response: ServiceResponse<string> = {
+      success: false,
+      body: "",
+      error: {
+        input: "",
+        options: {
+          code: "",
+          exit: 5
+        }
+      }
+    };
 
     if (capabilities.success && hooks.success && dependencies.success) {
       response = {
         success: true,
         body: "Addon pre-validation complete"
       }
-    } else if (!capabilities.success) {
+      return response;
+    }
+    if (!capabilities.success) {
       response = {
         success: false,
-        body: "Addon pre-validation failed",
+        body: response.body + "Capabilities detected.",
         error: {
-          input: capabilities.error?.input!,
-          options: {
-            code: capabilities.error?.options?.code,
-            exit: 1
-          }
+          input: response.error?.input + " " + capabilities.error?.input!,
         }
       }
-    } else if (!hooks.success) {
+    }
+    if (!hooks.success) {
       response = {
         success: false,
-        body: "Addon pre-validation failed",
+        body: response.body + " \n" + "  * Hooks detected.",
         error: {
-          input: hooks.error?.input!,
-          options: {
-            code: hooks.error?.options?.code,
-            exit: 1
-          }
+          input: response.error?.input + " " + hooks.error?.input!,
         }
       }
-    } else if (!dependencies.success) {
+    }
+    if (!dependencies.success) {
       response = {
         success: false,
-        body: "Addon pre-validation failed",
+        body: response.body + " \n" + "  * Dependencies detected.",
         error: {
-          input: dependencies.error?.input!,
-          options: {
-            code: dependencies.error?.options?.code,
-            exit: 1
-          }
-        }
-      }
-    } else {
-      response = {
-        success: false,
-        body: "Addon pre-validation failed",
-        error: {
-          input: "Unknown error",
-          options: {
-            code: "E505",
-            exit: 1
-          }
+          input: response.error?.input + " " + dependencies.error?.input!,
         }
       }
     }
