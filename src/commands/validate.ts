@@ -47,6 +47,7 @@ export default class Validate extends SleekCommand {
     protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl'], char:'p'}),
     version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
     addonName: Flags.string({description: "Name of the addon"}),
+    skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
   }
 
@@ -67,6 +68,7 @@ export default class Validate extends SleekCommand {
     if (flags.addonName) {
       addonName = flags.addonName;
     }
+    const skipHooksValidation = flags.skipHooks;
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
       const repoUrlInput = args.helmUrl || flags.helmUrl;
@@ -103,7 +105,7 @@ export default class Validate extends SleekCommand {
     const chartPath = await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
 
     const validatorService = new ChartValidatorService(this, chartPath);
-    const validatorServiceResp = await validatorService.validate();
+    const validatorServiceResp = await validatorService.validate({ skipHooksValidation });
 
     this.log(validatorServiceResp.body);
 
