@@ -3,10 +3,11 @@ import fs from "node:fs";
 import CreateIssueOpt from "../commandOpts/create-issue.js";
 import {SleekCommand} from "../sleek-command.js";
 import CreateIssueService from "../services/create-issue.js";
-import {IssueData} from "../types/issue.js";
+import {ChartAutoCorrection, IssueData} from "../types/issue.js";
 import SchemaValidationService from "../services/schemaValidation.js";
 import ChartValidatorService from "../services/validate.js";
 import {execSync} from "child_process";
+import {ValidateOptions} from "../types/validate.js";
 
 
 export class CreateIssue extends SleekCommand {
@@ -36,7 +37,10 @@ export class CreateIssue extends SleekCommand {
         const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
         const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
         const validatorService = new ChartValidatorService(this, charPath);
-        const validatorServiceResp = await validatorService.validate();
+        const validateOps: ValidateOptions ={
+            skipHooksValidation: inputDataParsed.chartAutoCorrection.includes(ChartAutoCorrection.hooks)
+        }
+        const validatorServiceResp = await validatorService.validate(validateOps);
         // todo: if validatorService exits when errors, not need to handle here !success
         if(!validatorServiceResp.success){
             this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )

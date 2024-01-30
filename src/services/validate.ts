@@ -7,6 +7,16 @@ import {spawnSync} from "child_process";
 import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
+import {ValidateOptions} from "../types/validate.js";
+
+export const SuccessResponse:ServiceResponse<string> = {
+  success: true,
+};
+
+export const ValidationSkipped:ServiceResponse<string> = {
+  success: true,
+  body:'validation skipped'
+};
 
 export default class ChartValidatorService extends BaseService {
   // this will always be a local filepath
@@ -21,9 +31,9 @@ export default class ChartValidatorService extends BaseService {
 
   }
 
-  public async validate(): Promise<ServiceResponse<any>> {
+  public async validate(ops: ValidateOptions): Promise<ServiceResponse<any>> {
     const capabilities = await this.findCapabilities();
-    const hooks = await this.findHooks();
+    const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
 
     let response: ServiceResponse<string> = {
@@ -82,14 +92,10 @@ export default class ChartValidatorService extends BaseService {
       encoding: "utf-8"
     });
 
-    let response: ServiceResponse<string>;
-
     if (capabilities.stdout === "") {
-      response = {
-        success: true,
-      }
+      return SuccessResponse
     } else {
-      response = {
+      return  {
         success: false,
         body: "Unsupported system Capabilities are used in chart.",
         error: {
@@ -101,8 +107,6 @@ export default class ChartValidatorService extends BaseService {
         }
       }
     }
-
-    return response;
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
@@ -110,11 +114,9 @@ export default class ChartValidatorService extends BaseService {
 
     let response: ServiceResponse<string>;
     if (hooks.stdout === "") {
-      response = {
-        success: true,
-      }
+      return SuccessResponse
     } else {
-      response = {
+      return {
         success: false,
         body: "Unsupported system Hooks are used in chart.",
         error: {
@@ -126,8 +128,6 @@ export default class ChartValidatorService extends BaseService {
         }
       }
     }
-
-    return response;
   }
 
   private async findDependencies(): Promise<ServiceResponse<string>> {
@@ -150,11 +150,9 @@ export default class ChartValidatorService extends BaseService {
     const allDepsFiles = dependencies.every(dep => dep.includes('file://'));
 
     if (allDepsFiles) {
-      response = {
-        success: true,
-      }
+      return SuccessResponse
     } else {
-      response = {
+      return {
         success: false,
         body: "Not all dependencies reside in the main chart.",
         error: {
@@ -166,7 +164,5 @@ export default class ChartValidatorService extends BaseService {
         }
       }
     }
-
-    return response;
   }
 }
