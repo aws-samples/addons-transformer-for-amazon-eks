@@ -11,20 +11,7 @@ export default class HelmManagerService extends BaseService {
     const untarLocation = `./unzipped-${addonName}`;
     const pullCmd = `rm -rf ${untarLocation} && 
                              mkdir ${untarLocation} && 
-                             helm pull ${helmProtocol}://${helmProtocol} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null 2>&1`;
-    try {
-      execSync(pullCmd);
-    } catch (e) {
-      this.error(`Helm chart pull failed with error ${e}`);
-    }
-    return untarLocation;
-  }
-  public async pullAndUnzipChartV2(name:string, chartTag:string, url:string): Promise<string> {
-    const chartVersionFlag = !! chartTag ? `--version ${chartTag}`:''
-    const untarLocation = `./unzipped-${name}`;
-    const pullCmd = `rm -rf ${untarLocation} && 
-                             mkdir ${untarLocation} && 
-                             helm pull oci://${url} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null 2>&1`;
+                             helm pull ${helmProtocol}://${helmUrl} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null`;
     try {
       execSync(pullCmd);
     } catch (e) {
