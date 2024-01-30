@@ -53,7 +53,7 @@ USAGE
 <!-- commands -->
 * [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
 * [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
-* [`aws-sleek-transformer validate [HELMURL] [FILE]`](#aws-sleek-transformer-validate-helmurl-file)
+* [`aws-sleek-transformer validate [HELMURL]`](#aws-sleek-transformer-validate-helmurl)
 
 ## `aws-sleek-transformer create-issue FILE`
 
@@ -122,25 +122,29 @@ EXAMPLES
 
 _See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
-## `aws-sleek-transformer validate [HELMURL] [FILE]`
+## `aws-sleek-transformer validate [HELMURL]`
 
-Validates a given addon from the configuration provided through the 'configure' command
+Validates the addon after pulling it from the helm repository.
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [HELMURL] [FILE] [--file <value>] [--helmUrl <value>] [--addonName <value>]
+  $ aws-sleek-transformer validate [HELMURL] [-r <value> | [-f <value> | --helmUrl <value>] | ] [-p <value> | 
+    | ] [-v <value> | ] [--addonName <value>] [--skipHooks]
 
 ARGUMENTS
-  HELMURL  Helm URL of the addon
-  FILE     Path to add-on input file
+  HELMURL  Fully qualified Helm URL of the addon
 
 FLAGS
-  --addonName=<value>  Name of the addon
-  --file=<value>       Path to add-on input file
-  --helmUrl=<value>    Helm URL of the addon
+  -f, --file=<value>       Path to add-on input file
+  -p, --protocol=<value>   Protocol of the helm hosting to use
+  -r, --helmRepo=<value>   Helm repo of the addon
+  -v, --version=<value>    Version of the addon to validate
+      --addonName=<value>  Name of the addon
+      --helmUrl=<value>    Fully qualified URL of the Repo
+      --skipHooks          Skip helm hooks validation
 
 DESCRIPTION
-  Validates a given addon from the configuration provided through the 'configure' command
+  Validates the addon after pulling it from the helm repository.
 
 
   This performs pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static
@@ -153,6 +157,10 @@ DESCRIPTION
 
   It will perform a static validation on the device and then give you the option to submit it to the marketplace for
   runtime and further validation before it can be included in the EKS Console marketplace.
+
+  The command can accept two different formats of inputs:
+  * Fully qualified Helm URL to download
+  * Deconstructed URL that requires Protocol, Repo, and Version to pull
 
 
 EXAMPLES
