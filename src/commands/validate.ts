@@ -40,14 +40,14 @@ export default class Validate extends SleekCommand {
 
   static flags = {
     // todo check exclusive flags
-    file: Flags.string({description: "Path to add-on input file", exclusive: ['helmUrl']}), // or file or URL, full or bits
-    helmUrl: Flags.string({description: "Fully qualified URL of the Repo", exclusive: ['file']}),  // fully qualified URL of helm repo
-    helmRepo: Flags.string({description: "Helm repo of the addon", exclusive: ['file', 'helmUrl']}),  // construct it piecemeal
-    protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl']}),
-    version: Flags.string({description: "Version of the addon to validate", exclusive: ['file']}),
-    addonName: Flags.string({description: "Name of the addon"}),
-    extended: Flags.boolean({description: "Run extended validation", hidden: true}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
     // todo check Flags.url type
+    file: Flags.string({description: "Path to add-on input file", exclusive: ['helmUrl'], char:'f'}), // or file or URL, full or bits
+    helmUrl: Flags.string({description: "Fully qualified URL of the Repo", exclusive: ['file']}),  // fully qualified URL of helm repo
+    helmRepo: Flags.string({description: "Helm repo of the addon", exclusive: ['file', 'helmUrl'], char:'r'}),  // construct it piecemeal
+    protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl'], char:'p'}),
+    version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
+    addonName: Flags.string({description: "Name of the addon"}),
+    extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
   }
 
   static summary = "Validates the addon after pulling it from the helm repository.";
@@ -59,49 +59,49 @@ export default class Validate extends SleekCommand {
     // if file is given, validate based on the path
     // else, raise error stating one or the other arg/flag should be provided
     let repoProtocol, repoUrl, versionTag, addonName;
-
+    // uncomment for debugging purposes
+    // this.log('---')
+    // this.log(`>> args: ${JSON.stringify(args)}`)
+    // this.log(`>> flags: ${JSON.stringify(flags)}`)
+    // this.log('---')
     if (flags.addonName) {
       addonName = flags.addonName;
     }
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
-      repoUrl = args.helmUrl || flags.helmUrl;
-      const {protocol, host, port} = url.parse(repoUrl || ""); // todo: validate this works as expected
-
-      repoProtocol = protocol;
-      versionTag = port; // will never be falsy because the flag or arg validation
-      repoUrl = host; // ensure it works
+      const repoUrlInput = args.helmUrl || flags.helmUrl;
+      this.log(`Validating chart from url: ${repoUrlInput}`)
+      repoProtocol = this.getProtocolFromFullQualifiedUrl(repoUrlInput!);
+      repoUrl = this.getRepoFromFullChartUri(repoUrlInput!).substring(repoProtocol.length+3); // 3 == '://'.length
+      versionTag = this.getVersionTagFromChartUri(repoUrlInput!);
     } else if (
-      (args.helmUrl || flags.helmUrl) && (flags.helmRepo || flags.protocol || flags.version) || // base url + flags to override
+      (args.helmUrl || flags.helmUrl) && (flags.helmRepo || flags.protocol || flags.version) || // base url + flags to override // todo
       (flags.helmRepo && flags.protocol && flags.version) // all the url bits
     ) {
-      // JD get the base url from
-      // todo
-
+      repoProtocol = flags.protocol;
+      repoUrl = flags.helmRepo;
+      versionTag = flags.version;
+      this.log(`Validating chart from flags: ${repoProtocol}://${repoUrl}:${versionTag}`)
     } else if (flags.file) {
-      // JD
-      // schema validation
       const filePath = flags.file;
+      this.log(`Validating chart from input file ${filePath}`)
+      // schema validation
       const fileContents = fs.readFileSync(filePath, 'utf8');
       const schemaValidator = new SchemaValidationService(this);
       const data = await schemaValidator.validateInputFileSchema(fileContents);
-      const inputDataParsed = data.body as IssueData;
       // get url
+      const inputDataParsed = data.body as IssueData;
       const addonData = inputDataParsed.addon;
-      repoUrl = addonData.helmChartUrl;
       repoProtocol = addonData.helmChartUrlProtocol;
-      versionTag = this.getVersionTagFromUrl(addonData.helmChartUrl);
-      // pull and validate
+      repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
+      versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
     } else {
       this.error("Either a Helm URL or a file path should be provided");
     }
 
     const helmManager = new HelmManagerService(this);
-
     const chartPath = await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
 
-    // const chartPath = await helmManager.pullAndUnzipChartV2(addonData.name, chartTag, repoUrl, 'oci')
-    // const charPath = await pullHelmChart(addonData.name, chartTag, repo)
     const validatorService = new ChartValidatorService(this, chartPath);
     const validatorServiceResp = await validatorService.validate();
 
@@ -112,20 +112,15 @@ export default class Validate extends SleekCommand {
     }
   }
 
-  private getVersionTagFromUrl(helmChartUrl: string) {
+  private getProtocolFromFullQualifiedUrl(helmChartUrl: string) {
+    return helmChartUrl?.substring(0,helmChartUrl?.indexOf(':'))
+  }
+
+  private getRepoFromFullChartUri(helmChartUrl: string) {
+    return helmChartUrl.substring(0, helmChartUrl.lastIndexOf(':'));
+  }
+
+  private getVersionTagFromChartUri(helmChartUrl: string) {
     return helmChartUrl.lastIndexOf(':') ? `${helmChartUrl.substring(helmChartUrl.lastIndexOf(':') + 1)}` : '';
-  }
-
-  private async validateFile(filePath: string): Promise<void> {
-    const validator = new ChartValidatorService(this, filePath);
-    await validator.validate();
-  }
-
-  private async validateHelmChart(helmUrl: string, addonName: string): Promise<void> {
-    const helmManager = new HelmManagerService(this);
-
-    const untarLocation = await helmManager.pullAndUnzipChart(helmUrl, addonName);
-    const validator = new ChartValidatorService(this, untarLocation);
-    await validator.validate();
   }
 }
