@@ -42,7 +42,7 @@
     "/dist",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/elaramas/aws-sleek-transformer",
+  "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks",
   "main": "",
   "license": "MIT",
   "name": "aws-sleek-transformer",
@@ -53,22 +53,11 @@
     "topicSeparator": " ",
     "macos": {
       "identifier": "com.aws.sleek.cli"
-    },
-    "topics": {
-      "configure": {
-        "description": "Sets up the Sleek CLI to work with a given helm chart"
-      },
-      "validate": {
-        "description": "Validates the addons you want to validate"
-      },
-      "submit": {
-        "description": "Submits the addons to the marketplace team to place in the EKS console marketplace"
-      }
     }
   },
   "repository": "aws-samples/addons-transformer-for-amazon-eks",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && rsync -a -m --include='**/*.d.ts' --include='*/' --exclude='*' src/ dist/",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
