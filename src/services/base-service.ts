@@ -11,11 +11,11 @@ export abstract class BaseService {
   }
 
   public log(message?: string, ...args: any[]): void{
-    this.commandCaller.log(message, args)
+    this.commandCaller.log(message, ...args)
   }
 
   public logToStderr(message?: string, ...args: any[]): void{
-    this.commandCaller.logToStderr(message, args)
+    this.commandCaller.logToStderr(message, ...args)
   }
 
   public error(input: Error | string, options?: {
