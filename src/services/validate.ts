@@ -17,6 +17,19 @@ export const ValidationSkipped:ServiceResponse<string> = {
   success: true,
   body:'validation skipped'
 };
+export const ExtendValidationSuccess:ServiceResponse<string> = {
+  success: true,
+  body:'Extend validation to be implemented; SUCCESS'
+};
+export const ExtendValidationFail:ServiceResponse<string> = {
+  success: false,
+  error:{
+    input: 'Extend validation to be implemented; FAIL',
+    options:{
+      exit:2,
+    }
+  }
+};
 
 export default class ChartValidatorService extends BaseService {
   // this will always be a local filepath
@@ -27,8 +40,8 @@ export default class ChartValidatorService extends BaseService {
     this.toValidate = toValidate;
   }
 
-  public async extendedValidation(localFile?: string) {
-
+  public async extendedValidation(localFile?: string): Promise<ServiceResponse<any>> {
+    return ExtendValidationFail
   }
 
   public async validate(ops: ValidateOptions): Promise<ServiceResponse<any>> {

@@ -97,6 +97,7 @@ export default class Validate extends SleekCommand {
       repoProtocol = addonData.helmChartUrlProtocol;
       repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
+      addonName = inputDataParsed.addon.name;
     } else {
       this.error("Either a Helm URL or a file path should be provided");
     }
@@ -108,9 +109,16 @@ export default class Validate extends SleekCommand {
     const validatorServiceResp = await validatorService.validate({ skipHooksValidation });
 
     this.log(validatorServiceResp.body);
+    if(!validatorServiceResp.success){
+      this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )
+    }
 
     if (flags.extended) {
-      await validatorService.extendedValidation(flags.file);
+      const extendedValidatorServiceResp = await validatorService.extendedValidation(flags.file);
+      this.log(extendedValidatorServiceResp.body);
+      if(!extendedValidatorServiceResp.success){
+        this.error(extendedValidatorServiceResp.error?.input!, extendedValidatorServiceResp.error?.options )
+      }
     }
   }
 
