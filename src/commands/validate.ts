@@ -5,7 +5,6 @@ import HelmManagerService from "../services/helm.js";
 import fs from "node:fs";
 import SchemaValidationService from "../services/schemaValidation.js";
 import {IssueData} from "../types/issue.js";
-import * as url from "url";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -49,6 +48,7 @@ export default class Validate extends SleekCommand {
     addonName: Flags.string({description: "Name of the addon"}),
     skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
+    folder: Flags.string({description: "Path to the addon folder", hidden: true, char:'d', exclusive: ['file', 'helmUrl']}),  // internal and for partner users who would like to test against their local code
   }
 
   static summary = "Validates the addon after pulling it from the helm repository.";

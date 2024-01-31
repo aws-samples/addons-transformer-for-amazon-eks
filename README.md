@@ -22,6 +22,7 @@ Sleek Marketplace validator is solution provide pre-launch validations of the pa
 4. Performs static validations to find occurrences of:
     - `.Capabilities`
     - `helm.sh/hook`
+    - Dependencies external to the main chart
 5. Sends the addon and the report of the validation to the AWS Marketplace team to start getting the addon listed on the
   EKS console marketplace.
 
@@ -33,6 +34,7 @@ To implement this solution, you need the following prerequisites:
 * AWS CLI default profile should be configured to access your AWS Account.
 * [Node](https://nodejs.org/en/download/current/) version 18.12.1 or later.
 * [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
+* [Helm CLI](https://helm.sh/docs/intro/install/) to interact with helm charts. 
 
 
 # Usage

@@ -54,11 +54,13 @@ export default class ChartValidatorService extends BaseService {
         body: "Addon pre-validation complete"
       }
       return response;
+    } else {
+      response.body = "Addon pre-validation failed, reasons listed below: "
     }
     if (!capabilities.success) {
       response = {
         success: false,
-        body: response.body + "Capabilities detected.",
+        body: response.body + "\n" + "  * Capabilities detected.",
         error: {
           input: response.error?.input + " " + capabilities.error?.input!,
         }
@@ -67,7 +69,7 @@ export default class ChartValidatorService extends BaseService {
     if (!hooks.success) {
       response = {
         success: false,
-        body: response.body + " \n" + "  * Hooks detected.",
+        body: response.body + "\n" + "  * Hooks detected.",
         error: {
           input: response.error?.input + " " + hooks.error?.input!,
         }
@@ -76,7 +78,7 @@ export default class ChartValidatorService extends BaseService {
     if (!dependencies.success) {
       response = {
         success: false,
-        body: response.body + " \n" + "  * Dependencies detected.",
+        body: response.body + "\n" + "  * Dependencies detected.",
         error: {
           input: response.error?.input + " " + dependencies.error?.input!,
         }
@@ -112,7 +114,6 @@ export default class ChartValidatorService extends BaseService {
   private async findHooks(): Promise<ServiceResponse<string>> {
     const hooks = spawnSync('grep', ['-Rile', '".Hooks"', this.toValidate], {shell: true, encoding: "utf-8"});
 
-    let response: ServiceResponse<string>;
     if (hooks.stdout === "") {
       return SuccessResponse
     } else {

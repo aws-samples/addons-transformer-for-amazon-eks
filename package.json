@@ -57,7 +57,7 @@
   },
   "repository": "aws-samples/addons-transformer-for-amazon-eks",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b && rsync -a -m --include='**/*.d.ts' --include='*/' --exclude='*' src/ dist/",
+    "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
