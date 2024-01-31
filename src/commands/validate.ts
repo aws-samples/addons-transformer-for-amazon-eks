@@ -1,9 +1,10 @@
-import * as path from "path";
-import {Flags} from '@oclif/core';
-import select from "@inquirer/select";
+import {Args, Flags} from '@oclif/core';
 import {SleekCommand} from "../sleek-command.js";
-import {execSync, spawnSync} from "child_process";
-import {destructureAddonKey, getAddonKey, getCurrentAddons} from "../utils.js";
+import ChartValidatorService from "../services/validate.js";
+import HelmManagerService from "../services/helm.js";
+import fs from "node:fs";
+import SchemaValidationService from "../services/schemaValidation.js";
+import {IssueData} from "../types/issue.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -13,82 +14,115 @@ export default class Validate extends SleekCommand {
     Runs the static analysis to find occurrences of:
       * .Capabilities
       * helm.sh/hook
-    
-    This command requires the "configure" command to have been run, it needs:
-      * Helm URL
-    to be configured correctly.
+      * external helm dependencies
     
     It will perform a static validation on the device and then give you the option to submit it to the marketplace for
-    runtime and further validation before it can be included in the EKS Console marketplace. 
+    runtime and further validation before it can be included in the EKS Console marketplace.
+    
+    The command can accept two different formats of inputs:
+      * Fully qualified Helm URL to download
+      * Deconstructed URL that requires Protocol, Repo, and Version to pull
   `
 
   static examples = [
     '<%= config.bin %> <%= command.id %>',
   ]
 
-  static flags = {
-    addonName: Flags.string({description: "Name of the addon to validate"}),
-    addonVersion: Flags.string({description: "Version of the addon to validate"}),
+  static args = {
+    helmUrl: Args.string(
+      {
+        required: false,
+        description: "Fully qualified Helm URL of the addon"
+      }
+    ),
   }
 
-  static summary = "Validates a given addon from the configuration provided through the 'configure' command";
+  static flags = {
+    // todo check exclusive flags
+    // todo check Flags.url type
+    file: Flags.string({description: "Path to add-on input file", exclusive: ['helmUrl'], char:'f'}), // or file or URL, full or bits
+    helmUrl: Flags.string({description: "Fully qualified URL of the Repo", exclusive: ['file']}),  // fully qualified URL of helm repo
+    helmRepo: Flags.string({description: "Helm repo of the addon", exclusive: ['file', 'helmUrl'], char:'r'}),  // construct it piecemeal
+    protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl'], char:'p'}),
+    version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
+    addonName: Flags.string({description: "Name of the addon"}),
+    skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
+    extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
+    folder: Flags.string({description: "Path to the addon folder", hidden: true, char:'d', exclusive: ['file', 'helmUrl']}),  // internal and for partner users who would like to test against their local code
+  }
+
+  static summary = "Validates the addon after pulling it from the helm repository.";
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Validate);
 
-    let addonKey;
-
-    // if addon name and version are not provided, prompt the user
-    if (!flags.addonName || !flags.addonVersion) {
-      // fetch pre-existing configs from  ~/.sleek/config.json
-      const currentConf = this.configuration;
-      const addons = getCurrentAddons(currentConf);
-
-      const selected: { name: string,  version: string } = await select({
-        message: 'Which addon would you like to validate the configuration for?',
-        choices: addons
-      });
-
-      addonKey = selected.name;
-    } else {
-      addonKey = getAddonKey(flags.addonName, flags.addonVersion);
+    // if helmURL is given, download the chart then validate
+    // if file is given, validate based on the path
+    // else, raise error stating one or the other arg/flag should be provided
+    let repoProtocol, repoUrl, versionTag, addonName;
+    // uncomment for debugging purposes
+    // this.log('---')
+    // this.log(`>> args: ${JSON.stringify(args)}`)
+    // this.log(`>> flags: ${JSON.stringify(flags)}`)
+    // this.log('---')
+    if (flags.addonName) {
+      addonName = flags.addonName;
     }
-    const chart = path.resolve(await this.pullHelmChart(addonKey));
-
-    // turns out using grep is the best way to do it lmao
-    // rip all the Windows users
-    const findCapabilities = spawnSync('grep', ['-Rile', '".Capabilities"', chart], { shell: true });
-    const findHooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', chart], { shell: true });
-
-    if (findCapabilities.stdout.toString() == "" && findHooks.stdout.toString() == "") {
-      this.log('No occurrences of .Capabilities or helm.sh/hook found in Helm chart');
-
-      this.configuration[addonKey].validated = false;
+    const skipHooksValidation = flags.skipHooks;
+    if (args.helmUrl || flags.helmUrl) {
+      // JD decompose url, pull  and validate
+      const repoUrlInput = args.helmUrl || flags.helmUrl;
+      this.log(`Validating chart from url: ${repoUrlInput}`)
+      repoProtocol = this.getProtocolFromFullQualifiedUrl(repoUrlInput!);
+      repoUrl = this.getRepoFromFullChartUri(repoUrlInput!).substring(repoProtocol.length+3); // 3 == '://'.length
+      versionTag = this.getVersionTagFromChartUri(repoUrlInput!);
+    } else if (
+      (args.helmUrl || flags.helmUrl) && (flags.helmRepo || flags.protocol || flags.version) || // base url + flags to override // todo
+      (flags.helmRepo && flags.protocol && flags.version) // all the url bits
+    ) {
+      repoProtocol = flags.protocol;
+      repoUrl = flags.helmRepo;
+      versionTag = flags.version;
+      this.log(`Validating chart from flags: ${repoProtocol}://${repoUrl}:${versionTag}`)
+    } else if (flags.file) {
+      const filePath = flags.file;
+      this.log(`Validating chart from input file ${filePath}`)
+      // schema validation
+      const fileContents = fs.readFileSync(filePath, 'utf8');
+      const schemaValidator = new SchemaValidationService(this);
+      const data = await schemaValidator.validateInputFileSchema(fileContents);
+      // get url
+      const inputDataParsed = data.body as IssueData;
+      const addonData = inputDataParsed.addon;
+      repoProtocol = addonData.helmChartUrlProtocol;
+      repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
+      versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
     } else {
-      this.log("Found .Capabilities or helm.sh/hook in helm chart.");
+      this.error("Either a Helm URL or a file path should be provided");
+    }
 
-      this.configuration[addonKey].validated = true;
+    const helmManager = new HelmManagerService(this);
+    const chartPath = await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
+
+    const validatorService = new ChartValidatorService(this, chartPath);
+    const validatorServiceResp = await validatorService.validate({ skipHooksValidation });
+
+    this.log(validatorServiceResp.body);
+
+    if (flags.extended) {
+      await validatorService.extendedValidation(flags.file);
     }
   }
 
-  private async pullHelmChart(addonKey: string): Promise<string> {
-    const addonInfo = destructureAddonKey(addonKey);
+  private getProtocolFromFullQualifiedUrl(helmChartUrl: string) {
+    return helmChartUrl?.substring(0,helmChartUrl?.indexOf(':'))
+  }
 
-    const currentConf = this.configuration;
-    const currentAddon = currentConf[addonKey];
+  private getRepoFromFullChartUri(helmChartUrl: string) {
+    return helmChartUrl.substring(0, helmChartUrl.lastIndexOf(':'));
+  }
 
-    const untarLocation = `./unzipped-${addonInfo.name}`;
-    const pullCmd = `rm -rf ${untarLocation} && 
-                             mkdir ${untarLocation} && 
-                             helm pull ${currentAddon.helmUrl} --version ${addonInfo.version} --untar --untardir ${untarLocation}`;
-    try {
-      const result = execSync(pullCmd);
-      this.log(result.toString());
-      this.log("Helm Chart pull complete.");
-    } catch (e) {
-      this.error(`Helm chart pull failed with error ${e}`);
-    }
-
-    return untarLocation;
+  private getVersionTagFromChartUri(helmChartUrl: string) {
+    return helmChartUrl.lastIndexOf(':') ? `${helmChartUrl.substring(helmChartUrl.lastIndexOf(':') + 1)}` : '';
   }
 }

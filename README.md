@@ -1,5 +1,5 @@
-AWS Sleek Transformer CLI
-=========================
+Addons Transformer CLI for Amazon EKS
+=====================================
 
 <!-- toc -->
 * [Usage](#usage)
@@ -22,6 +22,7 @@ Sleek Marketplace validator is solution provide pre-launch validations of the pa
 4. Performs static validations to find occurrences of:
     - `.Capabilities`
     - `helm.sh/hook`
+    - Dependencies external to the main chart
 5. Sends the addon and the report of the validation to the AWS Marketplace team to start getting the addon listed on the
   EKS console marketplace.
 
@@ -33,6 +34,7 @@ To implement this solution, you need the following prerequisites:
 * AWS CLI default profile should be configured to access your AWS Account.
 * [Node](https://nodejs.org/en/download/current/) version 18.12.1 or later.
 * [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
+* [Helm CLI](https://helm.sh/docs/intro/install/) to interact with helm charts. 
 
 
 # Usage
@@ -51,75 +53,53 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`aws-sleek-transformer configure`](#aws-sleek-transformer-configure)
+* [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
 * [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
-* [`aws-sleek-transformer validate`](#aws-sleek-transformer-validate)
+* [`aws-sleek-transformer validate [HELMURL]`](#aws-sleek-transformer-validate-helmurl)
 
-## `aws-sleek-transformer configure`
+## `aws-sleek-transformer create-issue FILE`
 
-Sets up the Sleek CLI to work with a given helm chart
+Creates a Github Issue based in the input file
 
 ```
 USAGE
-  $ aws-sleek-transformer configure [--addonName <value>] [--addonVersion <value>] [--helmUrl <value>]
-    [--marketplaceId <value>] [--namespace <value>] [--region <value>]
+  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
+
+ARGUMENTS
+  FILE  Path to add-on input file
 
 FLAGS
-  --addonName=<value>      Name of the addon
-  --addonVersion=<value>   Version of the addon
-  --helmUrl=<value>        Helm URL of the addon
-  --marketplaceId=<value>  Marketplace AWS Account ID
-  --namespace=<value>      Namespace of the addon
-  --region=<value>         AWS Region
+  -d, --dryRun        Runs all checks without creating the issue
+      --file=<value>  Path to add-on input file
 
 DESCRIPTION
-  Sets up the Sleek CLI to work with a given helm chart
+  Creates a Github Issue based in the input file
 
 
-  Extracts information from the environment to populate information required for the Sleek CLI to function. If
-  certain information is not found, prompts the user for it and asks them to validate the information extracted from
-  the environment.
+  This creates a Github Issue on the Sleek repository.
 
-  This information is stored ~/.sleek/config.json
-  Each of these configurations can be edited by passing the exact addon name and version.
+  It will validate the input file to match the schema
 
-  The CLI requires the following:
-  * AWS Region
-  * Marketplace AWS Account ID
-  * Addon Name
-  * Addon Version
-  * Addon Helm Url
-  * Deployment Namespace
-
-  Each of these can be passed as flags to this command with the following flags:
-  * --region
-  * --marketplace_id
-  * --addon_name
-  * --addon_version
-  * --helm_url
-  * --namespace
+  TODO:
+  * Run validation before creating the issue
 
 
 EXAMPLES
-  $ aws-sleek-transformer configure
+  $ aws-sleek-transformer create-issue filename
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/configure.ts)_
+_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
 
 ## `aws-sleek-transformer submit`
 
-Uses the pre-existing configurations to submit the addon to the AWS marketplace
+Submit the addon to the AWS marketplace
 
 ```
 USAGE
-  $ aws-sleek-transformer submit [--addonName <value>] [--addonVersion <value>]
-
-FLAGS
-  --addonName=<value>     Name of the addon to submit
-  --addonVersion=<value>  Version of the addon to submit
+  $ aws-sleek-transformer submit
 
 DESCRIPTION
-  Uses the pre-existing configurations to submit the addon to the AWS marketplace
+  Submit the addon to the AWS marketplace
 
 
   Sends the selected addon, version to the marketplace for final submission and upload it to Project Sleek.
@@ -142,22 +122,31 @@ EXAMPLES
   $ aws-sleek-transformer submit
 ```
 
-_See code: [src/commands/submit.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/submit.ts)_
+_See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
-## `aws-sleek-transformer validate`
+## `aws-sleek-transformer validate [HELMURL]`
 
-Validates a given addon from the configuration provided through the 'configure' command
+Validates the addon after pulling it from the helm repository.
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [--addonName <value>] [--addonVersion <value>]
+  $ aws-sleek-transformer validate [HELMURL] [-r <value> | [-f <value> | --helmUrl <value>] | ] [-p <value> | 
+    | ] [-v <value> | ] [--addonName <value>] [--skipHooks]
+
+ARGUMENTS
+  HELMURL  Fully qualified Helm URL of the addon
 
 FLAGS
-  --addonName=<value>     Name of the addon to validate
-  --addonVersion=<value>  Version of the addon to validate
+  -f, --file=<value>       Path to add-on input file
+  -p, --protocol=<value>   Protocol of the helm hosting to use
+  -r, --helmRepo=<value>   Helm repo of the addon
+  -v, --version=<value>    Version of the addon to validate
+      --addonName=<value>  Name of the addon
+      --helmUrl=<value>    Fully qualified URL of the Repo
+      --skipHooks          Skip helm hooks validation
 
 DESCRIPTION
-  Validates a given addon from the configuration provided through the 'configure' command
+  Validates the addon after pulling it from the helm repository.
 
 
   This performs pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static
@@ -166,18 +155,19 @@ DESCRIPTION
   Runs the static analysis to find occurrences of:
   * .Capabilities
   * helm.sh/hook
-
-  This command requires the "configure" command to have been run, it needs:
-  * Helm URL
-  to be configured correctly.
+  * external helm dependencies
 
   It will perform a static validation on the device and then give you the option to submit it to the marketplace for
   runtime and further validation before it can be included in the EKS Console marketplace.
+
+  The command can accept two different formats of inputs:
+  * Fully qualified Helm URL to download
+  * Deconstructed URL that requires Protocol, Repo, and Version to pull
 
 
 EXAMPLES
   $ aws-sleek-transformer validate
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/elaramas/aws-sleek-transformer/blob/v0.0.1/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->

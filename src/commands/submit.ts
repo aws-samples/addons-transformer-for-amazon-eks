@@ -1,7 +1,4 @@
-import { Flags } from '@oclif/core'
-import select from "@inquirer/select";
 import {SleekCommand} from "../sleek-command.js";
-import {getAddonKey, getCurrentAddons} from "../utils.js";
 
 export default class Submit extends SleekCommand {
 
@@ -27,31 +24,14 @@ export default class Submit extends SleekCommand {
   ]
 
   static flags = {
-    addonName: Flags.string({description: "Name of the addon to submit"}),
-    addonVersion: Flags.string({description: "Version of the addon to submit"}),
   }
 
-  static summary = "Uses the pre-existing configurations to submit the addon to the AWS marketplace"
+  static summary = "Submit the addon to the AWS marketplace"
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Submit);
 
-    let addonKey;
-
-    // if addon name and version are not provided, prompt the user
-    if (!flags.addonName || !flags.addonVersion) {
-      // fetch pre-existing configs from  ~/.sleek/config.json
-      const currentConf = this.configuration;
-      const addons = getCurrentAddons(currentConf);
-
-      const selected: { name: string,  version: string } = await select({
-        message: 'Which addon would you like to submit to the marketplace?',
-        choices: addons
-      });
-      addonKey = getAddonKey(selected.name, selected.version);
-    } else {
-      addonKey = getAddonKey(flags.addonName, flags.addonVersion);
-    }
+    // TODO: Figure out the submit command
 
     // figure out how to submit to the marketplace
   }
