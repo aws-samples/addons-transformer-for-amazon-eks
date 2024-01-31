@@ -25,11 +25,10 @@ export default class CreateIssueService extends BaseService {
         };
 
         const octokit = new Octokit(octokitOptions)
-        const octokitResponse = await octokit.request('POST /repos/{owner}/{repo}/issues', createIssueRequest);
-        if (octokitResponse.status !== 201) {
-            this.error(`Error creating issue on ${owner}/${repo} (${octokitResponse.status})`, {exit: 1})
-        }
-        return {success: true, body: octokitResponse}
+        const octokitResponsePromise = octokit.request('POST /repos/{owner}/{repo}/issues', createIssueRequest);
+        return octokitResponsePromise
+            .then((response)=> {return {success: true, body: response}})
+            .catch((error)=>{this.error(`YY ${error}`)})
     }
 }
 
