@@ -48,6 +48,8 @@ export default class ChartValidatorService extends BaseService {
     const capabilities = await this.findCapabilities();
     const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
+    const lookups = await this.findLookups();
+    const releaseObjs = await this.findReleases();
 
     let response: ServiceResponse<string> = {
       success: false,
@@ -173,6 +175,46 @@ export default class ChartValidatorService extends BaseService {
           input: dependencies.toString(),
           options: {
             code: "E503",
+            exit: 1
+          }
+        }
+      }
+    }
+  }
+
+  private async findLookups(): Promise<ServiceResponse<string>> {
+    const grepLookups = spawnSync('grep', ['-Rile', '"{{\s*-\s*lookup\s*\(\s*"([^"]+)"\s*,\s*"([^"]+)"\s*-\s*}}"', this.toValidate], {shell: true, encoding: "utf-8"});
+
+    if (grepLookups.stdout === "") {
+      return SuccessResponse
+    } else {
+      return {
+        success: false,
+        body: "Unsupported system Lookups are used in chart.",
+        error: {
+          input: grepLookups.stdout,
+          options: {
+            code: "E504",
+            exit: 1
+          }
+        }
+      }
+    }
+  }
+
+  private async findReleases(): Promise<ServiceResponse<string>> {
+    const grepReleases = spawnSync('grep', { shell: true, encoding: "utf-8" });
+
+    if (grepReleases.stdout === "") {
+      return SuccessResponse
+    } else {
+      return {
+        success: false,
+        body: "Unsupported Releases are used in chart.",
+        error: {
+          input: grepReleases.stdout,
+          options: {
+            code: "E505",
             exit: 1
           }
         }
