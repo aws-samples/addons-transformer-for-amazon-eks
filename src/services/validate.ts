@@ -203,7 +203,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findReleases(): Promise<ServiceResponse<string>> {
-    const grepReleases = spawnSync('grep', { shell: true, encoding: "utf-8" });
+    const grepReleases = spawnSync('grep',{ shell: true, encoding: "utf-8" });
 
     if (grepReleases.stdout === "") {
       return SuccessResponse

@@ -72,8 +72,5 @@
   ],
   "types": "dist/index.d.ts",
   "exports": "./lib/index.js",
-  "type": "module",
-  "publishConfig": {
-    "registry": "http://localhost:4873"
-  }
+  "type": "module"
 }
