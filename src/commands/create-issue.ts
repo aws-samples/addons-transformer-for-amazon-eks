@@ -38,7 +38,7 @@ export class CreateIssue extends SleekCommand {
         const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
         const validatorService = new ChartValidatorService(this, charPath);
         const validateOps: ValidateOptions ={
-            skipHooksValidation: inputDataParsed.chartAutoCorrection.includes(ChartAutoCorrection.hooks)
+            skipHooksValidation: inputDataParsed.chartAutoCorrection?.includes(ChartAutoCorrection.hooks)
         }
         const validatorServiceResp = await validatorService.validate(validateOps);
         // todo: if validatorService exits when errors, not need to handle here !success
