@@ -4,7 +4,7 @@ import ChartValidatorService from "../services/validate.js";
 import HelmManagerService from "../services/helm.js";
 import fs from "node:fs";
 import SchemaValidationService from "../services/schemaValidation.js";
-import {IssueData} from "../types/issue.js";
+import {ChartAutoCorrection, IssueData} from "../types/issue.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -68,7 +68,7 @@ export default class Validate extends SleekCommand {
     if (flags.addonName) {
       addonName = flags.addonName;
     }
-    const skipHooksValidation = flags.skipHooks;
+    let skipHooksValidation = flags.skipHooks;
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
       const repoUrlInput = args.helmUrl || flags.helmUrl;
@@ -98,6 +98,7 @@ export default class Validate extends SleekCommand {
       repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
       addonName = inputDataParsed.addon.name;
+      skipHooksValidation =  inputDataParsed.chartAutoCorrection?.includes(ChartAutoCorrection.hooks);
     } else {
       this.error("Either a Helm URL or a file path should be provided");
     }
