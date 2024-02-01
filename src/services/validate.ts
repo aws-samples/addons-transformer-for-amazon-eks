@@ -127,7 +127,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rile', '".Hooks"', this.toValidate], {shell: true, encoding: "utf-8"});
+    const hooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
 
     if (hooks.stdout === "") {
       return SuccessResponse
