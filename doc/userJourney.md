@@ -10,6 +10,9 @@
 * Vendor access to the helm repository
 * Helm chart and images shared with the operator
 
+## Workflow
+![flow-diagram.jpg](img/flow-diagram.jpg)
+
 ## Guide
 1. Install the aws-sleek-transformer cli following the instructions in the tool repo: https://github.com/aws-samples/addons-transformer-for-amazon-eks
 2. Export a GitHub access token with 'repo' permissions for the account shared with the operator team. Token can be created at https://github.com/settings/tokens
@@ -30,3 +33,10 @@ The onboarding process supports the automatic removal from the charts of the  fe
 5. The vendor can see the progress in the issue and the other GitHub artefacts: action execution and pull request created
 
 6. Once all tests are correct, the generated assets will be added to the internal pull request and merged in the onboarding repo making them available to the vendor
+
+## TODO
+- [ ] Overview
+- [ ] Who is this meant for
+- [ ] All disclaimers
+- [ ] SLAs
+- [ ] Glossary (if any) & Key Concepts
