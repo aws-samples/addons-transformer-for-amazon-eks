@@ -98,7 +98,7 @@ export default class Validate extends SleekCommand {
       repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
       addonName = inputDataParsed.addon.name;
-      skipHooksValidation =  inputDataParsed.chartAutoCorrection?.includes(ChartAutoCorrection.hooks);
+      skipHooksValidation =  inputDataParsed.chartAutoCorrection?.hooks;
     } else {
       this.error("Either a Helm URL or a file path should be provided");
     }
