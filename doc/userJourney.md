@@ -33,3 +33,10 @@ The onboarding process supports the automatic removal from the charts of the  fe
 5. The vendor can see the progress in the issue and the other GitHub artefacts: action execution and pull request created
 
 6. Once all tests are correct, the generated assets will be added to the internal pull request and merged in the onboarding repo making them available to the vendor
+
+## TODO
+- [ ] Overview
+- [ ] Who is this meant for
+- [ ] All disclaimers
+- [ ] SLAs
+- [ ] Glossary (if any) & Key Concepts
