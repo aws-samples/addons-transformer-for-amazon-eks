@@ -10,6 +10,9 @@
 * Vendor access to the helm repository
 * Helm chart and images shared with the operator
 
+## Workflow
+![flow-diagram.jpg](img/flow-diagram.jpg)
+
 ## Guide
 1. Install the aws-sleek-transformer cli following the instructions in the tool repo: https://github.com/aws-samples/addons-transformer-for-amazon-eks
 2. Export a GitHub access token with 'repo' permissions for the account shared with the operator team. Token can be created at https://github.com/settings/tokens
