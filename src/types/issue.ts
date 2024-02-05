@@ -5,13 +5,15 @@ export type AddonData = {
     helmChartUrlProtocol: string,
     containerImagesUrls: string[],
 };
-export enum ChartAutoCorrection {
-    hooks = 'hooks',
-    releaseService = 'releaseService',
+
+export type ChartAutoCorrection = {
+    hooks:boolean,
+    capabilities:boolean
+    releaseService:boolean
 }
 
 export type IssueData = {
     addon: AddonData;
     sellerMarketPlaceAlias: string,
-    chartAutoCorrection: ChartAutoCorrection[]
+    chartAutoCorrection: ChartAutoCorrection
 };
