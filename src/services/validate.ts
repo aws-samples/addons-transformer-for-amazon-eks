@@ -23,6 +23,7 @@ export const ExtendValidationSuccess:ServiceResponse<string> = {
 };
 export const ExtendValidationFail:ServiceResponse<string> = {
   success: false,
+  body:'Extend validation to be implemented; FAIL',
   error:{
     input: 'Extend validation to be implemented; FAIL',
     options:{
@@ -48,7 +49,9 @@ export default class ChartValidatorService extends BaseService {
     const capabilities = await this.findCapabilities();
     const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
+    const unsupportedReleaseObjects =  await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
 
+    const allValidation = [capabilities, hooks, dependencies, unsupportedReleaseObjects]
     let response: ServiceResponse<string> = {
       success: false,
       body: "",
@@ -61,42 +64,27 @@ export default class ChartValidatorService extends BaseService {
       }
     };
 
-    if (capabilities.success && hooks.success && dependencies.success) {
+    if (allValidation.every(validation=> validation.success)) {
       response = {
         success: true,
         body: "Addon pre-validation complete"
       }
       return response;
-    } else {
-      response.body = "Addon pre-validation failed, reasons listed below: "
     }
-    if (!capabilities.success) {
-      response = {
-        success: false,
-        body: response.body + "\n" + "  * Capabilities detected.",
-        error: {
-          input: response.error?.input + " " + capabilities.error?.input!,
-        }
-      }
-    }
-    if (!hooks.success) {
-      response = {
-        success: false,
-        body: response.body + "\n" + "  * Hooks detected.",
-        error: {
-          input: response.error?.input + " " + hooks.error?.input!,
-        }
-      }
-    }
-    if (!dependencies.success) {
-      response = {
-        success: false,
-        body: response.body + "\n" + "  * Dependencies detected.",
-        error: {
-          input: response.error?.input + " " + dependencies.error?.input!,
-        }
-      }
-    }
+
+    // Failure scenarios:
+    response.body = "Addon pre-validation failed, reasons listed below: "
+    allValidation
+        .filter(validation=>!validation.success) // per each one of the failures
+        .map(validation=> {
+          response = {
+            success: false,
+            body: `${response.body} \n  * ${validation.body}`,
+            error: {
+              input: `${response.error?.input}  ${validation.error?.input!}`,
+            }
+          }
+        })
 
     return response;
   }
@@ -173,6 +161,32 @@ export default class ChartValidatorService extends BaseService {
           input: dependencies.toString(),
           options: {
             code: "E503",
+            exit: 1
+          }
+        }
+      }
+    }
+  }
+
+  private async findUnsupportedReleaseObject(skipReleaseService: boolean): Promise<ServiceResponse<string>> {
+    // beta guide 6.1.b) All Release objects (except .Name and .Namespace) are not supported
+    const unsupportedReleaseObjectsRegex = skipReleaseService ?
+        "'.Release.[Name|Namespace|Service]'":
+        "'.Release.[Name|Namespace]'";
+
+    const allReleaseObjects = spawnSync('grep', ['-r', '.Release.'], {shell: true, encoding: "utf-8"});
+    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex], {shell: true, encoding: "utf-8", input: allReleaseObjects.stdout});
+
+    if (unsupportedReleaseObjects.stdout === "") {
+      return SuccessResponse
+    } else {
+      return {
+        success: false,
+        body: "Unsupported release objects are used in chart.",
+        error: {
+          input: unsupportedReleaseObjects.stdout,
+          options: {
+            code: "E504",
             exit: 1
           }
         }
