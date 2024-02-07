@@ -101,6 +101,7 @@ export default class Validate extends SleekCommand {
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
       addonName = inputDataParsed.addon.name;
       skipHooksValidation =  inputDataParsed.chartAutoCorrection?.hooks;
+      skipReleaseService =  inputDataParsed.chartAutoCorrection?.releaseService;
     } else if(flags.directory){
       this.log(`Validating chart from input directory ${flags.directory}`)
     } else {
