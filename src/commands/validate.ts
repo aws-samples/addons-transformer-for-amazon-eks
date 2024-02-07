@@ -49,7 +49,7 @@ export default class Validate extends SleekCommand {
     addonName: Flags.string({description: "Name of the addon"}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
     skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
-    skipResourceService: Flags.boolean({description: "Skip .Release.Service appearances", default:false}),
+    skipReleaseService: Flags.boolean({description: "Skip .Release.Service appearances", default:false}),
   }
 
   static summary = "Validates the addon after pulling it from the helm repository.";
@@ -70,7 +70,7 @@ export default class Validate extends SleekCommand {
       addonName = flags.addonName;
     }
     let skipHooksValidation = flags.skipHooks;
-    let skipReleaseService = flags.skipResourceService;
+    let skipReleaseService = flags.skipReleaseService;
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
       const repoUrlInput = args.helmUrl || flags.helmUrl;
