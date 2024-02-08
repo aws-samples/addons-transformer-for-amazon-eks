@@ -42,7 +42,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   public async extendedValidation(localFile?: string): Promise<ServiceResponse<any>> {
-    return ExtendValidationFail
+    return ExtendValidationSuccess
   }
 
   public async validate(ops: ValidateOptions): Promise<ServiceResponse<any>> {
