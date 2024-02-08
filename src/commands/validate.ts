@@ -4,7 +4,7 @@ import ChartValidatorService from "../services/validate.js";
 import HelmManagerService from "../services/helm.js";
 import fs from "node:fs";
 import SchemaValidationService from "../services/schemaValidation.js";
-import {ChartAutoCorrection, IssueData} from "../types/issue.js";
+import {IssueData} from "../types/issue.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -41,14 +41,15 @@ export default class Validate extends SleekCommand {
     // todo check exclusive flags
     // todo check Flags.url type
     file: Flags.string({description: "Path to add-on input file", exclusive: ['helmUrl'], char:'f'}), // or file or URL, full or bits
+    directory: Flags.string({description: "Path to the addon folder", hidden: true, char:'d', exclusive: ['file', 'helmUrl']}),  // internal and for partner users who would like to test against their local code
     helmUrl: Flags.string({description: "Fully qualified URL of the Repo", exclusive: ['file']}),  // fully qualified URL of helm repo
     helmRepo: Flags.string({description: "Helm repo of the addon", exclusive: ['file', 'helmUrl'], char:'r'}),  // construct it piecemeal
     protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl'], char:'p'}),
     version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
     addonName: Flags.string({description: "Name of the addon"}),
-    skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
-    folder: Flags.string({description: "Path to the addon folder", hidden: true, char:'d', exclusive: ['file', 'helmUrl']}),  // internal and for partner users who would like to test against their local code
+    skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
+    skipReleaseService: Flags.boolean({description: "Skip .Release.Service occurrences", default:false}),
   }
 
   static summary = "Validates the addon after pulling it from the helm repository.";
@@ -69,6 +70,7 @@ export default class Validate extends SleekCommand {
       addonName = flags.addonName;
     }
     let skipHooksValidation = flags.skipHooks;
+    let skipReleaseService = flags.skipReleaseService;
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
       const repoUrlInput = args.helmUrl || flags.helmUrl;
@@ -99,15 +101,20 @@ export default class Validate extends SleekCommand {
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
       addonName = inputDataParsed.addon.name;
       skipHooksValidation =  inputDataParsed.chartAutoCorrection?.hooks;
+      skipReleaseService =  inputDataParsed.chartAutoCorrection?.releaseService;
+    } else if(flags.directory){
+      this.log(`Validating chart from input directory ${flags.directory}`)
     } else {
       this.error("Either a Helm URL or a file path should be provided");
     }
 
     const helmManager = new HelmManagerService(this);
-    const chartPath = await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
+    const chartPath = !! flags.directory ?
+        flags.directory:
+        await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
 
     const validatorService = new ChartValidatorService(this, chartPath);
-    const validatorServiceResp = await validatorService.validate({ skipHooksValidation });
+    const validatorServiceResp = await validatorService.validate({skipHooksValidation, skipReleaseService});
 
     this.log(validatorServiceResp.body);
     if(!validatorServiceResp.success){

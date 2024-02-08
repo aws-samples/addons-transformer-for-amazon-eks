@@ -1,3 +1,4 @@
 export type ValidateOptions = {
-    skipHooksValidation:boolean
+    skipHooksValidation?: boolean
+    skipReleaseService?: boolean
 }
