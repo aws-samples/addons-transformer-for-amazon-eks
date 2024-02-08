@@ -51,7 +51,7 @@ export class CreateIssue extends SleekCommand {
         const title = `Onboarding ${inputDataParsed.sellerMarketPlaceAlias} ${addonData.name}@${addonData.version}`;
         const body = `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
         const createIssueService = new CreateIssueService(this);
-        const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])
+        const createIssueResponse = await createIssueService.createIssue(title, body, ['DEV_MODE'])
 
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
     }
