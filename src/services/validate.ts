@@ -174,8 +174,8 @@ export default class ChartValidatorService extends BaseService {
         "'.Release.[Name|Namespace|Service]'":
         "'.Release.[Name|Namespace]'";
 
-    const allReleaseObjects = spawnSync('grep', ['-r', '.Release.'], {shell: true, encoding: "utf-8"});
-    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex], {shell: true, encoding: "utf-8", input: allReleaseObjects.stdout});
+    const allReleaseObjects = spawnSync('grep', ['-r', '.Release.', this.toValidate], {shell: true, encoding: "utf-8"});
+    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex, this.toValidate], {shell: true, encoding: "utf-8", input: allReleaseObjects.stdout});
 
     if (unsupportedReleaseObjects.stdout === "") {
       return SuccessResponse
