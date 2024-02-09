@@ -184,7 +184,7 @@ export default class ChartValidatorService extends BaseService {
         success: false,
         body: "Unsupported release objects are used in chart.",
         error: {
-          input: 'unsupportedReleaseObjects.stdout',
+          input: unsupportedReleaseObjects.stdout,
           options: {
             code: "E504",
             exit: 1
