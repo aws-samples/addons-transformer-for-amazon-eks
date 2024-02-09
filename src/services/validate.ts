@@ -59,6 +59,7 @@ export default class ChartValidatorService extends BaseService {
     const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
     const unsupportedReleaseObjects =  await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
+    const lookups = await this.findLookups();
 
     const allValidation = [
         lintResult,
@@ -66,7 +67,8 @@ export default class ChartValidatorService extends BaseService {
         capabilities,
         hooks,
         dependencies,
-        unsupportedReleaseObjects
+        unsupportedReleaseObjects,
+        lookups,
       ]
     let response: ServiceResponse<string> = {
       success: false,
@@ -256,6 +258,29 @@ export default class ChartValidatorService extends BaseService {
         input: errors.join(''),
         options: {
           code: "E506",
+          exit: 1
+        }
+      }
+    }
+  }
+
+  private async findLookups(): Promise<ServiceResponse<string>> {
+    // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
+    // and the word itself
+    const grepLookup = spawnSync('grep', ['-r', '"(\s*lookup"', this.toValidate], {shell: true, encoding: "utf-8"});
+
+
+    if (grepLookup.stdout === "") {
+      return SuccessResponse;
+    }
+
+    return {
+      success: false,
+      body: "Helm charts use lookup functions",
+      error: {
+        input: "Lookup functions not permitted",
+        options: {
+          code: "E507",
           exit: 1
         }
       }
