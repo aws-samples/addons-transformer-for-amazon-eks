@@ -60,7 +60,14 @@ export default class ChartValidatorService extends BaseService {
     const dependencies = await this.findDependencies();
     const unsupportedReleaseObjects =  await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
 
-    const allValidation = [lintResult, templateResult, capabilities, hooks, dependencies, unsupportedReleaseObjects]
+    const allValidation = [
+        lintResult,
+        templateResult,
+        capabilities,
+        hooks,
+        dependencies,
+        unsupportedReleaseObjects
+      ]
     let response: ServiceResponse<string> = {
       success: false,
       body: "",
