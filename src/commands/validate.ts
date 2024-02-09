@@ -4,7 +4,8 @@ import ChartValidatorService from "../services/validate.js";
 import HelmManagerService from "../services/helm.js";
 import fs from "node:fs";
 import SchemaValidationService from "../services/schemaValidation.js";
-import {IssueData} from "../types/issue.js";
+import {AddonData, AllEksSupportedKubernetesVersions, IssueData} from "../types/issue.js";
+import {getChartNameFromUrl} from "../utils.js";
 
 export default class Validate extends SleekCommand {
   static description = `
@@ -47,6 +48,7 @@ export default class Validate extends SleekCommand {
     protocol: Flags.string({description: "Protocol of the helm hosting to use", exclusive: ['file', 'helmUrl'], char:'p'}),
     version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
     addonName: Flags.string({description: "Name of the addon"}),
+    addonNamespace: Flags.string({description: "Add-on namespace",char:'n'}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
     skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
     skipReleaseService: Flags.boolean({description: "Skip .Release.Service occurrences", default:false}),
@@ -60,7 +62,7 @@ export default class Validate extends SleekCommand {
     // if helmURL is given, download the chart then validate
     // if file is given, validate based on the path
     // else, raise error stating one or the other arg/flag should be provided
-    let repoProtocol, repoUrl, versionTag, addonName;
+    let repoProtocol, repoUrl, chartName, versionTag, addonName;
     // uncomment for debugging purposes
     // this.log('---')
     // this.log(`>> args: ${JSON.stringify(args)}`)
@@ -71,12 +73,14 @@ export default class Validate extends SleekCommand {
     }
     let skipHooksValidation = flags.skipHooks;
     let skipReleaseService = flags.skipReleaseService;
+    let addonData: AddonData | undefined = undefined;
     if (args.helmUrl || flags.helmUrl) {
       // JD decompose url, pull  and validate
       const repoUrlInput = args.helmUrl || flags.helmUrl;
       this.log(`Validating chart from url: ${repoUrlInput}`)
       repoProtocol = this.getProtocolFromFullQualifiedUrl(repoUrlInput!);
       repoUrl = this.getRepoFromFullChartUri(repoUrlInput!).substring(repoProtocol.length+3); // 3 == '://'.length
+      chartName = getChartNameFromUrl(repoUrl);
       versionTag = this.getVersionTagFromChartUri(repoUrlInput!);
     } else if (
       (args.helmUrl || flags.helmUrl) && (flags.helmRepo || flags.protocol || flags.version) || // base url + flags to override // todo
@@ -84,6 +88,7 @@ export default class Validate extends SleekCommand {
     ) {
       repoProtocol = flags.protocol;
       repoUrl = flags.helmRepo;
+      chartName = getChartNameFromUrl(repoUrl!);
       versionTag = flags.version;
       this.log(`Validating chart from flags: ${repoProtocol}://${repoUrl}:${versionTag}`)
     } else if (flags.file) {
@@ -95,9 +100,10 @@ export default class Validate extends SleekCommand {
       const data = await schemaValidator.validateInputFileSchema(fileContents);
       // get url
       const inputDataParsed = data.body as IssueData;
-      const addonData = inputDataParsed.addon;
+      addonData = inputDataParsed.addon;
       repoProtocol = addonData.helmChartUrlProtocol;
       repoUrl = this.getRepoFromFullChartUri(addonData.helmChartUrl);
+      chartName = getChartNameFromUrl(repoUrl);
       versionTag = this.getVersionTagFromChartUri(addonData.helmChartUrl);
       addonName = inputDataParsed.addon.name;
       skipHooksValidation =  inputDataParsed.chartAutoCorrection?.hooks;
@@ -111,9 +117,20 @@ export default class Validate extends SleekCommand {
     const helmManager = new HelmManagerService(this);
     const chartPath = !! flags.directory ?
         flags.directory:
-        await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName);
+        `${await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName)}/${chartName}`;
 
-    const validatorService = new ChartValidatorService(this, chartPath);
+    // addonData is initialized when reading from the input yaml; when using flags the parameters are inferred
+    if (!addonData) {
+      addonData = {
+          helmChartUrl: `${repoProtocol}://${repoUrl}:${versionTag}`,
+          helmChartUrlProtocol: repoProtocol!,
+          kubernetesVersion: AllEksSupportedKubernetesVersions,
+          name: addonName!,
+          namespace: flags.addonNamespace || 'test-namespace',
+          version: versionTag!
+      }
+    }
+    const validatorService = new ChartValidatorService(this, chartPath, addonData!);
     const validatorServiceResp = await validatorService.validate({skipHooksValidation, skipReleaseService});
 
     this.log(validatorServiceResp.body);

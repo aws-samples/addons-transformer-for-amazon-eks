@@ -8,6 +8,7 @@ import SchemaValidationService from "../services/schemaValidation.js";
 import ChartValidatorService from "../services/validate.js";
 import {execSync} from "child_process";
 import {ValidateOptions} from "../types/validate.js";
+import {getChartNameFromUrl} from "../utils.js";
 
 
 export class CreateIssue extends SleekCommand {
@@ -35,8 +36,9 @@ export class CreateIssue extends SleekCommand {
         const addonData = inputDataParsed.addon;
         const repo= addonData.helmChartUrl.substring(0,addonData.helmChartUrl.lastIndexOf(':'))
         const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
-        const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
-        const validatorService = new ChartValidatorService(this, charPath);
+        const charName = getChartNameFromUrl(repo);
+        const charPath= `${await this.pullHelmChart(addonData.name, chartTag, repo)}/${charName}`;
+        const validatorService = new ChartValidatorService(this, charPath, addonData);
         const validateOps: ValidateOptions ={
             skipHooksValidation: inputDataParsed.chartAutoCorrection?.hooks
         }
