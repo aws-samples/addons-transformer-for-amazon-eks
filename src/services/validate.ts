@@ -46,12 +46,13 @@ export default class ChartValidatorService extends BaseService {
   }
 
   public async validate(ops: ValidateOptions): Promise<ServiceResponse<any>> {
+    const lintResult = await this.runHelmLint();
     const capabilities = await this.findCapabilities();
     const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
     const unsupportedReleaseObjects =  await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
 
-    const allValidation = [capabilities, hooks, dependencies, unsupportedReleaseObjects]
+    const allValidation = [lintResult, capabilities, hooks, dependencies, unsupportedReleaseObjects]
     let response: ServiceResponse<string> = {
       success: false,
       body: "",
@@ -189,6 +190,28 @@ export default class ChartValidatorService extends BaseService {
             code: "E504",
             exit: 1
           }
+        }
+      }
+    }
+  }
+
+  private async runHelmLint():  Promise<ServiceResponse<string>> {
+    const lintResult = spawnSync('helm', ['lint',' --strict','--with-subcharts', this.toValidate], {shell: true, encoding: "utf-8"});
+
+    // success execution
+    if( lintResult.status===0){
+      return SuccessResponse
+    }
+
+    // lint issues found
+     return {
+      success: false,
+      body: `Helm linter found errors running 'helm lint --strict --with-subcharts ${this.toValidate}'`,
+      error: {
+        input: lintResult.stdout,
+        options: {
+          code: "E505",
+          exit: 1
         }
       }
     }
