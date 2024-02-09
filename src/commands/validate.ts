@@ -49,6 +49,7 @@ export default class Validate extends SleekCommand {
     version: Flags.string({description: "Version of the addon to validate", exclusive: ['file'], char:'v'}),
     addonName: Flags.string({description: "Name of the addon"}),
     addonNamespace: Flags.string({description: "Add-on namespace",char:'n'}),
+    k8sVersions: Flags.string({description:"Comma separated list of supported kubernetes versions"}),
     extended: Flags.boolean({description: "Run extended validation", hidden: true, char:'e'}), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
     skipHooks: Flags.boolean({description: "Skip helm hooks validation", default:false}),
     skipReleaseService: Flags.boolean({description: "Skip .Release.Service occurrences", default:false}),
@@ -124,7 +125,7 @@ export default class Validate extends SleekCommand {
       addonData = {
           helmChartUrl: `${repoProtocol}://${repoUrl}:${versionTag}`,
           helmChartUrlProtocol: repoProtocol!,
-          kubernetesVersion: AllEksSupportedKubernetesVersions,
+          kubernetesVersion: flags.k8sVersions?.split(',') || AllEksSupportedKubernetesVersions,
           name: addonName!,
           namespace: flags.addonNamespace || 'test-namespace',
           version: versionTag!
