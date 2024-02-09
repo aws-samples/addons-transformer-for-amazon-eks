@@ -28,11 +28,14 @@ This npm module does the following features:
 
 ### Helm chart validation
 It grabs the following form the command line parameters or an input file the chart URL, pull it and performs static 
-validations to find occurrences of:
- - `.Capabilities`
- - `helm.sh/hook`
- - Use of `.Release.Service` (TODO)
+validations:
+ - Finding occurrences of unsupported `.Capabilities`
+ - Templates creating `helm.sh/hook`
+ - Use of `.Release.Service`
+ - Use of helm lookup function (TODO)
  - Dependencies external to the main chart
+ - Errors running `helm lint` see [lint command](#helm-lint-command) bellow )
+ - Errors running `helm template...` (see [template command](#helm-template-command) bellow )
 
 If the chart is not in a public registry, login on it in advance is necessary, for example, for login on ECR:
 
@@ -42,6 +45,22 @@ export AWS_REGION=<Registry region>
 export CHART_NAME=<Helm chart name>
 export ECR_HELM_REPOSITORY=${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${CHART_NAME}
 aws ecr get-login-password --region  eu-west-1 | helm registry login --username AWS --password-stdin ${ECR_HELM_REPOSITORY%%/*}
+```
+
+#### Helm lint command
+```shell
+helm lint --strict --with-subcharts $CHART_LOCATION
+```
+
+
+#### Helm template command
+```shell
+helm template $CHART_NAME $CHART_LOCATION
+ --set k8version=$KUBERNETES_VERSION
+ --kube-version $KUBERNETES_VERSION
+ --namespace $ADDON_NAMESPACE
+ --include-crds
+ --no-hooks
 ```
 
 ### Request submission for onboarding the add-on to the program
@@ -83,20 +102,25 @@ Validates the addon after pulling it from the helm repository.
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [HELMURL] [-r <value> | [-f <value> | --helmUrl <value>] | ] [-p <value> | 
-    | ] [-v <value> | ] [--addonName <value>] [--skipHooks]
+  $ aws-sleek-transformer validate [HELMURL] [-r <value> | [-f <value>
+    | --helmUrl <value>] | ] [-p <value> |  | ] [-v <value> | ] [--addonName
+    <value>] [-n <value>] [--k8sVersions <value>] [--skipHooks]
+    [--skipReleaseService]
 
 ARGUMENTS
   HELMURL  Fully qualified Helm URL of the addon
 
 FLAGS
-  -f, --file=<value>       Path to add-on input file
-  -p, --protocol=<value>   Protocol of the helm hosting to use
-  -r, --helmRepo=<value>   Helm repo of the addon
-  -v, --version=<value>    Version of the addon to validate
-      --addonName=<value>  Name of the addon
-      --helmUrl=<value>    Fully qualified URL of the Repo
-      --skipHooks          Skip helm hooks validation
+  -f, --file=<value>            Path to add-on input file
+  -n, --addonNamespace=<value>  Add-on namespace
+  -p, --protocol=<value>        Protocol of the helm hosting to use
+  -r, --helmRepo=<value>        Helm repo of the addon
+  -v, --version=<value>         Version of the addon to validate
+      --addonName=<value>       Name of the addon
+      --helmUrl=<value>         Fully qualified URL of the Repo
+      --k8sVersions=<value>     Comma separated list of supported kubernetesversions
+      --skipHooks               Skip helm hooks validation
+      --skipReleaseService      Skip .Release.Service occurrences
 
 DESCRIPTION
   Validates the addon after pulling it from the helm repository.
@@ -149,9 +173,6 @@ DESCRIPTION
   This creates a Github Issue on the Sleek repository.
 
   It will validate the input file to match the schema
-
-  TODO:
-  * Run validation before creating the issue
 
 
 EXAMPLES
