@@ -8,6 +8,8 @@ import SchemaValidationService from "../services/schemaValidation.js";
 import ChartValidatorService from "../services/validate.js";
 import {execSync} from "child_process";
 import {ValidateOptions} from "../types/validate.js";
+import {getChartNameFromUrl} from "../utils.js";
+import HelmManagerService from "../services/helm.js";
 
 
 export class CreateIssue extends SleekCommand {
@@ -18,7 +20,6 @@ export class CreateIssue extends SleekCommand {
     static flags = CreateIssueOpt.flags;
 
     async run(): Promise<any> {
-
         const {args, flags} = await this.parse(CreateIssue);
         const isDryRun = flags.dryRun;
         const filePath = args.file;
@@ -35,8 +36,10 @@ export class CreateIssue extends SleekCommand {
         const addonData = inputDataParsed.addon;
         const repo= addonData.helmChartUrl.substring(0,addonData.helmChartUrl.lastIndexOf(':'))
         const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
-        const charPath=await this.pullHelmChart(addonData.name, chartTag, repo)
-        const validatorService = new ChartValidatorService(this, charPath);
+        const chartName = getChartNameFromUrl(repo);
+        const helmManager = new HelmManagerService(this);
+        const charPath= `${await helmManager.pullAndUnzipChart(repo!, addonData.helmChartUrlProtocol!, chartTag!, addonData.name)}/${chartName}`;
+        const validatorService = new ChartValidatorService(this, charPath, addonData);
         const validateOps: ValidateOptions ={
             skipHooksValidation: inputDataParsed.chartAutoCorrection?.hooks
         }
@@ -56,21 +59,5 @@ export class CreateIssue extends SleekCommand {
         const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])
 
         this.log(`Issue created: ${createIssueResponse.body?.data.html_url}`)
-    }
-
-    // todo: move to helm service
-    // todo: add parameter for chart url protocol
-    private async pullHelmChart(name:string, chartTag:string, url:string): Promise<string> {
-        const chartVersionFlag = !! chartTag ? `--version ${chartTag}`:''
-        const untarLocation = `./unzipped-${name}`;
-        const pullCmd = `rm -rf ${untarLocation} && 
-                             mkdir ${untarLocation} && 
-                             helm pull oci://${url} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null 2>&1`;
-        try {
-            execSync(pullCmd);
-        } catch (e) {
-            this.error(`Helm chart pull failed with error ${e}`);
-        }
-        return untarLocation;
     }
 }

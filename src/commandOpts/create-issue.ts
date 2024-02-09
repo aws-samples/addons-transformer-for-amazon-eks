@@ -15,9 +15,6 @@ export default class CreateIssueOpt {
         This creates a Github Issue on the Sleek repository.
         
         It will validate the input file to match the schema
-        
-        TODO:
-          * Run validation before creating the issue
     `
 
     static examples = [
