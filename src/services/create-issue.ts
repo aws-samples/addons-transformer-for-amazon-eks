@@ -37,5 +37,5 @@ function getRepoOwner() {
 }
 
 function getRepoName() {
-    return 'aws-k8s-addons'
+    return 'aws-eks-addon-publication'
 }
