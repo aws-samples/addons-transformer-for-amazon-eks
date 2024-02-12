@@ -11,7 +11,7 @@ export default class HelmManagerService extends BaseService {
     const untarLocation = `./unzipped-${addonName}`;
     const pullCmd = `rm -rf ${untarLocation} && 
                              mkdir ${untarLocation} && 
-                             helm pull ${helmProtocol}://${helmUrl} ${chartVersionFlag} --untar --untardir ${untarLocation} >/dev/null`;
+                             helm pull ${helmProtocol}://${helmUrl} ${chartVersionFlag} --untar --untardir "${untarLocation}" >/dev/null`;
     try {
       execSync(pullCmd);
     } catch (e) {
