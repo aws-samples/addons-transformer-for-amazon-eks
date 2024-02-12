@@ -10,25 +10,25 @@ import {SleekCommand} from "../sleek-command.js";
 import {ValidateOptions} from "../types/validate.js";
 import {AddonData} from "../types/issue.js";
 
-export const SuccessResponse:ServiceResponse<string> = {
+export const SuccessResponse: ServiceResponse<string> = {
   success: true,
 };
 
-export const ValidationSkipped:ServiceResponse<string> = {
+export const ValidationSkipped: ServiceResponse<string> = {
   success: true,
-  body:'validation skipped'
+  body: 'validation skipped'
 };
-export const ExtendValidationSuccess:ServiceResponse<string> = {
+export const ExtendValidationSuccess: ServiceResponse<string> = {
   success: true,
-  body:'Extend validation to be implemented; SUCCESS'
+  body: 'Extend validation to be implemented; SUCCESS'
 };
-export const ExtendValidationFail:ServiceResponse<string> = {
+export const ExtendValidationFail: ServiceResponse<string> = {
   success: false,
-  body:'Extend validation to be implemented; FAIL',
-  error:{
+  body: 'Extend validation to be implemented; FAIL',
+  error: {
     input: 'Extend validation to be implemented; FAIL',
-    options:{
-      exit:2,
+    options: {
+      exit: 2,
     }
   }
 };
@@ -43,8 +43,8 @@ export default class ChartValidatorService extends BaseService {
   constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
     super(commandCaller);
     this.toValidate = toValidate;
-    this.name=addonData.name;
-    this.namespace=addonData.namespace;
+    this.name = addonData.name;
+    this.namespace = addonData.namespace;
     this.supportedKubernetesVersions = addonData.kubernetesVersion;
   }
 
@@ -58,18 +58,18 @@ export default class ChartValidatorService extends BaseService {
     const capabilities = await this.findCapabilities();
     const hooks = ops.skipHooksValidation ? ValidationSkipped : await this.findHooks();
     const dependencies = await this.findDependencies();
-    const unsupportedReleaseObjects =  await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
+    const unsupportedReleaseObjects = await this.findUnsupportedReleaseObject(ops.skipReleaseService!);
     const lookups = await this.findLookups();
 
     const allValidation = [
-        lintResult,
-        templateResult,
-        capabilities,
-        hooks,
-        dependencies,
-        unsupportedReleaseObjects,
-        lookups,
-      ]
+      lintResult,
+      templateResult,
+      capabilities,
+      hooks,
+      dependencies,
+      unsupportedReleaseObjects,
+      lookups,
+    ]
     let response: ServiceResponse<string> = {
       success: false,
       body: "",
@@ -82,7 +82,7 @@ export default class ChartValidatorService extends BaseService {
       }
     };
 
-    if (allValidation.every(validation=> validation.success)) {
+    if (allValidation.every(validation => validation.success)) {
       response = {
         success: true,
         body: "Addon pre-validation complete"
@@ -93,16 +93,16 @@ export default class ChartValidatorService extends BaseService {
     // Failure scenarios:
     response.body = "Addon pre-validation failed, reasons listed below: "
     allValidation
-        .filter(validation=>!validation.success) // per each one of the failures
-        .map(validation=> {
-          response = {
-            success: false,
-            body: `${response.body} \n  * ${validation.body}`,
-            error: {
-              input: `${response.error?.input}  ${validation.error?.input!}`,
-            }
+      .filter(validation => !validation.success) // per each one of the failures
+      .map(validation => {
+        response = {
+          success: false,
+          body: `${response.body} \n  * ${validation.body}`,
+          error: {
+            input: `${response.error?.input}  ${validation.error?.input!}`,
           }
-        })
+        }
+      })
 
     return response;
   }
@@ -116,7 +116,7 @@ export default class ChartValidatorService extends BaseService {
     if (capabilities.stdout === "") {
       return SuccessResponse
     } else {
-      return  {
+      return {
         success: false,
         body: "Unsupported system Capabilities are used in chart.",
         error: {
@@ -187,11 +187,15 @@ export default class ChartValidatorService extends BaseService {
   private async findUnsupportedReleaseObject(skipReleaseService: boolean): Promise<ServiceResponse<string>> {
     // beta guide 6.1.b) All Release objects (except .Name and .Namespace) are not supported
     const unsupportedReleaseObjectsRegex = skipReleaseService ?
-        "'.Release.[Name|Namespace|Service]'":
-        "'.Release.[Name|Namespace]'";
+      "'.Release.[Name|Namespace|Service]'" :
+      "'.Release.[Name|Namespace]'";
 
     const allReleaseObjects = spawnSync('grep', ['-r', '.Release.', this.toValidate], {shell: true, encoding: "utf-8"});
-    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex, this.toValidate], {shell: true, encoding: "utf-8", input: allReleaseObjects.stdout});
+    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex, this.toValidate], {
+      shell: true,
+      encoding: "utf-8",
+      input: allReleaseObjects.stdout
+    });
 
     if (unsupportedReleaseObjects.stdout === "") {
       return SuccessResponse
@@ -210,11 +214,14 @@ export default class ChartValidatorService extends BaseService {
     }
   }
 
-  private async runHelmLint():  Promise<ServiceResponse<string>> {
-    const lintResult = spawnSync('helm', ['lint',' --strict','--with-subcharts', this.toValidate], {shell: true, encoding: "utf-8"});
+  private async runHelmLint(): Promise<ServiceResponse<string>> {
+    const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', this.toValidate], {
+      shell: true,
+      encoding: "utf-8"
+    });
 
     // success execution
-    if( lintResult.status===0){
+    if (lintResult.status === 0) {
       return SuccessResponse
     }
 
@@ -233,20 +240,20 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async runHelmTemplate(): Promise<ServiceResponse<string>> {
-    const errors:string[]=[];
-    let allVersionSuccess=true;
+    const errors: string[] = [];
+    let allVersionSuccess = true;
 
     this.supportedKubernetesVersions.map(k8sVersion => {
-      const templateResult =  this.getTemplateResult(k8sVersion);
+      const templateResult = this.getTemplateResult(k8sVersion);
       // this.log(`Templating for k8s version ${k8sVersion} ${templateResult.status===0?'successful':'errored'}`)
-      if(templateResult.status != 0){
+      if (templateResult.status != 0) {
         allVersionSuccess = false
         errors.push(`Kubernetes version: ${k8sVersion} - ${templateResult.stderr}`)
       }
     })
 
     // success execution
-    if(allVersionSuccess){
+    if (allVersionSuccess) {
       return SuccessResponse;
     }
 
