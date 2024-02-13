@@ -68,7 +68,7 @@ $ npm install -g aws-sleek-transformer
 $ aws-sleek-transformer COMMAND
 running command...
 $ aws-sleek-transformer (--version)
-aws-sleek-transformer/0.0.1 darwin-arm64 node-v21.6.1
+aws-sleek-transformer/0.0.1 darwin-arm64 node-v18.19.0
 $ aws-sleek-transformer --help [COMMAND]
 USAGE
   $ aws-sleek-transformer COMMAND

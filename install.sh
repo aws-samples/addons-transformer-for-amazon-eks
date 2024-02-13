@@ -22,7 +22,7 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod +x get_helm.sh
 ./get_helm.sh -v 3.8.1
 rm -rf get_helm.sh
-NVM_DIR="$(HOME)/.nvm" && . "$(NVM_DIR)/nvm.sh" && nvm install
+NVM_DIR="${HOME}/.nvm" && . "${NVM_DIR}/nvm.sh" && nvm install
 npm install
 
 # pack
