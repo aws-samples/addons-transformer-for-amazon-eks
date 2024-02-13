@@ -13,3 +13,6 @@ oclif.lock
 oclif.manifest.json
 *.tgz
 **/unzipped-*/
+*.iml
+.idea
+

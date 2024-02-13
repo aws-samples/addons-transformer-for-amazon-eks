@@ -1,5 +1,9 @@
 {
   "author": "Elamaran Shanmugam @elamaras",
+  "license": "MIT",
+  "name": "aws-sleek-transformer",
+  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
+  "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
   "bin": "./bin/run.js",
   "dependencies": {
     "@aws-sdk/client-sts": "^3.462.0",
@@ -11,12 +15,12 @@
     "@types/ajv": "^1.0.0",
     "@types/js-yaml": "^4.0.9",
     "ajv": "^8.12.0",
+    "aws-sleek-transformer": "file:aws-sleek-transformer-0.0.1.tgz",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",
     "oclif": "^4.0.3",
     "shx": "^0.3.4"
   },
-  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",
     "@oclif/test": "^3",
@@ -42,10 +46,6 @@
     "/dist",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks",
-  "main": "",
-  "license": "MIT",
-  "name": "aws-sleek-transformer",
   "oclif": {
     "bin": "aws-sleek-transformer",
     "dirname": "aws-sleek-transformer",
