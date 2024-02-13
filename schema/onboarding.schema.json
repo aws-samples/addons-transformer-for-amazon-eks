@@ -63,7 +63,9 @@
       "properties": {
         "name": {
           "title": "Add-on name",
-          "type": "string"
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+          "maxLength": 53
         },
         "versionName": {
           "title": "Add-on version name",
@@ -161,11 +163,8 @@
           "type": "object"
         },
         "customConfiguration": {
-          "title": "List of expanded values keys to be allow to be modified when deploying the add-on",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "title": "Map of expanded values keys to be allow to be modified when deploying the add-on and its values",
+          "type": "object"
         },
         "serviceAccounts": {
           "title": "Service accounts - IAM policies mapping",

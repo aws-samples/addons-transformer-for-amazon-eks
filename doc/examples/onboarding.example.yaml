@@ -63,3 +63,5 @@ addon:
     serviceAccountTwo:
       iamManagedPolicies:
         - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
+    requiredParameters:
+      parent.childParameter: parameterValue

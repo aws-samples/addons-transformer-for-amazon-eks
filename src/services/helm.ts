@@ -9,8 +9,8 @@ export default class HelmManagerService extends BaseService {
 
     const chartVersionFlag = !! chartTag ? `--version ${chartTag}`:''
     const untarLocation = `./unzipped-${addonName}`;
-    const pullCmd = `rm -rf ${untarLocation} && 
-                             mkdir ${untarLocation} && 
+    const pullCmd = `rm -rf "${untarLocation}" && 
+                             mkdir "${untarLocation}" && 
                              helm pull ${helmProtocol}://${helmUrl} ${chartVersionFlag} --untar --untardir "${untarLocation}" >/dev/null`;
     try {
       execSync(pullCmd);

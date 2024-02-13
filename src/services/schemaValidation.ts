@@ -39,7 +39,5 @@ export default class SchemaValidationService extends BaseService {
 
 function getSchemaUrl(): string {
     //  todo: set up user public repo where the schema lives
-    // return 'https://raw.githubusercontent.com/elamaran11/aws-sleek-transformer/f96009d3feb4967b4d92fd57f4d1bd2cf148e1a9/src/schemas/issue-creation.schema.json'
-    // return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/615ad12cabfd849b051a9ab099b84a086a4982aa/gistfile1.txt'
-    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/d4ca5b7c7bcb34cc293413a297ece42c3e076eae/gistfile1.txt';
+    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/2e10c4930e103ddfec7be5615abedaef1b302a78/gistfile1.txt';
 }
