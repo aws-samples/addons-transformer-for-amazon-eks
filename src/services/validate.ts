@@ -8,7 +8,7 @@ import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 import {ValidateOptions} from "../types/validate.js";
-import {AddonData} from "../types/issue.js";
+import {AddonData, CustomConfiguration} from "../types/issue.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
   success: true,
@@ -39,13 +39,16 @@ export default class ChartValidatorService extends BaseService {
   private readonly supportedKubernetesVersions: string[];
   private readonly name: string;
   private readonly namespace: string;
-
+  private readonly parsedCustomConfiguration:string[] = [];
   constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
     super(commandCaller);
-    this.toValidate = toValidate;
-    this.name = addonData.name;
-    this.namespace = addonData.namespace;
+    this.toValidate = `"${toValidate}"`;
+    this.name = `"${addonData.name}"`;
+    this.namespace = `"${addonData.namespace}"`;
     this.supportedKubernetesVersions = addonData.kubernetesVersion;
+    if(!!addonData.customConfiguration){
+      Object.keys(addonData.customConfiguration).map(paramKey=>this.parsedCustomConfiguration.push(`--set ${paramKey}="${addonData.customConfiguration![paramKey]}"`))
+    }
   }
 
   public async extendedValidation(_localFile?: string): Promise<ServiceResponse<any>> {
@@ -214,8 +217,12 @@ export default class ChartValidatorService extends BaseService {
     }
   }
 
+  /**
+   * https://helm.sh/docs/helm/helm_lint/
+   * @private
+   */
   private async runHelmLint(): Promise<ServiceResponse<string>> {
-    const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', this.toValidate], {
+    const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', ...this.parsedCustomConfiguration, this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -228,7 +235,7 @@ export default class ChartValidatorService extends BaseService {
     // lint issues found
     return {
       success: false,
-      body: `Helm linter found errors running 'helm lint --strict --with-subcharts ${this.toValidate}'`,
+      body: `Helm linter found errors running 'helm lint --strict --with-subcharts ${this.parsedCustomConfiguration.join(" ")} ${this.toValidate}'`,
       error: {
         input: lintResult.stdout,
         options: {
@@ -239,6 +246,10 @@ export default class ChartValidatorService extends BaseService {
     }
   }
 
+  /**
+   * https://helm.sh/docs/helm/helm_template/
+   * @private
+   */
   private async runHelmTemplate(): Promise<ServiceResponse<string>> {
     const errors: string[] = [];
     let allVersionSuccess = true;
@@ -274,8 +285,7 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    const grepLookup = spawnSync('grep', ['-r', '"(\s*lookup"', this.toValidate], {shell: true, encoding: "utf-8"});
-
+    const grepLookup = spawnSync('grep', ['-r', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
@@ -316,7 +326,8 @@ export default class ChartValidatorService extends BaseService {
       '--kube-version', k8sVersion,
       '--namespace', this.namespace,
       '--include-crds',
-      '--no-hooks'
+      '--no-hooks',
+      ...this.parsedCustomConfiguration,
     ], {shell: true, encoding: "utf-8"});
   }
 }
