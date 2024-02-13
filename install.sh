@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
 # check prerequisites NVM and AWS credentials
 if [ -d "${HOME}/.nvm/.git" ];
 then
@@ -22,7 +18,8 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod +x get_helm.sh
 ./get_helm.sh -v 3.8.1
 rm -rf get_helm.sh
-NVM_DIR="${HOME}/.nvm" && . "${NVM_DIR}/nvm.sh" && nvm install
+. $NVM_DIR/nvm.sh
+nvm install
 npm install
 
 # pack
