@@ -12,7 +12,7 @@ scrub:
 setup:
 	curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 	chmod +x get_helm.sh
-	./get_helm.sh -v 3.8.1
+	./get_helm.sh -v $(HELM_VERSION)
 	rm -rf get_helm.sh
 	NVM_DIR="$(HOME)/.nvm" && . "$(NVM_DIR)/nvm.sh" && nvm install
 	npm install
@@ -24,5 +24,8 @@ build:
 install:
 	npm install -g $(shell ls aws-sleek-transformer*gz)
 	echo "Installed successfully, test by running: 'aws-sleek-transformer' --help "
+
+publish:
+	npm publish --access public
 
 pack: check scrub setup build install
