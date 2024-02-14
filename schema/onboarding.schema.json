@@ -136,14 +136,13 @@
           "title": "Add-on supported kubernetes versions",
           "type": "array",
           "items": {
-            "type": "string",
             "enum": [
-              "1.23",
-              "1.24",
-              "1.25",
-              "1.26",
-              "1.27",
-              "1.28"
+              1.23,
+              1.24,
+              1.25,
+              1.26,
+              1.27,
+              1.28
             ]
           }
         },
@@ -197,7 +196,6 @@
     },
     "accountId": {
       "title": "Seller AWS account ID",
-      "type": "string",
       "pattern": "\\d{12}$"
     },
     "productName": {
