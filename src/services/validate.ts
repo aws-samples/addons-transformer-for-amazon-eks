@@ -8,7 +8,7 @@ import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 import {ValidateOptions} from "../types/validate.js";
-import {AddonData, CustomConfiguration} from "../types/issue.js";
+import {AddonData} from "../types/issue.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
   success: true,
@@ -39,16 +39,12 @@ export default class ChartValidatorService extends BaseService {
   private readonly supportedKubernetesVersions: string[];
   private readonly name: string;
   private readonly namespace: string;
-  private readonly parsedCustomConfiguration:string[] = [];
   constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
     super(commandCaller);
     this.toValidate = `"${toValidate}"`;
     this.name = `"${addonData.name}"`;
     this.namespace = `"${addonData.namespace}"`;
     this.supportedKubernetesVersions = addonData.kubernetesVersion;
-    if(!!addonData.customConfiguration){
-      Object.keys(addonData.customConfiguration).map(paramKey=>this.parsedCustomConfiguration.push(`--set ${paramKey}="${addonData.customConfiguration![paramKey]}"`))
-    }
   }
 
   public async extendedValidation(_localFile?: string): Promise<ServiceResponse<any>> {
@@ -222,7 +218,7 @@ export default class ChartValidatorService extends BaseService {
    * @private
    */
   private async runHelmLint(): Promise<ServiceResponse<string>> {
-    const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', ...this.parsedCustomConfiguration, this.toValidate], {
+    const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -235,7 +231,7 @@ export default class ChartValidatorService extends BaseService {
     // lint issues found
     return {
       success: false,
-      body: `Helm linter found errors running 'helm lint --strict --with-subcharts ${this.parsedCustomConfiguration.join(" ")} ${this.toValidate}'`,
+      body: `Helm linter found errors running 'helm lint --strict --with-subcharts ${this.toValidate}'`,
       error: {
         input: lintResult.stdout,
         options: {
@@ -327,7 +323,6 @@ export default class ChartValidatorService extends BaseService {
       '--namespace', this.namespace,
       '--include-crds',
       '--no-hooks',
-      ...this.parsedCustomConfiguration,
     ], {shell: true, encoding: "utf-8"});
   }
 }

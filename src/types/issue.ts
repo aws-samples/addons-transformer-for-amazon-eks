@@ -1,4 +1,3 @@
-export type CustomConfiguration = {[key: string]:Object}
 export type AddonData = {
     name: string,
     namespace: string,
@@ -7,7 +6,7 @@ export type AddonData = {
     helmChartUrlProtocol: string,
     containerImagesUrls?: string[],
     kubernetesVersion: string[],
-    customConfiguration?: CustomConfiguration
+    customConfiguration?: string[]
 };
 
 export type ChartAutoCorrection = {
