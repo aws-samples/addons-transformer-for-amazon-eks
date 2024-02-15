@@ -39,5 +39,5 @@ export default class SchemaValidationService extends BaseService {
 
 function getSchemaUrl(): string {
     //  todo: set up user public repo where the schema lives
-    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/9b205b693f963c97f056f9ebf92cdf0d4d5869da/gistfile1.txt';
+    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/46591727f019323a4f08fed7ab5e9d132a42bffe/gistfile1.txt';
 }

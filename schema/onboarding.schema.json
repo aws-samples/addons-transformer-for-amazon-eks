@@ -162,8 +162,11 @@
           "type": "object"
         },
         "customConfiguration": {
-          "title": "Map of expanded values keys to be allow to be modified when deploying the add-on and its values",
-          "type": "object"
+          "title": "List of expanded values keys to be allow to be modified when deploying the add-on",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "serviceAccounts": {
           "title": "Service accounts - IAM policies mapping",
