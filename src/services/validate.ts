@@ -1,8 +1,3 @@
-// remove the config persisted --
-// extract validating into this service
-// add parameter for extend testing
-// add a second parameter that's "internal version" number maintained by us
-
 import {spawnSync} from "child_process";
 import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
@@ -107,7 +102,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findCapabilities(): Promise<ServiceResponse<string>> {
-    const capabilities = spawnSync('grep', ['-Rile', '".Capabilities"', this.toValidate], {
+    const capabilities = spawnSync('grep', ['-Rilen', '".Capabilities"', this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -130,7 +125,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rile', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
+    const hooks = spawnSync('grep', ['-Rilen', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
 
     if (hooks.stdout === "") {
       return SuccessResponse
@@ -189,8 +184,8 @@ export default class ChartValidatorService extends BaseService {
       "'.Release.[Name|Namespace|Service]'" :
       "'.Release.[Name|Namespace]'";
 
-    const allReleaseObjects = spawnSync('grep', ['-r', '.Release.', this.toValidate], {shell: true, encoding: "utf-8"});
-    const unsupportedReleaseObjects = spawnSync('grep', ['-v', unsupportedReleaseObjectsRegex, this.toValidate], {
+    const allReleaseObjects = spawnSync('grep', ['-rn', '.Release.', this.toValidate], {shell: true, encoding: "utf-8"});
+    const unsupportedReleaseObjects = spawnSync('grep', ['-vn', unsupportedReleaseObjectsRegex, this.toValidate], {
       shell: true,
       encoding: "utf-8",
       input: allReleaseObjects.stdout
@@ -281,7 +276,7 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    const grepLookup = spawnSync('grep', ['-r', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
+    const grepLookup = spawnSync('grep', ['-Rilen', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
