@@ -32,10 +32,10 @@ export default class Validate extends SleekCommand {
     let addonData: AddonData | undefined = undefined;
 
     // uncomment for debugging purposes
-    this.log('---')
-    this.log(`>> args: ${JSON.stringify(args)}`)
-    this.log(`>> flags: ${JSON.stringify(flags)}`)
-    this.log('---')
+    // this.log('---')
+    // this.log(`>> args: ${JSON.stringify(args)}`)
+    // this.log(`>> flags: ${JSON.stringify(flags)}`)
+    // this.log('---')
     if (flags.addonName) {
       addonName = flags.addonName;
     }
