@@ -1,6 +1,6 @@
 sellerName: Cloudsoft
 sellerMarketPlaceAlias: cloufsoft-developer
-accountId: "012345678901"
+accountId: 012345678901
 productName: amp
 productCategory: networking
 productUrl: https://cloudsoft.io/software
@@ -24,9 +24,9 @@ addon:
   usageInstructions: >
     deploy it and enjoy
   kubernetesVersion:
-    - "1.26"
-    - "1.27"
-    - "1.28"
+    - 1.26
+    - 1.27
+    - 1.28
   architectures:
     - arm64
     - amd64
@@ -63,5 +63,3 @@ addon:
     serviceAccountTwo:
       iamManagedPolicies:
         - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
-    requiredParameters:
-      parent.childParameter: parameterValue
