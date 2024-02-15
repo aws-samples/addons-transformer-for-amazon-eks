@@ -1,9 +1,11 @@
 Addons Transformer CLI for Amazon EKS
 =====================================
 
-<!-- toc -->
-
-<!-- tocstop -->
+* [Introduction](#introduction)
+* [Pre-requisites](#pre-requisites)
+* [Features](#features)
+* [Installation](#installation)
+* [Commands](#commands)
 
 ## Introduction
 
@@ -87,7 +89,7 @@ $ npm install -g aws-sleek-transformer
 $ aws-sleek-transformer COMMAND
 running command...
 $ aws-sleek-transformer (--version)
-aws-sleek-transformer/0.0.1 darwin-arm64 node-v18.19.0
+aws-sleek-transformer/0.0.1 darwin-arm64 node-v20.10.0
 $ aws-sleek-transformer --help [COMMAND]
 USAGE
   $ aws-sleek-transformer COMMAND
@@ -122,9 +124,6 @@ DESCRIPTION
   This creates a Github Issue on the Sleek repository.
 
   It will validate the input file to match the schema
-
-  TODO:
-  * Run validation before creating the issue
 
 
 EXAMPLES
@@ -173,23 +172,23 @@ Validates the addon after pulling it from the helm repository.
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [HELMURL] [-r <value> | [-f <value>
-    | --helmUrl <value>] | ] [-p <value> |  | ] [-v <value> | ] [--addonName
-    <value>] [-n <value>] [--k8sVersions <value>] [--skipHooks]
+  $ aws-sleek-transformer validate [HELMURL] [-d <value> | [-f <value> | --helmUrl <value>] | ] [-r <value> | 
+    | ] [-p <value> |  | ] [-v <value> | ] [--addonName <value>] [-n <value>] [--k8sVersions <value>] [--skipHooks]
     [--skipReleaseService]
 
 ARGUMENTS
   HELMURL  Fully qualified Helm URL of the addon
 
 FLAGS
+  -d, --directory=<value>       Path to the local addon folder
   -f, --file=<value>            Path to add-on input file
   -n, --addonNamespace=<value>  Add-on namespace
   -p, --protocol=<value>        Protocol of the helm hosting to use
-  -r, --helmRepo=<value>        Helm repo of the addon
+  -r, --helmRepo=<value>        URL of the helm repo containg protocol and repo
   -v, --version=<value>         Version of the addon to validate
       --addonName=<value>       Name of the addon
-      --helmUrl=<value>         Fully qualified URL of the Repo
-      --k8sVersions=<value>     Comma separated list of supported kubernetesversions
+      --helmUrl=<value>         Fully qualified URL of the Repo including version tag
+      --k8sVersions=<value>     Comma separated list of supported kubernetes versions
       --skipHooks               Skip helm hooks validation
       --skipReleaseService      Skip .Release.Service occurrences
 
@@ -214,7 +213,15 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer validate
+  $ aws-sleek-transformer validate oci://12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts:x.x.x
+
+  $ aws-sleek-transformer validate -r 12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts -p oci -v x.x.x
+
+  $ aws-sleek-transformer validate -f ./input.yaml
+
+  $ aws-sleek-transformer validate -d ./addon-folder
+
+  $ aws-sleek-transformer validate --help
 ```
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
