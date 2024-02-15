@@ -1,6 +1,5 @@
 import {BaseService} from "./base-service.js";
 import {ServiceResponse} from "../types/service.js";
-import {SleekCommand} from "../sleek-command.js";
 import {IssueData} from "../types/issue.js";
 import _Ajv from "ajv";
 import * as yaml from "js-yaml";
@@ -39,5 +38,5 @@ export default class SchemaValidationService extends BaseService {
 
 function getSchemaUrl(): string {
     //  todo: set up user public repo where the schema lives
-    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/46591727f019323a4f08fed7ab5e9d132a42bffe/gistfile1.txt';
+    return 'https://gist.githubusercontent.com/jcabrerizo/2221586776b47eeb3943d9276cc913a5/raw/f585c2d29ff9b65bf2bb6084ab4956866d83373f/gistfile1.txt';
 }
