@@ -1,0 +1,37 @@
+
+sellerName: Lacework
+sellerMarketPlaceAlias: Lacework
+accountId: 434813966438
+productName: Lacework Agent
+productCategory: security
+productUrl: https://www.lacework.com/
+marketplaceProductId: 429d9a76-831d-41ee-a8ce-c2cb2826afb5
+marketplaceProductUrl: https://aws.amazon.com/marketplace/pp?sku=3xz69cflvko14wicz5lbrwfxx
+chartAutoCorrection:
+  hooks: true
+addon:
+  name: lacework-agent-helm-chart
+  versionName: Lacework Agent Helm Chart
+  version: 1.0.0
+  namespace: lacework
+  type: security
+#  helmChartUrl: public.ecr.aws/x5a2c1p1/lacework-agent:5.2.0
+  helmChartUrl: 304295633295.dkr.ecr.us-east-1.amazonaws.com/lacework-agent:5.2.0-cs
+  helmChartUrlProtocol: oci
+  containerImagesUrls:
+#    - docker.io/lacework/datacollector:latest
+    - 304295633295.dkr.ecr.us-east-1.amazonaws.com/images:laceworks
+  customConfiguration:
+    - laceworkConfig.accessTokenSecret
+  prerequisites: >
+    See the documentation at: https://docs.lacework.net/onboarding/deploy-on-kubernetes
+  usageInstructions: >
+    See the documentation at: https://docs.lacework.net/onboarding/deploy-on-kubernetes
+  kubernetesVersion:
+    - 1.26
+    - 1.27
+    - 1.28
+  architectures:
+    - arm64
+    - amd64
+
