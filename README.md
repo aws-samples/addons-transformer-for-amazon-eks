@@ -213,7 +213,15 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer validate
+  $ aws-sleek-transformer validate oci://12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts:x.x.x
+
+  $ aws-sleek-transformer validate -r 12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts -p oci -v x.x.x
+
+  $ aws-sleek-transformer validate -f ./input.yaml
+
+  $ aws-sleek-transformer validate -d ./addon-folder
+
+  $ aws-sleek-transformer validate --help
 ```
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
