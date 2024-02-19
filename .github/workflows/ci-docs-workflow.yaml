@@ -1,7 +1,7 @@
 name: ci-docs-workflow
 run-name: Generating docs for ${{ github.ref }}
 on:
-  pull_request:
+  push:
     branches:
       - main
       - dev
@@ -19,11 +19,8 @@ jobs:
         run: npx oclif readme
 
       - name: Commit docs
-        env:
-          HEAD_REF: ${{ github.event.workflow_run.head_branch }}
         run: |
-          echo ${{ github.event.workflow_run }}
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -am "Generate docs: ${{ github.ref }}"
-          git push origin HEAD:$HEAD_REF
+          git push
