@@ -22,6 +22,7 @@ jobs:
         env:
           HEAD_REF: ${{ github.event.workflow_run.head_branch }}
         run: |
+          echo ${{ github.event.workflow_run }}
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -am "Generate docs: ${{ github.ref }}"
