@@ -226,35 +226,3 @@ EXAMPLES
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->
-
-### create-issue
-
-`aws-sleek-transformer create-issue FILE`
-
-Creates a Github Issue based in the input file
-
-```
-USAGE
-  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
-
-ARGUMENTS
-  FILE  Path to add-on input file
-
-FLAGS
-  -d, --dryRun        Runs all checks without creating the issue
-      --file=<value>  Path to add-on input file
-
-DESCRIPTION
-  Creates a Github Issue based in the input file
-
-
-  This creates a Github Issue on the Sleek repository.
-
-  It will validate the input file to match the schema
-
-
-EXAMPLES
-  $ aws-sleek-transformer create-issue filename
-```
-
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_

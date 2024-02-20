@@ -4,7 +4,6 @@ import {ServiceResponse} from "../types/service.js";
 import {SleekCommand} from "../sleek-command.js";
 import {ValidateOptions} from "../types/validate.js";
 import {AddonData} from "../types/issue.js";
-import {getRepoFromFullChartUri} from "../utils.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
   success: true,
