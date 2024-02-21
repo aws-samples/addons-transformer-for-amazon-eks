@@ -38,6 +38,12 @@ addon:
     - ampResourceLimits.requests.memory
     - ampResourceLimits.limits.cpu
     - ampResourceLimits.limits.memory
+  secretNameKeyMapping:
+    ampSecretsNameOverride:
+      - amp-admin-password
+    exampleWithMultipleSecretKeys:
+      - secretKeyOne
+      - secretKeyTwo
   serviceAccounts:
     serviceAccountOne:
       iamManagedPolicies:
