@@ -168,6 +168,16 @@
             "type": "string"
           }
         },
+        "secretNameKeyMapping": {
+          "title": "Map of parameters supported for inject secrets and the keys expected to be found in. DO NOT INCLUDE SECRET VALUES",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
         "serviceAccounts": {
           "title": "Service accounts - IAM policies mapping",
           "$ref": "#/definitions/serviceAccount"
