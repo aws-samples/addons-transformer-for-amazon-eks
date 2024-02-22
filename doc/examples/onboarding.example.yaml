@@ -1,71 +1,103 @@
-sellerName: Cloudsoft
-sellerMarketPlaceAlias: cloufsoft-developer
-accountId: 012345678901
-productName: amp
+# Seller and product related information
+## Seller commercial name
+sellerName: Example
+## Seller alias in the AWS marketplace
+sellerMarketPlaceAlias: example-software
+## Seller AWS account ID
+accountId: 123456789012
+## Product name
+productName: Example Solution
+## Product category
 productCategory: networking
-productUrl: https://cloudsoft.io/software
-marketplaceProductId: prod-bqw25thnhcgmk
-marketplaceProductUrl: https://aws.amazon.com/marketplace/pp/prodview-6yypk5najvj5y
+## Product URL
+productUrl: https://example.io/solution
+## Marketplace product ID
+marketplaceProductId: prod-exa12thsdnghk
+## Marketplace product URL
+marketplaceProductUrl: https://aws.amazon.com/marketplace/pp/prodview-1abcd2najvj5y
+## Opt-in autocorrection. All of them default to false
 chartAutoCorrection:
+##  Opt-in removing hooks references from the templates and repackage the chart
   hooks: true
+##  Opt-in removing hooks unsupported capabilities from the templates and repackage the chart
   capabilities: true
+##  Opt-in replacing references to .Release.Service with 'eks' from the templates and repackage the chart
+  releaseService: false
+
+# Add-on information
 addon:
-  name: amp
-  versionName: Cloudsoft AMP 7.0.2 mp1
+## Add-on name
+  name: solution
+## Add-on version name
+  versionName: Example Software Solution 1
+## Add-on version e.g. 0.1.0
   version: 1.0.0
-  namespace: cloudsoft-amp
+## Add-on namespace
+  namespace: ex-sol
+## Add-on type
   type: networking
-  helmChartUrl: 709825985650.dkr.ecr.us-east-1.amazonaws.com/cloudsoft-development/cloudsoft-amp-helm:0.1.6
+## Add-on helm chart URL
+  helmChartUrl: 123456789012.dkr.ecr.us-east-1.amazonaws.com/example-software/solution-helm:0.1.0
+## Add-on helm chart URL protocol
   helmChartUrlProtocol: oci
+## Add-on container images URLs
   containerImagesUrls:
-    - 709825985650.dkr.ecr.us-east-1.amazonaws.com/cloudsoft-development/cloudsoft-amp:0.4.2
+    - 709825985650.dkr.ecr.us-east-1.amazonaws.com/example-software/solution:0.1.0
+## Add-on deployment prerequisites
   prerequisites: >
-    Follow instructions in: https://docs.cloudsoft.io/
+    Follow  instructions in: https://docs.example.com/installation/prerequisites
+## Add-on deployment instructions
   usageInstructions: >
-    deploy it and enjoy
+    Follow  instructions in: https://docs.example.com/instructions
+## List of add-on supported kubernetes versions
   kubernetesVersion:
     - 1.26
     - 1.27
     - 1.28
+## Add-on containers supported architectures
   architectures:
     - arm64
     - amd64
+## Parameters that will be used while installing this add-on on a EKS cluster
   environmentOverride:
     param1: value1
     param2: value2
+## List of expanded values keys to be allowed to be modified when deploying the add-on
   customConfiguration:
-    - ampResourceLimits.requests.cpu
-    - ampResourceLimits.requests.memory
-    - ampResourceLimits.limits.cpu
-    - ampResourceLimits.limits.memory
+    - resourceLimits.requests.cpu
+    - resourceLimits.requests.memory
+    - resourceLimits.limits.cpu
+    - resourceLimits.limits.memory
+## Map of parameters supported for inject secrets and the keys expected to be found in. DO NOT INCLUDE SECRET VALUES
   secretNameKeyMapping:
-    ampSecretsNameOverride:
-      - amp-admin-password
-    exampleWithMultipleSecretKeys:
+### `exampleSecret` is the name of the parameter  expected on the helm chart for the pre-created secret
+    exampleSecret:
+### `secretKeyOne` and `secretKeyOne` are the name of the keys to be resolved from AWS Secret Manager and added to the kubernetes `exampleWithSecretKeys` secret
       - secretKeyOne
       - secretKeyTwo
+## Service accounts - IAM policies mapping
   serviceAccounts:
     serviceAccountOne:
       iamManagedPolicies:
         - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
       iamInlinePolicies:
-          ampS3: >
+          persistenceS3: >
             {
                 "Version": "2012-10-17",
                 "Statement": [
                     {
-                        "Sid": "AmpPersistence",
+                        "Sid": "SolutionPersistence",
                         "Action": [
                             "s3:GetObject",
                             "s3:PutObject"
                         ],
                         "Effect": "Allow",
                         "Resource": [
-                            "arn:aws:s3:::cloudsoft-amp-*"
+                            "arn:aws:s3:::example-solution-*"
                         ]
                     }
                 ]
             }
     serviceAccountTwo:
       iamManagedPolicies:
-        - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
+        - arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess
