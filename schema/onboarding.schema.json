@@ -169,7 +169,7 @@
             "type": "string"
           }
         },
-        "secretNameKeyMapping": {
+        "secretMapping": {
           "title": "Map of parameters supported for inject secrets and the keys expected to be found in. DO NOT INCLUDE SECRET VALUES",
           "type": "object",
           "additionalProperties": {

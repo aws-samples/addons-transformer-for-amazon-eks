@@ -102,7 +102,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findCapabilities(): Promise<ServiceResponse<string>> {
-    const capabilities = spawnSync('grep', ['-Rilen', '".Capabilities"', this.toValidate], {
+    const capabilities = spawnSync('grep', ['-Rilne', '".Capabilities"', this.toValidate], {
       shell: true,
       encoding: "utf-8"
     });
@@ -125,7 +125,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rilen', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
+    const hooks = spawnSync('grep', ['-Rilne', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
 
     if (hooks.stdout === "") {
       return SuccessResponse
@@ -276,7 +276,7 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    const grepLookup = spawnSync('grep', ['-Rilen', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
+    const grepLookup = spawnSync('grep', ['-Rilne', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
