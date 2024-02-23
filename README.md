@@ -99,7 +99,6 @@ USAGE
 ## Commands
 <!-- commands -->
 * [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
-* [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
 * [`aws-sleek-transformer validate [HELMURL]`](#aws-sleek-transformer-validate-helmurl)
 
 ## `aws-sleek-transformer create-issue FILE`
@@ -131,40 +130,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
-
-## `aws-sleek-transformer submit`
-
-Submit the addon to the AWS marketplace
-
-```
-USAGE
-  $ aws-sleek-transformer submit
-
-DESCRIPTION
-  Submit the addon to the AWS marketplace
-
-
-  Sends the selected addon, version to the marketplace for final submission and upload it to Project Sleek.
-
-  It reads from the addons stored in the config: ~/.sleek/config.json and presents them as options to the user to
-  submit.
-
-  The CLI requires the configure command to be run before hand to ensure there are correct configurations for each of
-  the addons.
-
-  This command requires the following:
-  * Addon Name - as used in the configure command
-  * Addon Version - as used in the configure command
-
-  If no flags are provided, the CLI will launch an interactive menu which let's you select which addon to submit to
-  the marketplace.
-
-
-EXAMPLES
-  $ aws-sleek-transformer submit
-```
-
-_See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
 ## `aws-sleek-transformer validate [HELMURL]`
 
@@ -226,35 +191,3 @@ EXAMPLES
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->
-
-### create-issue
-
-`aws-sleek-transformer create-issue FILE`
-
-Creates a Github Issue based in the input file
-
-```
-USAGE
-  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
-
-ARGUMENTS
-  FILE  Path to add-on input file
-
-FLAGS
-  -d, --dryRun        Runs all checks without creating the issue
-      --file=<value>  Path to add-on input file
-
-DESCRIPTION
-  Creates a Github Issue based in the input file
-
-
-  This creates a Github Issue on the Sleek repository.
-
-  It will validate the input file to match the schema
-
-
-EXAMPLES
-  $ aws-sleek-transformer create-issue filename
-```
-
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
