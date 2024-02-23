@@ -7,6 +7,9 @@ The Sleek transformer is driven to assist partners quickly onboard their helm ch
 environment (known as Sleek). This system attempts to cover pre-validation checks we conduct before allowing partner
 addons into the AWS Console.
 
+The goal is to speed up the iterative process for onboarding partners into the EKS addons environment, increasing the
+throughput of partner addons by letting them validate against our checks before they engage with AWS Engineering.
+
 ### Getting Started
 To add a new command to this CLI, simply add a new file in `./src/commands/` that extends from `SleekCommand`.
 Our standard best practice is to separate the static aspects used to generate the OCLIF docs into a separate folder such
