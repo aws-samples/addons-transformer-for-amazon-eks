@@ -12,6 +12,12 @@ To add a new command to this CLI, simply add a new file in `./src/commands/` tha
 Our standard best practice is to separate the static aspects used to generate the OCLIF docs into a separate folder such
 as `./src/commandOpts` just to make it easier to read the functional vs. descriptive aspects of code.
 
+This entire CLI is heavily I/O bound, so please try and use Async/Await at appropriate locations. We separate the interface
+and logic aspects of the CLI by creating services that are called from the UI classes:
+* `./src/commands/` - contains all the interface files
+* `./src/services/` - contains all the services and logic
+* `./src/commandOpts/` - contains all the interface static properties (used to generate OCLIF documentation)
+
 ### Command Management
 This project uses OCLIF (Open CLI Framework) to manage commands. OCLIF provides a simple yet powerful framework
 for building CLI applications in Node.js. With OCLIF, commands are defined as classes that extend the base
