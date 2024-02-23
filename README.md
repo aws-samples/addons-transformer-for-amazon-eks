@@ -30,6 +30,24 @@ You can run `make` or execute `install.sh` to build this project and install the
 
 Both of these install the suitable Node, Npm and Helm versions required.
 
+## Cloud Shell Installation
+To quickly get started with this transformer, you can leverage CloudShell in the AWS Console. Some prerequisites you need:
+* Access to the helm chart to pull it
+* Install the Helm CLI in CloudShell using the following commands:
+    ```shell
+    $ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    $ chmod 700 get_helm.sh
+    $ ./get_helm.sh
+    ```
+* A github token as required by [The Github Service](README.md#request-submission-for-onboarding-the-add-on-to-the-program)
+
+To use this CLI in CloudShell,
+* Log into the AWS Console with a role that has access to the location of the helm chart
+    * If the chart is in a private ECR repo, ensure the role can pull from that repo.
+    * If the chart is in a public repo, ensure that there aren't any permissions restricting access to the public domain
+* Use the npm install command to directly install the CLI into the shell: `npm i -g aws-sleek-transformer`
+* Follow steps in [the Helm chart validation section](README.md#helm-chart-validation) for all other questions.
+
 ## Features
 This npm module does the following features:
 
@@ -39,10 +57,10 @@ validations:
  - Finding occurrences of unsupported `.Capabilities`
  - Templates creating `helm.sh/hook`
  - Use of `.Release.Service`
- - Use of helm lookup function (TODO)
+ - Use of helm lookup function
  - Dependencies external to the main chart
- - Errors running `helm lint` see [lint command](#helm-lint-command) bellow )
- - Errors running `helm template...` (see [template command](#helm-template-command) bellow )
+ - Errors running `helm lint` see [lint command](#helm-lint-command) below
+ - Errors running `helm template...` (see [template command](#helm-template-command) below
 
 If the chart is not in a public registry, login on it in advance is necessary, for example, for login on ECR:
 
