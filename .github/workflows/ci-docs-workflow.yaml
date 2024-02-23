@@ -1,0 +1,25 @@
+name: ci-docs-workflow
+run-name: Generating docs for ${{ github.ref }}
+on:
+  push:
+    branches:
+      - main
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install deps
+        run: npm i
+
+      - name: Generate docs
+        run: npm run prepack
+
+      - name: Commit docs
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Generate docs: ${{ github.ref }}"
+          git push
