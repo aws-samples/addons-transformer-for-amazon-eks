@@ -15,7 +15,8 @@ Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.
 ## Pre-requisites
 To implement this solution, you need the following prerequisites:
 
-* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). The AWS CLI is a unified tool to manage your AWS services.
+* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+ The AWS CLI is a unified tool to manage your AWS services.
 * AWS CLI default profile should be configured to access your AWS Account.
 * [Node](https://nodejs.org/en/download/current/) version 18.12.1 or later.
 * [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
@@ -25,7 +26,8 @@ To implement this solution, you need the following prerequisites:
 
 You can run `make` or execute `install.sh` to build this project and install the resulting library. In this case only the following are required:
 
-* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). The AWS CLI is a unified tool to manage your AWS services. 
+* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+The AWS CLI is a unified tool to manage your AWS services. 
 * [NVM](https://github.com/nvm-sh/nvm#install--update-script)
 
 Both of these install the suitable Node, Npm and Helm versions required.
@@ -49,18 +51,23 @@ To use this CLI in CloudShell,
 * Follow steps in [the Helm chart validation section](README.md#helm-chart-validation) for all other questions.
 
 ## Features
-This npm module does the following features:
+This npm module has the following features:
 
 ### Helm chart validation
-It grabs the following form the command line parameters or an input file the chart URL, pull it and performs static 
-validations:
- - Finding occurrences of unsupported `.Capabilities`
- - Templates creating `helm.sh/hook`
- - Use of `.Release.Service`
- - Use of helm lookup function
- - Dependencies external to the main chart
- - Errors running `helm lint` see [lint command](#helm-lint-command) below
- - Errors running `helm template...` (see [template command](#helm-template-command) below
+
+This NPM module accepts two kinds of input:
+  - CLI Args as descirbed in the [Commands](README.md#commands) section
+  - Input file as descibed in [AddOn Submission](#request-submission-for-onboarding-the-add-on-to-the-program)
+
+The module then performs static validation to attempt to find the following:
+  - Finding occurrences of unsupported `.Capabilities`
+  - Templates creating `helm.sh/hook`
+  - Use of `.Release.Service`
+  - Use of helm lookup function
+  - Dependencies external to the main chart
+  - Errors running `helm lint` see [lint command](#helm-lint-command) below
+  - Errors running `helm template...` (see [template command](#helm-template-command) below
+
 
 If the chart is not in a public registry, login on it in advance is necessary, for example, for login on ECR:
 
@@ -90,9 +97,10 @@ helm template $CHART_NAME $CHART_LOCATION
 
 ### Request submission for onboarding the add-on to the program
 
-It creates a GitHub issue in the onboarding repository for starting the process. As input, it takes the path to a `yaml`
-template that should contain the vendor, product and the add-on required information. The json-schema for its creation
-can be found in this repo [schema](./schema/onboarding.schema.json) and an example in the [doc/examples](./doc/examples/onboarding.example.yaml)
+This functionality creates a GitHub issue in the onboarding repository for starting the
+process. As input, it takes the path to a `yaml` template that should contain the vendor,
+product and the add-on required information. The json-schema for its creation can be found
+in this repo [schema](./schema/onboarding.schema.json) and an example in the [doc/examples](./doc/examples/onboarding.example.yaml)
 directory.
 
 For validation the template, it supports the flag `--dry-run` that prevents the issue creation.
