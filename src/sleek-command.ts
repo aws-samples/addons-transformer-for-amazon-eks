@@ -1,5 +1,3 @@
-import * as fs from "fs";
-import * as path from "path";
 import { Command, Config } from "@oclif/core";
 
 /**
