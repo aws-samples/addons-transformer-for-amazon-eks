@@ -1,8 +1,10 @@
-import {BaseService} from "./base-service.js";
-import {ServiceResponse} from "../types/service.js";
-import {IssueData} from "../types/issue.js";
+/* eslint-disable perfectionist/sort-objects */
 import _Ajv from "ajv";
 import * as yaml from "js-yaml";
+
+import {IssueData} from "../types/issue.js";
+import {ServiceResponse} from "../types/service.js";
+import {BaseService} from "./base-service.js";
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 export default class SchemaValidationService extends BaseService {
@@ -16,9 +18,9 @@ export default class SchemaValidationService extends BaseService {
             mode: 'no-cors'
         })
             .then(response => response.json())
-            .catch(err => {
+            .catch(error => {
                 this.logToStderr(`Schema url: ${schemaJsonUrl}`);
-                console.debug(err);
+                console.debug(error);
                 this.error('Error fetching the schema', {code: '1'});
             })
         const ajv = new Ajv({allErrors: true})

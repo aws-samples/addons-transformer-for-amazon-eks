@@ -1,9 +1,11 @@
-import {spawnSync} from "child_process";
-import {BaseService} from "./base-service.js";
-import {ServiceResponse} from "../types/service.js";
+/* eslint-disable perfectionist/sort-objects */
+import {spawnSync} from "node:child_process";
+
 import {SleekCommand} from "../sleek-command.js";
-import {ValidateOptions} from "../types/validate.js";
 import {AddonData} from "../types/issue.js";
+import {ServiceResponse} from "../types/service.js";
+import {ValidateOptions} from "../types/validate.js";
+import {BaseService} from "./base-service.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
   success: true,
@@ -29,11 +31,11 @@ export const ExtendValidationFail: ServiceResponse<string> = {
 };
 
 export default class ChartValidatorService extends BaseService {
-  // this will always be a local filepath
-  private readonly toValidate: string;
-  private readonly supportedKubernetesVersions: string[];
   private readonly name: string;
   private readonly namespace: string;
+  private readonly supportedKubernetesVersions: string[];
+  // this will always be a local filepath
+  private readonly toValidate: string;
   constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
     super(commandCaller);
     this.toValidate = `"${toValidate}"`;
@@ -104,13 +106,10 @@ export default class ChartValidatorService extends BaseService {
   private async findCapabilities(): Promise<ServiceResponse<string>> {
     const capabilities = spawnSync('grep', ['-Rilne', '".Capabilities"', this.toValidate], {
       shell: true,
-      encoding: "utf-8"
+      encoding: "utf8"
     });
 
-    if (capabilities.stdout === "") {
-      return SuccessResponse
-    } else {
-      return {
+    return capabilities.stdout === "" ? SuccessResponse : {
         success: false,
         body: "Unsupported system Capabilities are used in chart.",
         error: {
@@ -120,34 +119,13 @@ export default class ChartValidatorService extends BaseService {
             exit: 1
           }
         }
-      }
-    }
-  }
-
-  private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rilne', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
-
-    if (hooks.stdout === "") {
-      return SuccessResponse
-    } else {
-      return {
-        success: false,
-        body: "Unsupported system Hooks are used in chart.",
-        error: {
-          input: hooks.stdout,
-          options: {
-            code: "E502",
-            exit: 1
-          }
-        }
-      }
-    }
+      };
   }
 
   private async findDependencies(): Promise<ServiceResponse<string>> {
     const grepDependencies = spawnSync('helm', ['dependency', 'list', this.toValidate], {
       shell: true,
-      encoding: "utf-8"
+      encoding: "utf8"
     });
 
     // split every line in the output
@@ -161,10 +139,7 @@ export default class ChartValidatorService extends BaseService {
     // check dependencies to ensure they all contain file://
     const allDepsFiles = dependencies.every(dep => dep.includes('file://'));
 
-    if (allDepsFiles) {
-      return SuccessResponse
-    } else {
-      return {
+    return allDepsFiles ? SuccessResponse : {
         success: false,
         body: "Not all dependencies reside in the main chart.",
         error: {
@@ -173,6 +148,43 @@ export default class ChartValidatorService extends BaseService {
             code: "E503",
             exit: 1
           }
+        }
+      };
+  }
+
+  private async findHooks(): Promise<ServiceResponse<string>> {
+    const hooks = spawnSync('grep', ['-Rilne', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf-8"});
+
+    return hooks.stdout === "" ? SuccessResponse : {
+        success: false,
+        body: "Unsupported system Hooks are used in chart.",
+        error: {
+          input: hooks.stdout,
+          options: {
+            code: "E502",
+            exit: 1
+          }
+        }
+      };
+  }
+
+  private async findLookups(): Promise<ServiceResponse<string>> {
+    // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
+    // and the word itself
+    const grepLookup = spawnSync('grep', ['-Rilne', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
+
+    if (grepLookup.stdout === "") {
+      return SuccessResponse;
+    }
+
+    return {
+      success: false,
+      body: "Helm charts use lookup functions",
+      error: {
+        input: "Lookup functions not permitted",
+        options: {
+          code: "E507",
+          exit: 1
         }
       }
     }
@@ -187,14 +199,11 @@ export default class ChartValidatorService extends BaseService {
     const allReleaseObjects = spawnSync('grep', ['-rn', '.Release.', this.toValidate], {shell: true, encoding: "utf-8"});
     const unsupportedReleaseObjects = spawnSync('grep', ['-vn', unsupportedReleaseObjectsRegex, this.toValidate], {
       shell: true,
-      encoding: "utf-8",
+      encoding: "utf8",
       input: allReleaseObjects.stdout
     });
 
-    if (unsupportedReleaseObjects.stdout === "") {
-      return SuccessResponse
-    } else {
-      return {
+    return unsupportedReleaseObjects.stdout === "" ? SuccessResponse : {
         success: false,
         body: "Unsupported release objects are used in chart.",
         error: {
@@ -204,8 +213,33 @@ export default class ChartValidatorService extends BaseService {
             exit: 1
           }
         }
-      }
-    }
+      };
+  }
+
+  /**
+   *
+   *  helm template <chart-name> <chart-location>
+   *      --set k8version=<Kubernetes-version>
+   *      --kube-version <Kubernetes-version>
+   *      --namespace <addon-namespace>
+   *      --include-crds
+   *      --no-hooks
+   *      --f <any-overridden-values> TODO
+   *
+   * @param k8sVersion
+   * @private
+   */
+  private getTemplateResult(k8sVersion: string) {
+    return spawnSync('helm', [
+      'template',
+      this.name,
+      this.toValidate,
+      `--set k8version=${k8sVersion}`,
+      '--kube-version', k8sVersion,
+      '--namespace', this.namespace,
+      '--include-crds',
+      '--no-hooks',
+    ], {shell: true, encoding: "utf8"});
   }
 
   /**
@@ -215,7 +249,7 @@ export default class ChartValidatorService extends BaseService {
   private async runHelmLint(): Promise<ServiceResponse<string>> {
     const lintResult = spawnSync('helm', ['lint', ' --strict', '--with-subcharts', this.toValidate], {
       shell: true,
-      encoding: "utf-8"
+      encoding: "utf8"
     });
 
     // success execution
@@ -245,14 +279,14 @@ export default class ChartValidatorService extends BaseService {
     const errors: string[] = [];
     let allVersionSuccess = true;
 
-    this.supportedKubernetesVersions.map(k8sVersion => {
+    for (const k8sVersion of this.supportedKubernetesVersions) {
       const templateResult = this.getTemplateResult(k8sVersion);
       // this.log(`Templating for k8s version ${k8sVersion} ${templateResult.status===0?'successful':'errored'}`)
-      if (templateResult.status != 0) {
+      if (templateResult.status !== 0) {
         allVersionSuccess = false
         errors.push(`Kubernetes version: ${k8sVersion} - ${templateResult.stderr}`)
       }
-    })
+    }
 
     // success execution
     if (allVersionSuccess) {
@@ -271,53 +305,5 @@ export default class ChartValidatorService extends BaseService {
         }
       }
     }
-  }
-
-  private async findLookups(): Promise<ServiceResponse<string>> {
-    // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
-    // and the word itself
-    const grepLookup = spawnSync('grep', ['-Rilne', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
-
-    if (grepLookup.stdout === "") {
-      return SuccessResponse;
-    }
-
-    return {
-      success: false,
-      body: "Helm charts use lookup functions",
-      error: {
-        input: "Lookup functions not permitted",
-        options: {
-          code: "E507",
-          exit: 1
-        }
-      }
-    }
-  }
-
-  /**
-   *
-   *  helm template <chart-name> <chart-location>
-   *      --set k8version=<Kubernetes-version>
-   *      --kube-version <Kubernetes-version>
-   *      --namespace <addon-namespace>
-   *      --include-crds
-   *      --no-hooks
-   *      --f <any-overridden-values> TODO
-   *
-   * @param k8sVersion
-   * @private
-   */
-  private getTemplateResult(k8sVersion: string) {
-    return spawnSync('helm', [
-      'template',
-      this.name,
-      this.toValidate,
-      `--set k8version=${k8sVersion}`,
-      '--kube-version', k8sVersion,
-      '--namespace', this.namespace,
-      '--include-crds',
-      '--no-hooks',
-    ], {shell: true, encoding: "utf-8"});
   }
 }

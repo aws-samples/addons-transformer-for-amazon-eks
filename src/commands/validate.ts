@@ -1,9 +1,10 @@
-import {Args, Flags} from '@oclif/core';
-import {SleekCommand} from "../sleek-command.js";
-import ChartValidatorService from "../services/validate.js";
-import HelmManagerService from "../services/helm.js";
 import fs from "node:fs";
+
+import ValidateOpt from "../commandOpts/validate.js";
+import HelmManagerService from "../services/helm.js";
 import SchemaValidationService from "../services/schemaValidation.js";
+import ChartValidatorService from "../services/validate.js";
+import {SleekCommand} from "../sleek-command.js";
 import {AddonData, AllEksSupportedKubernetesVersions, IssueData} from "../types/issue.js";
 import {
   getChartNameFromUrl,
@@ -11,14 +12,13 @@ import {
   getRepoFromFullChartUri,
   getVersionTagFromChartUri
 } from "../utils.js";
-import ValidateOpt from "../commandOpts/validate.js";
 
 export default class Validate extends SleekCommand {
-  static description = ValidateOpt.description;
-  static summary = ValidateOpt.summary;
-  static examples = ValidateOpt.examples;
   static args = ValidateOpt.args;
+  static description = ValidateOpt.description;
+  static examples = ValidateOpt.examples;
   static flags = ValidateOpt.flags;
+  static summary = ValidateOpt.summary;
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Validate);
@@ -26,10 +26,10 @@ export default class Validate extends SleekCommand {
     // if helmURL is given, download the chart then validate
     // if file is given, validate based on the path
     // else, raise error stating one or the other arg/flag should be provided
-    let repoProtocol, repoUrl, chartName, versionTag, addonName;
+    let repoProtocol; let repoUrl; let chartName; let versionTag; let addonName;
     let skipHooksValidation = flags.skipHooks;
     let skipReleaseService = flags.skipReleaseService;
-    let addonData: AddonData | undefined = undefined;
+    let addonData: AddonData | undefined;
 
     // uncomment for debugging purposes
     // this.log('---')
@@ -46,7 +46,7 @@ export default class Validate extends SleekCommand {
 
       this.log(`Validating chart from url: ${repoUrlInput}`)
       repoProtocol = getProtocolFromFullQualifiedUrl(repoUrlInput!);
-      repoUrl = getRepoFromFullChartUri(repoUrlInput!).substring(repoProtocol.length + 3); // 3 == '://'.length
+      repoUrl = getRepoFromFullChartUri(repoUrlInput!).slice(Math.max(0, repoProtocol.length + 3)); // 3 == '://'.length
 
       chartName = getChartNameFromUrl(repoUrl);
       versionTag = getVersionTagFromChartUri(repoUrlInput!);
@@ -56,7 +56,7 @@ export default class Validate extends SleekCommand {
       const repoUrlInput = args.helmUrl || flags.helmUrl;
 
       repoProtocol = flags.protocol || getProtocolFromFullQualifiedUrl(repoUrlInput!);
-      repoUrl = flags.helmRepo || getRepoFromFullChartUri(repoUrlInput!).substring(repoProtocol.length + 3);
+      repoUrl = flags.helmRepo || getRepoFromFullChartUri(repoUrlInput!).slice(Math.max(0, repoProtocol.length + 3));
       versionTag = flags.version || getVersionTagFromChartUri(repoUrlInput!);
     } else if (
       flags.helmRepo && flags.protocol && flags.version // all the url bits
@@ -93,32 +93,31 @@ export default class Validate extends SleekCommand {
     if (!repoProtocol) {
       this.error("Protocol is required");
     }
+
     if (!repoUrl) {
       this.error("Repo is required");
     }
+
     if (!chartName) {
       this.error("Chart name is required");
     }
+
     if (!versionTag) {
       this.error("Version tag is required");
     }
 
     const helmManager = new HelmManagerService(this);
-    const chartPath = !!flags.directory ?
-      flags.directory :
-      `${await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName)}/${chartName}`;
+    const chartPath = flags.directory ?? `${await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName)}/${chartName}`;
 
     // addonData is initialized when reading from the input yaml; when using flags the parameters are inferred
-    if (!addonData) {
-      addonData = {
+    addonData ||= {
         helmChartUrl: `${repoProtocol}://${repoUrl}:${versionTag}`,
         helmChartUrlProtocol: repoProtocol!,
         kubernetesVersion: flags.k8sVersions?.split(',') || AllEksSupportedKubernetesVersions,
         name: addonName!,
         namespace: flags.addonNamespace || 'test-namespace',
         version: versionTag!
-      }
-    }
+      };
     const validatorService = new ChartValidatorService(this, chartPath, addonData!);
     const validatorServiceResp = await validatorService.validate({skipHooksValidation, skipReleaseService});
 

@@ -1,12 +1,13 @@
-import {Octokit} from "@octokit/core";
-import {ServiceResponse} from "../types/service.js";
+/* eslint-disable perfectionist/sort-objects */
 import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js";
+
+import {Octokit} from "@octokit/core";
+
+import {ServiceResponse} from "../types/service.js";
 import {BaseService} from "./base-service.js";
 
 export default class CreateIssueService extends BaseService {
-    public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
-        return this.createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, labels);
-    }
+    public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => this.createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, labels)
 
     private createIssueOnRepo = async (repo: string, owner: string, title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
         const octokitOptions = {
@@ -27,7 +28,7 @@ export default class CreateIssueService extends BaseService {
         const octokit = new Octokit(octokitOptions)
         const octokitResponsePromise = octokit.request('POST /repos/{owner}/{repo}/issues', createIssueRequest);
         return octokitResponsePromise
-            .then((response)=> {return {success: true, body: response}})
+            .then((response)=> ({success: true, body: response}))
             .catch((error)=>{this.error(`Create issue error: ${error}`)})
     }
 }
