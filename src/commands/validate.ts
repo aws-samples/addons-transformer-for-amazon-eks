@@ -89,6 +89,20 @@ export default class Validate extends SleekCommand {
       this.error("Either a Helm URL or a file path should be provided");
     }
 
+    // verify that the things are populated
+    if (!repoProtocol) {
+      this.error("Protocol is required");
+    }
+    if (!repoUrl) {
+      this.error("Repo is required");
+    }
+    if (!chartName) {
+      this.error("Chart name is required");
+    }
+    if (!versionTag) {
+      this.error("Version tag is required");
+    }
+
     const helmManager = new HelmManagerService(this);
     const chartPath = !!flags.directory ?
       flags.directory :
