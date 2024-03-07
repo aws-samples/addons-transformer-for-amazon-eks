@@ -38,6 +38,7 @@
     },
     "chartAutoCorrection": {
       "type": "object",
+      "title": "Opt-in autocorrection",
       "additionalProperties": false,
       "properties": {
         "hooks": {
@@ -133,7 +134,7 @@
           "type": "string"
         },
         "kubernetesVersion": {
-          "title": "Add-on supported kubernetes versions",
+          "title": "List of add-on supported kubernetes versions",
           "type": "array",
           "items": {
             "enum": [
@@ -162,10 +163,20 @@
           "type": "object"
         },
         "customConfiguration": {
-          "title": "List of expanded values keys to be allow to be modified when deploying the add-on",
+          "title": "List of expanded values keys to be allowed to be modified when deploying the add-on",
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "secretMapping": {
+          "title": "Map of parameters supported for inject secrets and the keys expected to be found in. DO NOT INCLUDE SECRET VALUES",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "serviceAccounts": {
@@ -212,11 +223,11 @@
       "type": "string"
     },
     "marketplaceProductId": {
-      "title": "Product URL",
+      "title": "Marketplace product ID",
       "type": "string"
     },
     "marketplaceProductUrl": {
-      "title": "Product AWS Marketplace URL",
+      "title": "Marketplace product URL",
       "type": "string"
     },
     "productCategory": {
