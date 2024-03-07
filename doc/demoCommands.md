@@ -15,7 +15,12 @@ aws-sleek-transformer validate --help
 
 ```shell
 # Validate passing repo URI
-aws-sleek-transformer validate oci://304295633295.dkr.ecr.eu-west-1.amazonaws.com/cloudsoft-amp-helm:0.1.6   
+aws-sleek-transformer validate oci://12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts:x.x.x   
+```
+
+```shell
+# Validate passing individual components of Repo URL
+aws-sleek-transformer validate -r 12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts -p oci -v x.x.x
 ```
 
 ```shell

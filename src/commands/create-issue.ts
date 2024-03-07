@@ -1,23 +1,22 @@
 import fs from "node:fs";
 
 import CreateIssueOpt from "../commandOpts/create-issue.js";
-import {SleekCommand} from "../sleek-command.js";
 import CreateIssueService from "../services/create-issue.js";
-import {ChartAutoCorrection, IssueData} from "../types/issue.js";
+import HelmManagerService from "../services/helm.js";
 import SchemaValidationService from "../services/schemaValidation.js";
 import ChartValidatorService from "../services/validate.js";
-import {execSync} from "child_process";
+import {SleekCommand} from "../sleek-command.js";
+import {IssueData} from "../types/issue.js";
 import {ValidateOptions} from "../types/validate.js";
 import {getChartNameFromUrl} from "../utils.js";
-import HelmManagerService from "../services/helm.js";
 
 
 export class CreateIssue extends SleekCommand {
-    static description = CreateIssueOpt.description;
-    static summary = CreateIssueOpt.summary;
-    static examples = CreateIssueOpt.examples;
     static args = CreateIssueOpt.args;
+    static description = CreateIssueOpt.description;
+    static examples = CreateIssueOpt.examples;
     static flags = CreateIssueOpt.flags;
+    static summary = CreateIssueOpt.summary;
 
     async run(): Promise<any> {
         const {args, flags} = await this.parse(CreateIssue);
@@ -34,8 +33,8 @@ export class CreateIssue extends SleekCommand {
 
         const inputDataParsed = data.body as IssueData;
         const addonData = inputDataParsed.addon;
-        const repo= addonData.helmChartUrl.substring(0,addonData.helmChartUrl.lastIndexOf(':'))
-        const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.substring(addonData.helmChartUrl.lastIndexOf(':')+1)}` : ''
+        const repo= addonData.helmChartUrl.slice(0,Math.max(0, addonData.helmChartUrl.lastIndexOf(':')))
+        const chartTag = addonData.helmChartUrl.lastIndexOf(':') ? `${addonData.helmChartUrl.slice(Math.max(0, addonData.helmChartUrl.lastIndexOf(':')+1))}` : ''
         const chartName = getChartNameFromUrl(repo);
         const helmManager = new HelmManagerService(this);
         const charPath= `${await helmManager.pullAndUnzipChart(repo!, addonData.helmChartUrlProtocol!, chartTag!, addonData.name)}/${chartName}`;
@@ -48,6 +47,7 @@ export class CreateIssue extends SleekCommand {
         if(!validatorServiceResp.success){
             this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )
         }
+
         this.log(`Chart validation successful`)
 
         // create issue base in the file input

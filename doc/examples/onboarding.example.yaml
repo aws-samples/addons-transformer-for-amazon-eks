@@ -15,6 +15,7 @@ productUrl: https://example.io/solution
 marketplaceProductId: prod-exa12thsdnghk
 ## Marketplace product URL
 marketplaceProductUrl: https://aws.amazon.com/marketplace/pp/prodview-1abcd2najvj5y
+
 ## Opt-in autocorrection. All of them default to false
 chartAutoCorrection:
 ##  Opt-in removing hooks references from the templates and repackage the chart

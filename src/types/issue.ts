@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-object-types */
 export type AddonData = {
     name: string,
     namespace: string,

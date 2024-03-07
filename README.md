@@ -15,7 +15,8 @@ Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.
 ## Pre-requisites
 To implement this solution, you need the following prerequisites:
 
-* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). The AWS CLI is a unified tool to manage your AWS services.
+* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+ The AWS CLI is a unified tool to manage your AWS services.
 * AWS CLI default profile should be configured to access your AWS Account.
 * [Node](https://nodejs.org/en/download/current/) version 18.12.1 or later.
 * [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) version 8.19.2 or later.
@@ -25,24 +26,48 @@ To implement this solution, you need the following prerequisites:
 
 You can run `make` or execute `install.sh` to build this project and install the resulting library. In this case only the following are required:
 
-* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). The AWS CLI is a unified tool to manage your AWS services. 
+* The [AWS Command Line Interface](http://aws.amazon.com/cli) (AWS CLI) [installed](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+The AWS CLI is a unified tool to manage your AWS services. 
 * [NVM](https://github.com/nvm-sh/nvm#install--update-script)
 
 Both of these install the suitable Node, Npm and Helm versions required.
 
+## Cloud Shell Installation
+To quickly get started with this transformer, you can leverage CloudShell in the AWS Console. Some prerequisites you need:
+* Access to the helm chart to pull it
+* Install the Helm CLI in CloudShell using the following commands:
+    ```shell
+    $ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    $ chmod 700 get_helm.sh
+    $ ./get_helm.sh
+    ```
+* A github token as required by [The Github Service](README.md#request-submission-for-onboarding-the-add-on-to-the-program)
+
+To use this CLI in CloudShell,
+* Log into the AWS Console with a role that has access to the location of the helm chart
+    * If the chart is in a private ECR repo, ensure the role can pull from that repo.
+    * If the chart is in a public repo, ensure that there aren't any permissions restricting access to the public domain
+* Use the npm install command to directly install the CLI into the shell: `npm i -g aws-sleek-transformer`
+* Follow steps in [the Helm chart validation section](README.md#helm-chart-validation) for all other questions.
+
 ## Features
-This npm module does the following features:
+This npm module has the following features:
 
 ### Helm chart validation
-It grabs the following form the command line parameters or an input file the chart URL, pull it and performs static 
-validations:
- - Finding occurrences of unsupported `.Capabilities`
- - Templates creating `helm.sh/hook`
- - Use of `.Release.Service`
- - Use of helm lookup function (TODO)
- - Dependencies external to the main chart
- - Errors running `helm lint` see [lint command](#helm-lint-command) bellow )
- - Errors running `helm template...` (see [template command](#helm-template-command) bellow )
+
+This NPM module accepts two kinds of input:
+  - CLI Args as descirbed in the [Commands](README.md#commands) section
+  - Input file as descibed in [AddOn Submission](#request-submission-for-onboarding-the-add-on-to-the-program)
+
+The module then performs static validation to attempt to find the following:
+  - Finding occurrences of unsupported `.Capabilities`
+  - Templates creating `helm.sh/hook`
+  - Use of `.Release.Service`
+  - Use of helm lookup function
+  - Dependencies external to the main chart
+  - Errors running `helm lint` see [lint command](#helm-lint-command) below
+  - Errors running `helm template...` (see [template command](#helm-template-command) below
+
 
 If the chart is not in a public registry, login on it in advance is necessary, for example, for login on ECR:
 
@@ -72,9 +97,10 @@ helm template $CHART_NAME $CHART_LOCATION
 
 ### Request submission for onboarding the add-on to the program
 
-It creates a GitHub issue in the onboarding repository for starting the process. As input, it takes the path to a `yaml`
-template that should contain the vendor, product and the add-on required information. The json-schema for its creation
-can be found in this repo [schema](./schema/onboarding.schema.json) and an example in the [doc/examples](./doc/examples/onboarding.example.yaml)
+This functionality creates a GitHub issue in the onboarding repository for starting the
+process. As input, it takes the path to a `yaml` template that should contain the vendor,
+product and the add-on required information. The json-schema for its creation can be found
+in this repo [schema](./schema/onboarding.schema.json) and an example in the [doc/examples](./doc/examples/onboarding.example.yaml)
 directory.
 
 For validation the template, it supports the flag `--dry-run` that prevents the issue creation.
@@ -99,7 +125,6 @@ USAGE
 ## Commands
 <!-- commands -->
 * [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
-* [`aws-sleek-transformer submit`](#aws-sleek-transformer-submit)
 * [`aws-sleek-transformer validate [HELMURL]`](#aws-sleek-transformer-validate-helmurl)
 
 ## `aws-sleek-transformer create-issue FILE`
@@ -131,40 +156,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
-
-## `aws-sleek-transformer submit`
-
-Submit the addon to the AWS marketplace
-
-```
-USAGE
-  $ aws-sleek-transformer submit
-
-DESCRIPTION
-  Submit the addon to the AWS marketplace
-
-
-  Sends the selected addon, version to the marketplace for final submission and upload it to Project Sleek.
-
-  It reads from the addons stored in the config: ~/.sleek/config.json and presents them as options to the user to
-  submit.
-
-  The CLI requires the configure command to be run before hand to ensure there are correct configurations for each of
-  the addons.
-
-  This command requires the following:
-  * Addon Name - as used in the configure command
-  * Addon Version - as used in the configure command
-
-  If no flags are provided, the CLI will launch an interactive menu which let's you select which addon to submit to
-  the marketplace.
-
-
-EXAMPLES
-  $ aws-sleek-transformer submit
-```
-
-_See code: [src/commands/submit.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/submit.ts)_
 
 ## `aws-sleek-transformer validate [HELMURL]`
 
@@ -226,35 +217,3 @@ EXAMPLES
 
 _See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
 <!-- commandsstop -->
-
-### create-issue
-
-`aws-sleek-transformer create-issue FILE`
-
-Creates a Github Issue based in the input file
-
-```
-USAGE
-  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
-
-ARGUMENTS
-  FILE  Path to add-on input file
-
-FLAGS
-  -d, --dryRun        Runs all checks without creating the issue
-      --file=<value>  Path to add-on input file
-
-DESCRIPTION
-  Creates a Github Issue based in the input file
-
-
-  This creates a Github Issue on the Sleek repository.
-
-  It will validate the input file to match the schema
-
-
-EXAMPLES
-  $ aws-sleek-transformer create-issue filename
-```
-
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
