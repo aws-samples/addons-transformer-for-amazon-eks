@@ -5,6 +5,7 @@ import {SleekCommand} from "../sleek-command.js";
 import {AddonData} from "../types/issue.js";
 import {ServiceResponse} from "../types/service.js";
 import {ValidateOptions} from "../types/validate.js";
+import {getRepoFromFullChartUri} from "../utils.js";
 import {BaseService} from "./base-service.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
@@ -104,22 +105,43 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findCapabilities(): Promise<ServiceResponse<string>> {
-    const capabilities = spawnSync('grep', ['-Rilne', '".Capabilities"', this.toValidate], {
-      shell: true,
-      encoding: "utf8"
-    });
+    // create two templates, one with CRDs and the other without
+    // then grep the two generated outputs to see if there's a delta in how many capabilities are found
+    // if there is a delta, then there are unsupported capabilities in the chart
+    // this is a bit hacky, but it works for now
+    let allVersionSuccess = true;
+    let errors: string[] = [];
 
-    return capabilities.stdout === "" ? SuccessResponse : {
-        success: false,
-        body: "Unsupported system Capabilities are used in chart.",
-        error: {
-          input: capabilities.stdout,
-          options: {
-            code: "E501",
-            exit: 1
-          }
+    this.supportedKubernetesVersions.map(k8sVersion => {
+      const withCrds = this.getNoCrdsTemplateResult(k8sVersion);
+      const withoutCrds = this.getTemplateResult(k8sVersion);
+
+      const capsWithCrds = spawnSync('grep', ['-ilne', '".Capabilities"', "<<<", withCrds.stdout], {shell: true, encoding: "utf-8"});
+      const capsWithoutCrds = spawnSync('grep', ['-ilne', '".Capabilities"', "<<<", withoutCrds.stdout], {shell: true, encoding: "utf-8"});
+
+      if (capsWithCrds.stdout !== capsWithoutCrds.stdout) {
+        allVersionSuccess = false;
+        errors.push(`Unsupported system Capabilities are used in chart for Kubernetes version ${k8sVersion}.`)
+      }
+    })
+
+    // success execution
+    if (allVersionSuccess) {
+      return SuccessResponse;
+    }
+
+    // any off the templates failed
+    return {
+      success: false,
+      body: `.Capabilities detected for at least one Kubernetes version'`,
+      error: {
+        input: errors.join(''),
+        options: {
+          code: "E501",
+          exit: 1
         }
       };
+    }
   }
 
   private async findDependencies(): Promise<ServiceResponse<string>> {
@@ -305,5 +327,25 @@ export default class ChartValidatorService extends BaseService {
         }
       }
     }
+  }
+
+  /**
+   * helm template <chart-name> <chart-location>
+   *      --set k8version=<Kubernetes-version>
+   *      --kube-version <Kubernetes-version>
+   *      --namespace <addon-namespace>
+   *      --skip-crds
+   *      --f <any-overridden-values> TODO
+   */
+  private getNoCrdsTemplateResult(k8sVersion: string) {
+    return spawnSync('helm', [
+      'template',
+      this.name,
+      this.toValidate,
+      `--set k8version=${k8sVersion}`,
+      '--kube-version', k8sVersion,
+      '--namespace', this.namespace,
+      '--skip-crds',
+    ], {shell: true, encoding: "utf-8"});
   }
 }
