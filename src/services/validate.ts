@@ -140,8 +140,8 @@ export default class ChartValidatorService extends BaseService {
           code: "E501",
           exit: 1
         }
-      };
-    }
+      }
+    };
   }
 
   private async findDependencies(): Promise<ServiceResponse<string>> {
