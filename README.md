@@ -10,7 +10,8 @@ Addons Transformer CLI for Amazon EKS
 ## Introduction
 
 Addons Transformer for Amazon EKS is a solution that provides pre-launch validations of the partner software based on
-compatibility with Amazon EKS Third Party Addon guidelines, covering static and dynamic (deployment/runtime) aspects. 
+compatibility with [Amazon EKS Third Party Addon guidelines](https://docs.aws.amazon.com/marketplace/latest/userguide/container-product-policies.html#publishing-eks-add-on),
+covering static and dynamic (deployment/runtime) aspects. 
 
 ## Pre-requisites
 To implement this solution, you need the following prerequisites:

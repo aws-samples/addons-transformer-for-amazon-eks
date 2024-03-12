@@ -2,7 +2,7 @@
   "author": "Elamaran Shanmugam @elamaras",
   "license": "MIT",
   "name": "addons-transformer-for-amazon-eks",
-  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
+  "description": "Addons Transformer for Amazon EKS is solution that provides pre-launch validations of the partner software on compatibility with Amazon EKS Third Party Addon guidelines, covering static and dynamic (deployment/runtime) aspects.",
   "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
   "bin": "./bin/run.js",
   "dependencies": {
