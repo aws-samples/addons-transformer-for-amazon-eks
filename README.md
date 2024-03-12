@@ -9,8 +9,8 @@ Addons Transformer CLI for Amazon EKS
 
 ## Introduction
 
-Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with 
-Sleek guidelines, covering static and dynamic (deployment/runtime) aspects. 
+Addons Transformer for Amazon EKS is a solution that provides pre-launch validations of the partner software based on
+compatibility with Amazon EKS Third Party Addon guidelines, covering static and dynamic (deployment/runtime) aspects. 
 
 ## Pre-requisites
 To implement this solution, you need the following prerequisites:
@@ -47,7 +47,7 @@ To use this CLI in CloudShell,
 * Log into the AWS Console with a role that has access to the location of the helm chart
     * If the chart is in a private ECR repo, ensure the role can pull from that repo.
     * If the chart is in a public repo, ensure that there aren't any permissions restricting access to the public domain
-* Use the npm install command to directly install the CLI into the shell: `npm i -g aws-sleek-transformer`
+* Use the npm install command to directly install the CLI into the shell: `npm i -g addons-transformer-for-amazon-eks`
 * Follow steps in [the Helm chart validation section](README.md#helm-chart-validation) for all other questions.
 
 ## Features
@@ -111,29 +111,29 @@ chart.
 ## Installation
 <!-- usage -->
 ```sh-session
-$ npm install -g aws-sleek-transformer
-$ aws-sleek-transformer COMMAND
+$ npm install -g addons-transformer-for-amazon-eks
+$ addons-transformer-for-amazon-eks COMMAND
 running command...
-$ aws-sleek-transformer (--version)
-aws-sleek-transformer/0.0.1 darwin-arm64 node-v20.10.0
-$ aws-sleek-transformer --help [COMMAND]
+$ addons-transformer-for-amazon-eks (--version)
+addons-transformer-for-amazon-eks/0.0.5 darwin-arm64 node-v20.10.0
+$ addons-transformer-for-amazon-eks --help [COMMAND]
 USAGE
-  $ aws-sleek-transformer COMMAND
+  $ addons-transformer-for-amazon-eks COMMAND
 ...
 ```
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`aws-sleek-transformer create-issue FILE`](#aws-sleek-transformer-create-issue-file)
-* [`aws-sleek-transformer validate [HELMURL]`](#aws-sleek-transformer-validate-helmurl)
+* [`addons-transformer-for-amazon-eks create-issue FILE`](#addons-transformer-for-amazon-eks-create-issue-file)
+* [`addons-transformer-for-amazon-eks validate [HELMURL]`](#addons-transformer-for-amazon-eks-validate-helmurl)
 
-## `aws-sleek-transformer create-issue FILE`
+## `addons-transformer-for-amazon-eks create-issue FILE`
 
 Creates a Github Issue based in the input file
 
 ```
 USAGE
-  $ aws-sleek-transformer create-issue FILE [-d] [--file <value>]
+  $ addons-transformer-for-amazon-eks create-issue FILE [-d] [--file <value>]
 
 ARGUMENTS
   FILE  Path to add-on input file
@@ -152,20 +152,20 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer create-issue filename
+  $ addons-transformer-for-amazon-eks create-issue filename
 ```
 
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/create-issue.ts)_
+_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.5/src/commands/create-issue.ts)_
 
-## `aws-sleek-transformer validate [HELMURL]`
+## `addons-transformer-for-amazon-eks validate [HELMURL]`
 
 Validates the addon after pulling it from the helm repository.
 
 ```
 USAGE
-  $ aws-sleek-transformer validate [HELMURL] [-d <value> | [-f <value> | --helmUrl <value>] | ] [-r <value> | 
-    | ] [-p <value> |  | ] [-v <value> | ] [--addonName <value>] [-n <value>] [--k8sVersions <value>] [--skipHooks]
-    [--skipReleaseService]
+  $ addons-transformer-for-amazon-eks validate [HELMURL] [-d <value> | [-f <value> | --helmUrl <value>] | ]
+    [-r <value> |  | ] [-p <value> |  | ] [-v <value> | ] [--addonName <value>] [-n <value>] [--k8sVersions <value>]
+    [--skipHooks] [--skipReleaseService]
 
 ARGUMENTS
   HELMURL  Fully qualified Helm URL of the addon
@@ -204,16 +204,16 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ aws-sleek-transformer validate oci://12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts:x.x.x
+  $ addons-transformer-for-amazon-eks validate oci://12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts:x.x.x
 
-  $ aws-sleek-transformer validate -r 12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts -p oci -v x.x.x
+  $ addons-transformer-for-amazon-eks validate -r 12345678901.dkr.ecr.us-east-2.amazonaws.com/example-charts -p oci -v x.x.x
 
-  $ aws-sleek-transformer validate -f ./input.yaml
+  $ addons-transformer-for-amazon-eks validate -f ./input.yaml
 
-  $ aws-sleek-transformer validate -d ./addon-folder
+  $ addons-transformer-for-amazon-eks validate -d ./addon-folder
 
-  $ aws-sleek-transformer validate --help
+  $ addons-transformer-for-amazon-eks validate --help
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.1/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.5/src/commands/validate.ts)_
 <!-- commandsstop -->
