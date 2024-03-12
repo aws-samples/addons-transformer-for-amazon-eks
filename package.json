@@ -1,8 +1,8 @@
 {
   "author": "Elamaran Shanmugam @elamaras",
   "license": "MIT",
-  "name": "aws-eks-3pa",
-  "description": "AWS EKS 3PA Transformer is a solution that provides pre-launch validations of the partner software on compatibility based on the marketplace guidelines, covering static and dynamic (deployment/runtime) aspects.",
+  "name": "aws-sleek-transformer",
+  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
   "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
   "bin": "./bin/run.js",
   "dependencies": {
@@ -45,12 +45,12 @@
     "/oclif.manifest.json"
   ],
   "oclif": {
-    "bin": "aws-eks-3pa",
-    "dirname": "aws-eks-3pa",
+    "bin": "aws-sleek-transformer",
+    "dirname": "aws-sleek-transformer",
     "commands": "./dist/commands",
     "topicSeparator": " ",
     "macos": {
-      "identifier": "com.aws.eks-3pa.cli"
+      "identifier": "com.aws.sleek.cli"
     }
   },
   "repository": "aws-samples/addons-transformer-for-amazon-eks",
@@ -63,7 +63,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "0.0.5",
+  "version": "0.0.1",
   "bugs": "https://github.com/aws-samples/addons-transformer-for-amazon-eks/issues",
   "keywords": [
     "oclif"
