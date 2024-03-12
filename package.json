@@ -1,8 +1,8 @@
 {
   "author": "Elamaran Shanmugam @elamaras",
   "license": "MIT",
-  "name": "aws-sleek-transformer",
-  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
+  "name": "addons-transformer-for-amazon-eks",
+  "description": "Addons Transformer for Amazon EKS is solution that provides pre-launch validations of the partner software on compatibility with Amazon EKS Third Party Addon guidelines, covering static and dynamic (deployment/runtime) aspects.",
   "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
   "bin": "./bin/run.js",
   "dependencies": {
@@ -45,12 +45,12 @@
     "/oclif.manifest.json"
   ],
   "oclif": {
-    "bin": "aws-sleek-transformer",
-    "dirname": "aws-sleek-transformer",
+    "bin": "addons-transformer-for-amazon-eks",
+    "dirname": "addons-transformer-for-amazon-eks",
     "commands": "./dist/commands",
     "topicSeparator": " ",
     "macos": {
-      "identifier": "com.aws.sleek.cli"
+      "identifier": "com.aws.addons-transformer-for-amazon-eks.cli"
     }
   },
   "repository": "aws-samples/addons-transformer-for-amazon-eks",
@@ -63,7 +63,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "0.0.1",
+  "version": "0.0.5",
   "bugs": "https://github.com/aws-samples/addons-transformer-for-amazon-eks/issues",
   "keywords": [
     "oclif"
