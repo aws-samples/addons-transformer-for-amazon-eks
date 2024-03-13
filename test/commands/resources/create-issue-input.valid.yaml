@@ -1,0 +1,59 @@
+sellerName: test
+sellerMarketPlaceAlias: cloufsoft-developer
+accountId: "012345678901"
+productName: myapp
+productCategory: networking
+productUrl: https://test.io/software
+addon:
+  name: myapp
+  versionName: test myapp 0.1.0 mp1
+  version: 1.0.0
+  namespace: test-myapp
+  type: networking
+  helmChartUrl: 709825985650.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp-helm:0.1.6
+  containerImagesUrls:
+    - 709825985650.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp:0.4.2
+  prerequisites: >
+    Follow instructions in: https://docs.test.io/
+  usageInstructions: >
+    deploy it and enjoy
+  kubernetesVersion:
+    - "1.26"
+    - "1.27"
+    - "1.28"
+  architectures:
+    - arm64
+    - amd64
+  environmentOverride:
+    param1: value1
+    param2: value2
+  customConfiguration:
+    - myappResourceLimits.requests.cpu
+    - myappResourceLimits.requests.memory
+    - myappResourceLimits.limits.cpu
+    - myappResourceLimits.limits.memory
+  serviceAccounts:
+    serviceAccountOne:
+      iamManagedPolicies:
+        - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
+      iamInlinePolicies:
+        myappS3: >
+          {
+              "Version": "2012-10-17",
+              "Statement": [
+                  {
+                      "Sid": "myappPersistence",
+                      "Action": [
+                          "s3:GetObject",
+                          "s3:PutObject"
+                      ],
+                      "Effect": "Allow",
+                      "Resource": [
+                          "arn:aws:s3:::test-myapp-*"
+                      ]
+                  }
+              ]
+          }
+    serviceAccountTwo:
+      iamManagedPolicies:
+        - arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage
