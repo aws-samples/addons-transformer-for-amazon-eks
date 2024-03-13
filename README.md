@@ -116,7 +116,7 @@ $ npm install -g addons-transformer-for-amazon-eks
 $ addons-transformer-for-amazon-eks COMMAND
 running command...
 $ addons-transformer-for-amazon-eks (--version)
-addons-transformer-for-amazon-eks/0.0.5 darwin-arm64 node-v20.10.0
+addons-transformer-for-amazon-eks/0.0.6 darwin-arm64 node-v20.10.0
 $ addons-transformer-for-amazon-eks --help [COMMAND]
 USAGE
   $ addons-transformer-for-amazon-eks COMMAND
@@ -156,7 +156,7 @@ EXAMPLES
   $ addons-transformer-for-amazon-eks create-issue filename
 ```
 
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.5/src/commands/create-issue.ts)_
+_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.6/src/commands/create-issue.ts)_
 
 ## `addons-transformer-for-amazon-eks validate [HELMURL]`
 
@@ -216,5 +216,5 @@ EXAMPLES
   $ addons-transformer-for-amazon-eks validate --help
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.5/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.6/src/commands/validate.ts)_
 <!-- commandsstop -->

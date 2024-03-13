@@ -5,7 +5,6 @@ import {SleekCommand} from "../sleek-command.js";
 import {AddonData} from "../types/issue.js";
 import {ServiceResponse} from "../types/service.js";
 import {ValidateOptions} from "../types/validate.js";
-import {getRepoFromFullChartUri} from "../utils.js";
 import {BaseService} from "./base-service.js";
 
 export const SuccessResponse: ServiceResponse<string> = {
@@ -193,7 +192,7 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    const grepLookup = spawnSync('grep', ['-Rilne', '"(\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
+    const grepLookup = spawnSync('grep', ['-Rilne', '"\{\{\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf-8"});
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
