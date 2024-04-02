@@ -41,7 +41,7 @@ export default class ChartValidatorService extends BaseService {
     this.toValidate = `"${toValidate}"`;
     this.name = `"${addonData.name}"`;
     this.namespace = `"${addonData.namespace}"`;
-    this.supportedKubernetesVersions = addonData.kubernetesVersion;
+    this.supportedKubernetesVersions = addonData.kubernetesVersion!;
   }
 
   public async extendedValidation(_localFile?: string): Promise<ServiceResponse<any>> {
