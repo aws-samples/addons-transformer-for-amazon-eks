@@ -90,11 +90,11 @@ export default class Validate extends SleekCommand {
     }
 
     // verify that the things are populated
-    if (!repoProtocol) {
+    if (flags.directory || !repoProtocol) {
       this.error("Protocol is required");
     }
 
-    if (!repoUrl) {
+    if (flags.directory || !repoUrl) {
       this.error("Repo is required");
     }
 
@@ -111,14 +111,16 @@ export default class Validate extends SleekCommand {
 
     // addonData is initialized when reading from the input yaml; when using flags the parameters are inferred
     addonData ||= {
-        helmChartUrl: `${repoProtocol}://${repoUrl}:${versionTag}`,
-        helmChartUrlProtocol: repoProtocol!,
-        kubernetesVersion: flags.k8sVersions?.split(',') || AllEksSupportedKubernetesVersions,
-        name: addonName!,
-        namespace: flags.addonNamespace || 'test-namespace',
-        version: versionTag!
-      };
-    const validatorService = new ChartValidatorService(this, chartPath, addonData!);
+      helmChartUrl: flags.directory ? 'local-testing' : `${repoProtocol}://${repoUrl}:${versionTag}`,
+      helmChartUrlProtocol: flags.directory ? 'local-testing' : repoProtocol!,
+      kubernetesVersion: flags.k8sVersions?.split(',') || AllEksSupportedKubernetesVersions,
+      name: addonName!,
+      namespace: flags.addonNamespace || 'test-namespace',
+      version: versionTag!
+    };
+
+
+    const validatorService = new ChartValidatorService(this, chartPath, addonData);
     const validatorServiceResp = await validatorService.validate({skipHooksValidation, skipReleaseService});
 
     this.log(validatorServiceResp.body);

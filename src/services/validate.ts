@@ -36,12 +36,12 @@ export default class ChartValidatorService extends BaseService {
   private readonly supportedKubernetesVersions: string[];
   // this will always be a local filepath
   private readonly toValidate: string;
-  constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
+  constructor(commandCaller: SleekCommand, toValidate: string, addonData?: AddonData) {
     super(commandCaller);
     this.toValidate = `"${toValidate}"`;
-    this.name = `"${addonData.name}"`;
-    this.namespace = `"${addonData.namespace}"`;
-    this.supportedKubernetesVersions = addonData.kubernetesVersion;
+    this.name = `"${addonData?.name ?? 'local-test'}"`;
+    this.namespace = `"${addonData?.namespace}"`;
+    this.supportedKubernetesVersions = addonData?.kubernetesVersion!;
   }
 
   public async extendedValidation(_localFile?: string): Promise<ServiceResponse<any>> {
