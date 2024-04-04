@@ -53,7 +53,7 @@ export class CreateIssue extends SleekCommand {
         // create issue base in the file input
         const title = `Onboarding ${inputDataParsed.sellerMarketPlaceAlias} ${addonData.name}@${addonData.version}`;
         const body = `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
-        const createIssueService = new CreateIssueService(this);
+        const createIssueService = new CreateIssueService(this, flags.repoOwner, flags.repo);
 
         // Add label 'DEV_MODE' for forcing pull aws-sleek-transformer from the repo instead of the npm Registry
         const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])

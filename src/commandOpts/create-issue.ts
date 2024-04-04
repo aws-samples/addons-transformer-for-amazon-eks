@@ -29,8 +29,16 @@ export default class CreateIssueOpt {
             description: "Runs all checks without creating the issue",
         }),
         file: Flags.string({description: "Path to add-on input file"}),
-        repo: Flags.string({description:"Github repository name where the issue will be created", hidden:true}),
-        repoOwner: Flags.string({description:"Github repository owner", hidden:true}),
+        repo: Flags.string({
+            default: "aws-eks-addon-publication",
+            description:"Github repository name where the issue will be created",
+            hidden:true
+        }),
+        repoOwner: Flags.string({
+            default: "cloudsoft-fusion",
+            description:"Github repository owner",
+            hidden:true
+        }),
     }
 
     static summary = "Creates a Github Issue based in the input file";

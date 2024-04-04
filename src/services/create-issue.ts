@@ -3,11 +3,21 @@ import type {OctokitResponse} from "@octokit/types/dist-types/OctokitResponse.js
 
 import {Octokit} from "@octokit/core";
 
+import {SleekCommand} from "../sleek-command.js";
 import {ServiceResponse} from "../types/service.js";
 import {BaseService} from "./base-service.js";
 
 export default class CreateIssueService extends BaseService {
-    public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => this.createIssueOnRepo(getRepoName(), getRepoOwner(), title, body, labels)
+
+    private repo:string;
+    private repoOwner:string;
+
+    constructor(commandCaller: SleekCommand, repoOwner: string, repo: string) {
+        super(commandCaller)
+        this.repoOwner = repoOwner;
+        this.repo = repo;
+    }
+    public createIssue = async (title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => this.createIssueOnRepo(this.repo, this.repoOwner, title, body, labels)
 
     private createIssueOnRepo = async (repo: string, owner: string, title: string, body: string, labels: string[]): Promise<ServiceResponse<OctokitResponse<any>>> => {
         const octokitOptions = {
@@ -31,12 +41,4 @@ export default class CreateIssueService extends BaseService {
             .then((response)=> ({success: true, body: response}))
             .catch((error)=>{this.error(`Create issue error: ${error}`)})
     }
-}
-
-function getRepoOwner() {
-    return 'cloudsoft-fusion';
-}
-
-function getRepoName() {
-    return 'aws-eks-addon-publication'
 }
