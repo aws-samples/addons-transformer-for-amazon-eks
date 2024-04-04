@@ -25,7 +25,7 @@ export class CreateIssue extends SleekCommand {
 
         this.log(`File to process: ${filePath} ${isDryRun ? '(dry run)' : ''}`)
         const fileContents = fs.readFileSync(filePath, 'utf8');
-        const schemaValidator = new SchemaValidationService(this);
+        const schemaValidator = new SchemaValidationService(this, flags.issueSchemaUrl);
         const data = await schemaValidator.validateInputFileSchema(fileContents);
         this.log('Schema validation correct') // it exits if not valid
 

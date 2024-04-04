@@ -1,4 +1,5 @@
 import {Args, Flags} from "@oclif/core";
+import ValidateOpt from "./validate.js";
 
 export default class CreateIssueOpt {
 
@@ -29,6 +30,7 @@ export default class CreateIssueOpt {
             description: "Runs all checks without creating the issue",
         }),
         file: Flags.string({description: "Path to add-on input file"}),
+        issueSchemaUrl: ValidateOpt.flags.issueSchemaUrl,
         repo: Flags.string({
             default: "aws-eks-addon-publication",
             description:"Github repository name where the issue will be created",

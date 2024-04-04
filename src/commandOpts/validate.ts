@@ -88,6 +88,11 @@ export default class ValidateOpt {
       description: "Skip .Release.Service occurrences",
       default: false
     }),
+    issueSchemaUrl: Flags.string({
+      default: "https://raw.githubusercontent.com/aws-samples/addons-transformer-for-amazon-eks/main/schema/onboarding.schema.json",
+      description: "URL for the schema used for issue input file",
+      hidden: true
+    }),
   }
 
   static summary = "Validates the addon after pulling it from the helm repository.";
