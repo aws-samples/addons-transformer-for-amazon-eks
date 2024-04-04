@@ -25,7 +25,7 @@ export class CreateIssue extends SleekCommand {
 
         this.log(`File to process: ${filePath} ${isDryRun ? '(dry run)' : ''}`)
         const fileContents = fs.readFileSync(filePath, 'utf8');
-        const schemaValidator = new SchemaValidationService(this);
+        const schemaValidator = new SchemaValidationService(this, flags.issueSchemaUrl);
         const data = await schemaValidator.validateInputFileSchema(fileContents);
         this.log('Schema validation correct') // it exits if not valid
 
@@ -53,7 +53,7 @@ export class CreateIssue extends SleekCommand {
         // create issue base in the file input
         const title = `Onboarding ${inputDataParsed.sellerMarketPlaceAlias} ${addonData.name}@${addonData.version}`;
         const body = `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
-        const createIssueService = new CreateIssueService(this);
+        const createIssueService = new CreateIssueService(this, flags.repoOwner, flags.repo);
 
         // Add label 'DEV_MODE' for forcing pull aws-sleek-transformer from the repo instead of the npm Registry
         const createIssueResponse = await createIssueService.createIssue(title, body, ['pending'])

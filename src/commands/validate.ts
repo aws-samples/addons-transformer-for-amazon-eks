@@ -71,7 +71,7 @@ export default class Validate extends SleekCommand {
       this.log(`Validating chart from input file ${filePath}`)
       // schema validation
       const fileContents = fs.readFileSync(filePath, 'utf8');
-      const schemaValidator = new SchemaValidationService(this);
+      const schemaValidator = new SchemaValidationService(this, flags.issueSchemaUrl);
       const data = await schemaValidator.validateInputFileSchema(fileContents);
       // get url
       const inputDataParsed = data.body as IssueData;
