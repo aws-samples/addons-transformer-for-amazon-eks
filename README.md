@@ -42,7 +42,7 @@ To quickly get started with this transformer, you can leverage CloudShell in the
     $ chmod 700 get_helm.sh
     $ ./get_helm.sh
     ```
-* A github token as required by [The Github Service](README.md#request-submission-for-onboarding-the-add-on-to-the-program)
+* A GitHub token as required by [The GitHub Service](README.md#request-submission-for-onboarding-the-add-on-to-the-program)
 
 To use this CLI in CloudShell,
 * Log into the AWS Console with a role that has access to the location of the helm chart
@@ -57,8 +57,8 @@ This npm module has the following features:
 ### Helm chart validation
 
 This NPM module accepts two kinds of input:
-  - CLI Args as descirbed in the [Commands](README.md#commands) section
-  - Input file as descibed in [AddOn Submission](#request-submission-for-onboarding-the-add-on-to-the-program)
+  - CLI Args as described in the [Commands](README.md#commands) section
+  - Input file as described in [AddOn Submission](#request-submission-for-onboarding-the-add-on-to-the-program)
 
 The module then performs static validation to attempt to find the following:
   - Finding occurrences of unsupported `.Capabilities`

@@ -51,7 +51,7 @@ export default class ValidateOpt {
       exclusive: ['file']
     }),  // fully qualified URL of helm repo
     helmRepo: Flags.string({
-      description: "URL of the helm repo containg protocol and repo",
+      description: "URL of the helm repo containing protocol and repo",
       exclusive: ['file', 'helmUrl'],
       char: 'r'
     }),  // construct it piecemeal

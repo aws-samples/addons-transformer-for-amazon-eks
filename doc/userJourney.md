@@ -1,7 +1,7 @@
 # EKS add-on onboarding user journey
 
 ## Personas:
-* Vendor: ISV, AWS partner, marketplace seller of the product deployed
+* Vendor: ISV, AWS partner, marketplace seller of the product
 * Operator: AWS or Cloudsoft engineer supporting the onboarding
 
 ## Requirements:
@@ -26,17 +26,12 @@ The yaml document must match the [JSON schema (TODO: update url once merged)](ht
 In order to help the vendor with the creation of a valid yaml document and a valid chart, the cli exposes a validate command that runs the same validations locally but it doesn’t try to create an issue. Check the tool readme for instructions.
 
 4. Running the following command
+```shell
 aws-sleek-transformer create-issue add-on.yaml
+```
 pulls the chart from the helm repo and validates it. If no issues are found in the static analysis, a new issue will be opened in the onboarding GitHub repository to progress with extra validation and testing.
 The onboarding process supports the automatic removal from the charts of the  features not supported by EKS. The option has to be enabled explicitly, by setting the chartAutoCorrection property to true in the yaml document. The onboarding process outputs will be available on the pull request.
 
 5. The vendor can see the progress in the issue and the other GitHub artefacts: action execution and pull request created
 
 6. Once all tests are correct, the generated assets will be added to the internal pull request and merged in the onboarding repo making them available to the vendor
-
-## TODO
-- [ ] Overview
-- [ ] Who is this meant for
-- [ ] All disclaimers
-- [ ] SLAs
-- [ ] Glossary (if any) & Key Concepts

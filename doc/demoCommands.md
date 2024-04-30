@@ -36,7 +36,7 @@ addons-transformer-for-amazon-eks create-issue --help
 ```
 
 ```shell
-# Creating issue from input file by JSON schema###
+# Creating issue from input file by JSON schema
 addons-transformer-for-amazon-eks create-issue ./examples/onboarding.example.yaml --dry-run 
 ```
 

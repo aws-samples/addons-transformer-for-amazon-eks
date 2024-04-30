@@ -20,6 +20,7 @@ export default class Validate extends SleekCommand {
   static flags = ValidateOpt.flags;
   static summary = ValidateOpt.summary;
 
+  // eslint-disable-next-line complexity
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Validate);
 
@@ -28,6 +29,7 @@ export default class Validate extends SleekCommand {
     // else, raise error stating one or the other arg/flag should be provided
     let repoProtocol; let repoUrl; let chartName; let versionTag; let addonName;
     let skipHooksValidation = flags.skipHooks;
+    // eslint-disable-next-line prefer-destructuring
     let skipReleaseService = flags.skipReleaseService;
     let addonData: AddonData | undefined;
 
@@ -51,6 +53,7 @@ export default class Validate extends SleekCommand {
       chartName = getChartNameFromUrl(repoUrl);
       versionTag = getVersionTagFromChartUri(repoUrlInput!);
     } else if (
+      // eslint-disable-next-line no-dupe-else-if
       (args.helmUrl || flags.helmUrl) && (flags.helmRepo || flags.protocol || flags.version) // base url + flags to override // todo
     ) {
       const repoUrlInput = args.helmUrl || flags.helmUrl;
@@ -131,9 +134,13 @@ export default class Validate extends SleekCommand {
     const validatorService = new ChartValidatorService(this, chartPath, addonData!);
     const validatorServiceResp = await validatorService.validate({skipHooksValidation, skipReleaseService});
 
-    this.log(validatorServiceResp.body);
-    if (!validatorServiceResp.success) {
-      this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options)
+    if (validatorServiceResp === undefined) {
+      this.error('Error validating service');
+    } else if (validatorServiceResp.success) {
+      this.log(validatorServiceResp.body);
+      this.log('Validation successful');
+    } else if (validatorServiceResp.error !== undefined) {
+      this.error(validatorServiceResp.error?.input, validatorServiceResp.error?.options)
     }
   }
 }
