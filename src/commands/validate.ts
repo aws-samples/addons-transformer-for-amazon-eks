@@ -86,25 +86,33 @@ export default class Validate extends SleekCommand {
     } else if (flags.directory) {
       this.log(`Validating chart from input directory ${flags.directory}`)
     } else {
-      this.error("Either a Helm URL or a file path should be provided");
+      this.error("Parameters not valid. Please run 'validate --help' for see valid options");
     }
 
     // verify that the things are populated
-    if (flags.directory || !repoProtocol) {
-      this.error("Protocol is required");
+    if (!flags.directory) {
+      let errorMessage = '';
+      if (!repoProtocol) {
+        errorMessage = `${errorMessage} protocol is required`;
+      }
+
+      if (!repoUrl) {
+        errorMessage = `${errorMessage} repo is required`;
+      }
+
+      if (!chartName) {
+        errorMessage = `${errorMessage} Chart name is required`;
+      }
+
+      if (!versionTag) {
+        errorMessage = `${errorMessage} version tag is required`;
+      }
+
+      if (errorMessage !== '') {
+        this.error(`Parameters are not valid: ${errorMessage}`);
+      }
     }
 
-    if (flags.directory || !repoUrl) {
-      this.error("Repo is required");
-    }
-
-    if (!chartName) {
-      this.error("Chart name is required");
-    }
-
-    if (!versionTag) {
-      this.error("Version tag is required");
-    }
 
     const helmManager = new HelmManagerService(this);
     const chartPath = flags.directory ?? `${await helmManager.pullAndUnzipChart(repoUrl!, repoProtocol!, versionTag!, addonName)}/${chartName}`;

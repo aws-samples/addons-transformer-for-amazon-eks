@@ -27,7 +27,7 @@ export default class CreateIssueOpt {
             aliases: ['dry-run', 'dryrun'],
             char: 'd',
             default: false,
-            description: "Runs all checks without creating the issue",
+            description: "Validates the input file schema without creating the issue nor validating the chart",
         }),
         issueSchemaUrl: ValidateOpt.flags.issueSchemaUrl,
         repo: Flags.string({

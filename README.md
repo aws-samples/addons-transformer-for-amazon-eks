@@ -140,8 +140,7 @@ ARGUMENTS
   FILE  Path to add-on input file
 
 FLAGS
-  -d, --dryRun        Runs all checks without creating the issue
-      --file=<value>  Path to add-on input file
+  -d, --dryRun        Validates the input file schema without creating the issue nor validating the chart
 
 DESCRIPTION
   Creates a Github Issue based in the input file
