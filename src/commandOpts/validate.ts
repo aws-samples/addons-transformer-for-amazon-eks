@@ -75,11 +75,6 @@ export default class ValidateOpt {
     k8sVersions: Flags.string({
       description: "Comma separated list of supported kubernetes versions"
     }),
-    extended: Flags.boolean({
-      description: "Run extended validation",
-      hidden: true,
-      char: 'e'
-    }), // triggers security and extended checks. NEEDS THE CONTAINER IMAGE FOR THE ADDON
     skipHooks: Flags.boolean({
       description: "Skip helm hooks validation",
       default: false

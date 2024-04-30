@@ -27,9 +27,8 @@ export default class CreateIssueOpt {
             aliases: ['dry-run', 'dryrun'],
             char: 'd',
             default: false,
-            description: "Runs all checks without creating the issue",
+            description: "Validates the input file schema without creating the issue nor validating the chart",
         }),
-        file: Flags.string({description: "Path to add-on input file"}),
         issueSchemaUrl: ValidateOpt.flags.issueSchemaUrl,
         repo: Flags.string({
             default: "aws-eks-addon-publication",

@@ -44,6 +44,7 @@ export class CreateIssue extends SleekCommand {
         }
         const validatorServiceResp = await validatorService.validate(validateOps);
         // todo: if validatorService exits when errors, not need to handle here !success
+        this.log(validatorServiceResp.body);
         if(!validatorServiceResp.success){
             this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options )
         }
@@ -52,6 +53,7 @@ export class CreateIssue extends SleekCommand {
 
         // create issue base in the file input
         const title = `Onboarding ${inputDataParsed.sellerMarketPlaceAlias} ${addonData.name}@${addonData.version}`;
+        // the yaml contend is captured from the issue body when running the pipelines by searching the ```yaml and ``` markers
         const body = `Issue body:\n\n\`\`\`yaml\n${fileContents}\`\`\`\n`;
         const createIssueService = new CreateIssueService(this, flags.repoOwner, flags.repo);
 
