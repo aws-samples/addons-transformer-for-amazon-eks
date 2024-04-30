@@ -127,13 +127,5 @@ export default class Validate extends SleekCommand {
     if (!validatorServiceResp.success) {
       this.error(validatorServiceResp.error?.input!, validatorServiceResp.error?.options)
     }
-
-    if (flags.extended) {
-      const extendedValidatorServiceResp = await validatorService.extendedValidation(flags.file);
-      this.log(extendedValidatorServiceResp.body);
-      if (!extendedValidatorServiceResp.success) {
-        this.error(extendedValidatorServiceResp.error?.input!, extendedValidatorServiceResp.error?.options)
-      }
-    }
   }
 }

@@ -44,10 +44,6 @@ export default class ChartValidatorService extends BaseService {
     this.supportedKubernetesVersions = addonData.kubernetesVersion!;
   }
 
-  public async extendedValidation(_localFile?: string): Promise<ServiceResponse<any>> {
-    return ExtendValidationSuccess
-  }
-
   public async validate(ops: ValidateOptions): Promise<ServiceResponse<any>> {
     const lintResult = await this.runHelmLint();
     const templateResult = await this.runHelmTemplate();
