@@ -1,16 +1,22 @@
 {
   "author": "Elamaran Shanmugam @elamaras",
+  "license": "MIT",
+  "name": "addons-transformer-for-amazon-eks",
+  "description": "Addons Transformer for Amazon EKS is solution that provides pre-launch validations of the partner software on compatibility with Amazon EKS Third Party Addon guidelines, covering static and dynamic (deployment/runtime) aspects.",
+  "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
   "bin": "./bin/run.js",
   "dependencies": {
-    "@aws-sdk/client-sts": "^3.462.0",
     "@inquirer/prompts": "^3.3.0",
     "@inquirer/select": "^1.3.1",
     "@oclif/core": "^3",
     "@oclif/plugin-help": "^5",
+    "@octokit/core": "^5.0.2",
+    "ajv": "^8.12.0",
+    "js-yaml": "^4.1.0",
+    "json-schema": "^0.4.0",
     "oclif": "^4.0.3",
     "shx": "^0.3.4"
   },
-  "description": "Sleek Marketplace validator is solution provide pre-launch validations of the partner software on compatibility with Sleek guidelines, covering static and dynamic (deployment/runtime) aspects.",
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",
     "@oclif/test": "^3",
@@ -19,6 +25,8 @@
     "@types/inquirer": "^9.0.7",
     "@types/mocha": "^10",
     "@types/node": "^18",
+    "@types/ajv": "^1.0.0",
+    "@types/js-yaml": "^4.0.9",
     "chai": "^4",
     "eslint": "^8",
     "eslint-config-oclif": "^5",
@@ -36,28 +44,13 @@
     "/dist",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/aws-samples/addons-transformer-for-amazon-eks.git",
-  "main": "",
-  "license": "MIT",
-  "name": "addons-transformer-for-amazon-eks",
   "oclif": {
     "bin": "addons-transformer-for-amazon-eks",
     "dirname": "addons-transformer-for-amazon-eks",
     "commands": "./dist/commands",
     "topicSeparator": " ",
     "macos": {
-      "identifier": "com.aws.sleek.cli"
-    },
-    "topics": {
-      "configure": {
-        "description": "Sets up the Sleek CLI to work with a given helm chart"
-      },
-      "validate": {
-        "description": "Validates the addons you want to validate"
-      },
-      "submit": {
-        "description": "Submits the addons to the marketplace team to place in the EKS console marketplace"
-      }
+      "identifier": "com.aws.addons-transformer-for-amazon-eks.cli"
     }
   },
   "repository": "aws-samples/addons-transformer-for-amazon-eks",
@@ -70,7 +63,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "0.0.1",
+  "version": "0.0.6",
   "bugs": "https://github.com/aws-samples/addons-transformer-for-amazon-eks/issues",
   "keywords": [
     "oclif"

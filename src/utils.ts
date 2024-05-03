@@ -1,19 +1,16 @@
-import {IConfig} from "./sleek-command.js";
-
-export function getCurrentAddons(currentConf: IConfig) {
-  return Object.keys(currentConf).map(addonName => {
-    return {
-      name: addonName,
-      value: {name: addonName, version: addonName.split('@')[1]},
-    }
-  });
+/* eslint-disable unicorn/prefer-string-slice */
+export function getChartNameFromUrl(repoUrl:string):string {
+    return repoUrl.substring(repoUrl.lastIndexOf('/')+1 ,repoUrl.length)
 }
 
-export function getAddonKey(name: string,  version: string) {
-  return name + '@' + version;
+export function getProtocolFromFullQualifiedUrl(helmChartUrl: string) {
+    return helmChartUrl?.substring(0, helmChartUrl?.indexOf(':'))
 }
 
-export function destructureAddonKey(key: string) {
-  const [name, version] = key.split('@');
-  return {name, version};
+export function getRepoFromFullChartUri(helmChartUrl: string) {
+    return helmChartUrl.substring(0, helmChartUrl.lastIndexOf(':'));
+}
+
+export function getVersionTagFromChartUri(helmChartUrl: string) {
+    return helmChartUrl.lastIndexOf(':') ? `${helmChartUrl.substring(helmChartUrl.lastIndexOf(':') + 1)}` : '';
 }

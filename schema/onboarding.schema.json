@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EKS add-on workflow - Issue creation",
+  "type": "object",
+  "definitions": {
+    "basicSemver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "serviceAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[A-Za-z0-9.-]+$": {
+          "type": "object",
+          "properties": {
+            "iamManagedPolicies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "iamInlinePolicies": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "patternProperties": {
+                "^[a-zA-Z0-9_+=,.@-]+$": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "chartAutoCorrection": {
+      "type": "object",
+      "title": "Opt-in autocorrection",
+      "additionalProperties": false,
+      "properties": {
+        "hooks": {
+          "title": "Opt-in removing hooks references from the templates and repackage the chart",
+          "type": "boolean",
+          "default": false
+        },
+        "capabilities": {
+          "title": "Opt-in removing hooks unsupported capabilities from the templates and repackage the chart",
+          "type": "boolean",
+          "default": false
+        },
+        "releaseService": {
+          "title": "Opt-in replacing references to .Release.Service with 'eks' from the templates and repackage the chart",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "addon": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Add-on name",
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+          "maxLength": 53
+        },
+        "versionName": {
+          "title": "Add-on version name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Add-on version e.g. 0.1.0",
+          "$ref": "#/definitions/basicSemver"
+        },
+        "namespace": {
+          "title": "Add-on namespace",
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1
+        },
+        "type": {
+          "title": "Add-on type",
+          "type": "string",
+          "enum": [
+            "gitops",
+            "monitoring",
+            "logging",
+            "cert-management",
+            "policy-management",
+            "cost-management",
+            "autoscaling",
+            "storage",
+            "kubernetes-management",
+            "service-mesh",
+            "etcd-backup",
+            "ingress-service-type",
+            "load-balancer",
+            "local-registry",
+            "networking",
+            "security",
+            "backup",
+            "ingress-controller",
+            "observability"
+          ]
+        },
+        "helmChartUrl": {
+          "title": "Add-on helm chart URL",
+          "type": "string"
+        },
+        "helmChartUrlProtocol": {
+          "title": "Add-on helm chart URL protocol",
+          "enum": [
+            "oci",
+            "https"
+          ]
+        },
+        "containerImagesUrls": {
+          "title": "Add-on container images URLs",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prerequisites": {
+          "title": "Add-on deployment prerequisites",
+          "type": "string"
+        },
+        "usageInstructions": {
+          "title": "Add-on deployment instructions",
+          "type": "string"
+        },
+        "kubernetesVersion": {
+          "title": "List of add-on supported kubernetes versions",
+          "type": "array",
+          "items": {
+            "enum": [
+              1.23,
+              1.24,
+              1.25,
+              1.26,
+              1.27,
+              1.28
+            ]
+          }
+        },
+        "architectures": {
+          "title": "Add-on containers supported architectures",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "arm64",
+              "amd64"
+            ]
+          }
+        },
+        "environmentOverride": {
+          "title": "Parameters that will be used while installing this add-on on a EKS cluster",
+          "type": "object"
+        },
+        "customConfiguration": {
+          "title": "List of expanded values keys to be allowed to be modified when deploying the add-on",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secretMapping": {
+          "title": "Map of parameters supported for inject secrets and the keys expected to be found in. DO NOT INCLUDE SECRET VALUES",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "serviceAccounts": {
+          "title": "Service accounts - IAM policies mapping",
+          "$ref": "#/definitions/serviceAccount"
+        }
+      },
+      "required": [
+        "name",
+        "versionName",
+        "type",
+        "helmChartUrl",
+        "containerImagesUrls",
+        "namespace",
+        "prerequisites",
+        "usageInstructions",
+        "kubernetesVersion",
+        "architectures"
+      ]
+    }
+  },
+  "properties": {
+    "additionalProperties": false,
+    "sellerName": {
+      "title": "Seller commercial name",
+      "type": "string"
+    },
+    "sellerMarketPlaceAlias": {
+      "title": "Seller alias in the AWS marketplace",
+      "type": "string"
+    },
+    "accountId": {
+      "title": "Seller AWS account ID",
+      "type": "number",
+      "minimum": 100000000000,
+      "maximum": 999999999999
+    },
+    "productName": {
+      "title": "Product name",
+      "type": "string"
+    },
+    "productUrl": {
+      "title": "Product URL",
+      "type": "string"
+    },
+    "marketplaceProductId": {
+      "title": "Marketplace product ID",
+      "type": "string"
+    },
+    "marketplaceProductUrl": {
+      "title": "Marketplace product URL",
+      "type": "string"
+    },
+    "productCategory": {
+      "title": "Product category",
+      "type": "string"
+    },
+    "chartAutoCorrection": {
+      "title": "Chart corrections to apply automatically",
+      "$ref": "#/definitions/chartAutoCorrection"
+    },
+    "addon": {
+      "title": "Add-on properties",
+      "$ref": "#/definitions/addon"
+    }
+  },
+  "required": [
+    "sellerName",
+    "sellerMarketPlaceAlias",
+    "accountId",
+    "productName",
+    "marketplaceProductId",
+    "marketplaceProductUrl",
+    "productCategory",
+    "addon"
+  ]
+}
