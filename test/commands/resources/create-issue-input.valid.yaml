@@ -10,9 +10,9 @@ addon:
   version: 1.0.0
   namespace: test-myapp
   type: networking
-  helmChartUrl: 709825985650.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp-helm:0.1.6
+  helmChartUrl: 123456789012.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp-helm:0.1.6
   containerImagesUrls:
-    - 709825985650.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp:0.4.2
+    - 123456789012.dkr.ecr.us-east-1.amazonaws.com/test-development/test-myapp:0.4.2
   prerequisites: >
     Follow instructions in: https://docs.test.io/
   usageInstructions: >

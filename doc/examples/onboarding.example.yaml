@@ -43,7 +43,7 @@ addon:
   helmChartUrlProtocol: oci
 ## Add-on container images URLs
   containerImagesUrls:
-    - 709825985650.dkr.ecr.us-east-1.amazonaws.com/example-software/solution:0.1.0
+    - 123456789012.dkr.ecr.us-east-1.amazonaws.com/example-software/solution:0.1.0
 ## Add-on deployment prerequisites
   prerequisites: >
     Follow  instructions in: https://docs.example.com/installation/prerequisites
