@@ -125,9 +125,9 @@ export default class Validate extends SleekCommand {
       helmChartUrl: flags.directory ? 'local-testing' : `${repoProtocol}://${repoUrl}:${versionTag}`,
       helmChartUrlProtocol: flags.directory ? 'local-testing' : repoProtocol!,
       kubernetesVersion: flags.k8sVersions?.split(',') || AllEksSupportedKubernetesVersions,
-      name: addonName!,
+      name: flags.directory ? 'local-testing' : addonName!,
       namespace: flags.addonNamespace || 'test-namespace',
-      version: versionTag!
+      version: flags.directory ? 'local-testing' : versionTag!
     };
 
 
