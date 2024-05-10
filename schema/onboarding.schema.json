@@ -129,6 +129,11 @@
           "title": "Add-on deployment prerequisites",
           "type": "string"
         },
+        "deliveryOptionDescription": {
+          "title": "Delivery option description",
+          "type": "string",
+          "maxLength": 4000
+        },
         "usageInstructions": {
           "title": "Add-on deployment instructions",
           "type": "string"
