@@ -28,5 +28,6 @@ export const AllEksSupportedKubernetesVersions = [
     "1.25",
     "1.26",
     "1.27",
-    "1.28"
+    "1.28",
+    "1.29",
 ]
