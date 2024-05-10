@@ -50,9 +50,10 @@ addon:
 ## Add-on deployment instructions
   usageInstructions: >
     Follow  instructions in: https://docs.example.com/instructions
+## The description will be shown in the product details page and when the buyer is configuring or launching the product
   deliveryOptionDescription: >
     EKS add-on installation
-  ## List of add-on supported kubernetes versions
+## List of add-on supported kubernetes versions
   kubernetesVersion:
     - 1.26
     - 1.27
