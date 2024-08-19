@@ -187,7 +187,7 @@ export default class ChartValidatorService extends BaseService {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
     // eslint-disable-next-line no-useless-escape
-    const grepLookup = spawnSync('grep', ['-Rilne', '"\{\{-?\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
+    const grepLookup = spawnSync('grep', ['-Rilne', '"\{\{-?\s*.*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
