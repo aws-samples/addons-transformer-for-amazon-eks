@@ -116,7 +116,7 @@ $ npm install -g addons-transformer-for-amazon-eks
 $ addons-transformer-for-amazon-eks COMMAND
 running command...
 $ addons-transformer-for-amazon-eks (--version)
-addons-transformer-for-amazon-eks/0.0.6 darwin-arm64 node-v20.10.0
+addons-transformer-for-amazon-eks/1.0.0 darwin-arm64 node-v20.16.0
 $ addons-transformer-for-amazon-eks --help [COMMAND]
 USAGE
   $ addons-transformer-for-amazon-eks COMMAND
@@ -134,13 +134,13 @@ Creates a Github Issue based in the input file
 
 ```
 USAGE
-  $ addons-transformer-for-amazon-eks create-issue FILE [-d] [--file <value>]
+  $ addons-transformer-for-amazon-eks create-issue FILE [-d]
 
 ARGUMENTS
   FILE  Path to add-on input file
 
 FLAGS
-  -d, --dryRun        Validates the input file schema without creating the issue nor validating the chart
+  -d, --dryRun  Validates the input file schema without creating the issue nor validating the chart
 
 DESCRIPTION
   Creates a Github Issue based in the input file
@@ -155,7 +155,7 @@ EXAMPLES
   $ addons-transformer-for-amazon-eks create-issue filename
 ```
 
-_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.6/src/commands/create-issue.ts)_
+_See code: [src/commands/create-issue.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v1.0.0/src/commands/create-issue.ts)_
 
 ## `addons-transformer-for-amazon-eks validate [HELMURL]`
 
@@ -175,7 +175,7 @@ FLAGS
   -f, --file=<value>            Path to add-on input file
   -n, --addonNamespace=<value>  Add-on namespace
   -p, --protocol=<value>        Protocol of the helm hosting to use
-  -r, --helmRepo=<value>        URL of the helm repo containg protocol and repo
+  -r, --helmRepo=<value>        URL of the helm repo containing protocol and repo
   -v, --version=<value>         Version of the addon to validate
       --addonName=<value>       Name of the addon
       --helmUrl=<value>         Fully qualified URL of the Repo including version tag
@@ -215,5 +215,5 @@ EXAMPLES
   $ addons-transformer-for-amazon-eks validate --help
 ```
 
-_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v0.0.6/src/commands/validate.ts)_
+_See code: [src/commands/validate.ts](https://github.com/aws-samples/addons-transformer-for-amazon-eks/blob/v1.0.0/src/commands/validate.ts)_
 <!-- commandsstop -->
