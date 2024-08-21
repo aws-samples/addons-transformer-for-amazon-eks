@@ -114,8 +114,8 @@ export default class ChartValidatorService extends BaseService {
       const withCrds = this.getNoCrdsTemplateResult(k8sVersion);
       const withoutCrds = this.getTemplateResult(k8sVersion);
 
-      const capsWithCrds = spawnSync('grep', ['-ilnE', '".Capabilities"', "<<<", withCrds.stdout], {shell: true, encoding: "utf8"});
-      const capsWithoutCrds = spawnSync('grep', ['-ilnE', '".Capabilities"', "<<<", withoutCrds.stdout], {shell: true, encoding: "utf8"});
+      const capsWithCrds = spawnSync('grep', ['-ilne', '".Capabilities"', "<<<", withCrds.stdout], {shell: true, encoding: "utf8"});
+      const capsWithoutCrds = spawnSync('grep', ['-ilne', '".Capabilities"', "<<<", withoutCrds.stdout], {shell: true, encoding: "utf8"});
 
       if (capsWithCrds.stdout !== capsWithoutCrds.stdout) {
         allVersionSuccess = false;
@@ -157,7 +157,7 @@ export default class ChartValidatorService extends BaseService {
       .map(line => line.split('/t')[1])
       .filter(Boolean);
 
-    this.debug(dependencies);
+    this.debug(`dependencies found: ${dependencies}`);
 
     if (dependencies.length === 0) {
       return SuccessResponse;
@@ -180,7 +180,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-RinE', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf8"});
+    const hooks = spawnSync('grep', ['-Rine', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf8"});
 
     return hooks.stdout === "" ? SuccessResponse : {
         success: false,
@@ -198,8 +198,7 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    // eslint-disable-next-line no-useless-escape
-    const grepLookup = spawnSync('grep', ['-RinE', "'\{\{-\?\s*.*(lookup)\s'", `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
+    const grepLookup = spawnSync('grep', ['-RinE', "'\\{\\{-\\?*.*\\s*(lookup)\\s'", `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
 
     this.debug(`grepLookup out: ${grepLookup.stdout}`);
 
