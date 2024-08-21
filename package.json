@@ -11,7 +11,6 @@
     "@oclif/core": "^3",
     "@oclif/plugin-help": "^5",
     "@octokit/core": "^5.0.2",
-    "addons-transformer-for-amazon-eks": "file:addons-transformer-for-amazon-eks-1.0.0.tgz",
     "ajv": "^8.12.0",
     "debug": "^4.3.6",
     "js-yaml": "^4.1.0",
@@ -64,7 +63,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "1.0.0",
+  "version": "1.0.2",
   "bugs": "https://github.com/aws-samples/addons-transformer-for-amazon-eks/issues",
   "keywords": [
     "oclif"
