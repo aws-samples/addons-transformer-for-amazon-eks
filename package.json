@@ -63,7 +63,7 @@
     "prepare": "npm run build",
     "version": "oclif readme && git add README.md"
   },
-  "version": "1.0.2",
+  "version": "1.1.0",
   "bugs": "https://github.com/aws-samples/addons-transformer-for-amazon-eks/issues",
   "keywords": [
     "oclif"
