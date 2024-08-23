@@ -6,6 +6,8 @@ import {ServiceResponse} from "../types/service.js";
 import {ValidateOptions} from "../types/validate.js";
 import {BaseService} from "./base-service.js";
 
+import {Debug} from "@oclif/core/lib/config/util.js";
+
 export const SuccessResponse: ServiceResponse<string> = {
   success: true,
 };
@@ -30,11 +32,14 @@ export const ExtendValidationFail: ServiceResponse<string> = {
 };
 
 export default class ChartValidatorService extends BaseService {
+  private debug = Debug("validator");
+
   private readonly name: string;
   private readonly namespace: string;
   private readonly supportedKubernetesVersions: string[];
   // this will always be a local filepath
   private readonly toValidate: string;
+
   constructor(commandCaller: SleekCommand, toValidate: string, addonData: AddonData) {
     super(commandCaller);
     this.toValidate = `"${toValidate}"`;
@@ -149,7 +154,14 @@ export default class ChartValidatorService extends BaseService {
     const dependencies = grepDependencies.stdout.toString()
       .split('/n')
       .slice(1)
-      .map(line => line.split('/t')[1]);
+      .map(line => line.split('/t')[1])
+      .filter(Boolean);
+
+    this.debug(`dependencies found: ${dependencies}`);
+
+    if (dependencies.length === 0) {
+      return SuccessResponse;
+    }
 
     // check dependencies to ensure they all contain file://
     const allDepsFiles = dependencies.every(dep => dep.includes('file://'));
@@ -168,7 +180,7 @@ export default class ChartValidatorService extends BaseService {
   }
 
   private async findHooks(): Promise<ServiceResponse<string>> {
-    const hooks = spawnSync('grep', ['-Rilne', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf8"});
+    const hooks = spawnSync('grep', ['-Rine', '"helm.sh/hook"', this.toValidate], {shell: true, encoding: "utf8"});
 
     return hooks.stdout === "" ? SuccessResponse : {
         success: false,
@@ -186,8 +198,9 @@ export default class ChartValidatorService extends BaseService {
   private async findLookups(): Promise<ServiceResponse<string>> {
     // Find any instance of "lookup" that starts with an opening parenthesis and ignore any white spaces between opening
     // and the word itself
-    // eslint-disable-next-line no-useless-escape
-    const grepLookup = spawnSync('grep', ['-Rilne', '"\{\{-?\s*lookup"', `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
+    const grepLookup = spawnSync('grep', ['-RinE', "'\\{\\{-\\?*.*\\s*(lookup)\\s'", `"${this.toValidate}"`], {shell: true, encoding: "utf8"});
+
+    this.debug(`grepLookup out: ${grepLookup.stdout}`);
 
     if (grepLookup.stdout === "") {
       return SuccessResponse;
